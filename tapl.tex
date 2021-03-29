@@ -1,0 +1,82 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\usepackage{unicode-math}
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+\usepackage{listings}
+%\usepackage{minted}% hightlighting
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\begin{document}
+\title{Types and Programming Language}
+\author{枫聆}
+\maketitle
+\tableofcontents
+
+\newpage
+\section{Introduction}
+
+\begin{definition}
+\rm A {\color{red} type system} is a tractable syntactic method for proving the absence of certain program behaviors by classlying phrases according to the kinds of value they compute.
+\end{definition}
+
+{\color{blue} type system是一种用于证明某些确定的程序行为不会发生的方法，它怎么做呢？通过它们计算出值的类型来分类, 有点抽象... 我想知道the kinds of value they compute是什么？ 如何分类？ 分类之后接下来该怎么做？}
+
+\begin{annotation}
+\rm Being static, type systems are necessarily also {\color{red}conservative}: they can categorically prove the absence of some bad program behaviors， but they cant prove their presence.
+\end{annotation}
+
+\lstset{language=C,
+    basicstyle=\ttfamily,
+    keywordstyle=\bfseries,
+    showstringspaces=false,
+    morekeywords={include, printf}
+}
+\lstset{numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=5pt}
+
+\begin{example}
+\rm
+\begin{lstlisting}
+if <complex test> then 5 else <type error>
+\end{lstlisting}
+{\color{blue} 上面这个annotation在说type system只能证明它看到的一些bad program behavior不会出现，但是它们可能会reject掉一些runtime time阶段运行良好的程序，例如在runtime阶段上面的else可能永远都不会进. 即type system无法证明它是否真的存在}.
+\end{example}
+
+\end{document}
