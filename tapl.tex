@@ -101,7 +101,7 @@ $$
 \begin{array}{ccc}
 \text{true} \in \mathcal{T}  & \text{false} \in \mathcal{T} & 0 \in \mathcal{T} \\
 \infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} & \infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} & \infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} \\
-& \infer{t_1 \in \mathcal{T}  t_1 \in \mathcal{T}  t_1 \in \mathcal{T}}{ \in \mathcal{T}} &\\ 
+& \infer{\text{\lstinline[mathescape]!if $t_1$ then $t_2$ else $t_3$!}}{ t_1 \in \mathcal{T} & t_2 \in \mathcal{T} & t_3 \in \mathcal{T}} &\\ 
 \end{array}
 $$
 \end{definition}
