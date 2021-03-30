@@ -106,4 +106,25 @@ $$
 $$
 \end{definition}
 
+\begin{definition}
+\rm For each natural number $i$, define a S(X) as follow:
+$$
+\begin{aligned}
+S_0(X)  &= X \\
+S_1(X)  &= \Set{\text{succ}\ t,\text{prev}\ t,\text{iszero}\ t }{t \in X} \cup \Set{\text{\lstinline[mathescape]!if $t_1$ then $t_2$ else $t_3$!}}{t_1,t_2,t_3 \in X} \\
+&\vdots \\
+S_{i+1}(X) &= S(S_i(X)).
+\end{aligned}
+$$
+\end{definition}
+
+\begin{proposition}
+\rm $\mathcal{T} = \bigcup_{i = 0}^{\omega} S_i(\{\text{true},\text{false},0\})$.
+\end{proposition}
+
+\begin{proof}
+
+\end{proof}
+
+
 \end{document}
