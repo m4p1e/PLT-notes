@@ -22,6 +22,8 @@
 \usepackage{listings}
 %\usepackage{minted}% hightlighting
 
+\usepackage{proof} % infer
+
 \usepackage{xcolor}
 \usepackage{titlesec}
 \titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
@@ -78,5 +80,30 @@ if <complex test> then 5 else <type error>
 \end{lstlisting}
 {\color{blue} 上面这个annotation在说type system只能证明它看到的一些bad program behavior不会出现，但是它们可能会reject掉一些runtime time阶段运行良好的程序，例如在runtime阶段上面的else可能永远都不会进. 即type system无法证明它是否真的存在}.
 \end{example}
+
+\newpage
+\section{Untyped Systems}
+
+\subsection{Syntax}
+
+\begin{definition}
+\rm The set of terms is the smallest set $\mathcal{T}$ such that 
+\begin{enumerate}
+	\item $\{\text{true},\text{false},0\} \subseteq \mathcal{T}$;
+	\item if $t_1 \in \mathcal{T}$, then $\{\text{succ}\ t_1, \text{pred}\ t_1, \text{iszero}\ t_1\} \subseteq \mathcal{T}$;
+	\item if $t_1 \in \mathcal{T}, t_2 \in \mathcal{T}, t_3 \in \mathcal{T}$, then {\lstinline[mathescape]!if $t_1$ then $t_2$ else $t_3$!} $\in \mathcal{T}$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+\rm The set of terms is defined by the following rules:
+$$
+\begin{array}{ccc}
+\text{true} \in \mathcal{T}  & \text{false} \in \mathcal{T} & 0 \in \mathcal{T} \\
+\infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} & \infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} & \infer{\text{succ} t_1 \in \mathcal{T}}{t_1 \mathcal{T}} \\
+& \infer{t_1 \in \mathcal{T}  t_1 \in \mathcal{T}  t_1 \in \mathcal{T}}{ \in \mathcal{T}} &\\ 
+\end{array}
+$$
+\end{definition}
 
 \end{document}
