@@ -91,7 +91,7 @@ if <complex test> then 5 else <type error>
 \begin{enumerate}
 	\item $\{\text{true},\text{false},0\} \subseteq \mathcal{T}$;
 	\item if $t_1 \in \mathcal{T}$, then $\{\text{succ}\ t_1, \text{pred}\ t_1, \text{iszero}\ t_1\} \subseteq \mathcal{T}$;
-	\item if $t_1 \in \mathcal{T}, t_2 \in \mathcal{T}, t_3 \in \mathcal{T}$, then {\lstinline[mathescape]!if $t_1$ then $t_2$ else $t_3$!} $\in \mathcal{T}$.
+	\item if $t_1 \in \mathcal{T}, t_2 \in \mathcal{T}, t_3 \in \mathcal{T}$, then $\text{\lstinline[mathescape]!if $t_1$ then $t_2$ else $t_3$!} \in \mathcal{T}$.
 \end{enumerate}
 \end{definition}
 
@@ -123,8 +123,44 @@ $$
 \end{proposition}
 
 \begin{proof}
+我们设$\bigcup_{i = 0}^{\omega} S_i(\{\text{true},\text{false},0\}) = S$和$\{\text{true},\text{false},0\} = T$，证明过程分两步走(1)$S$ follow Definition2.1 (2) $S$ is smallest.
 
+proof (1). $\{\text{true},\text{false},0\} \in S$这是显然的. 若$t_1 \in S$，那么$t_1 \in S_i(T)$，考虑$\text{succ}\ t_1, \text{pred}\ t_1, \text{iszero}\ t_1 \in S_{i+1}(T)$.  同理Definiton2.1(3).
+
+proof (2). 考虑任意follow Definition2.1的集合$S'$，我们需要证明$S \subseteq S'$.  我们考虑任意的$S_i \subseteq S$，若都有$S_i \subseteq S'$，那么则有$S \subseteq S'$. 这里我们使用induction来证明，首先有$S_0(T) \subseteq S'$，假设$S_n(T) \subseteq S'$. 那么考虑$S_{n+1}(T) = S(S_n(T))$，任意的$t_1，t_2, t_3 \in S_n(T)$，那么Definition2.1(1)(2)(3)得到的结果都是属于$S'$，因此$S_{n+1}(T) \subseteq S'$.  
 \end{proof}
 
+\newpage
+\subsection{Semantic Styles}
+
+%https://www.zhihu.com/question/23861885
+\begin{annotation}
+\rm 有三种方法来形式化语义:
+\begin{enumerate}
+	\item Operational semantics(操作语义) 定义程序是如何运行的？ 所以你需要一个abstract machine来帮助解释，之所以abstract是因为它里面的mechine code就是the term of language. 其中又分为两种类型，big-step和small-step.
+	\item Denotational semantics(指称语义) 就是给定一个semantic domain和一个interpretaion function，通过这个function把term映射到semantic domain里面，这个domain里面可能是一堆数学对象. 它的优势是对求值进行抽象，突出语言的本质. 我们可以在semantic domain里面做运算，只要interpretation function建立的好，运算结果可以表征程序本身的性质.
+	\item Axiomatic semantics(公理语义) 拿axioms堆起来的程序？ 类似Hoare logic.
+	\item Alegbraic semantics(代数语义) 把程序本身映射到某个代数结构上，转而研究这个代数?
+\end{enumerate}
+\end{annotation}
+
+\newpage
+\subsection{Evaluation}
+
+\begin{annotation}
+\rm 这一章在讲operational semantic of boolean expression, 这个过程会清晰的告诉你我们求值的结果是什么？当我们对term求值时，term之间的转换规则应该是什么？ 既然有了转换，那么一定有终止的时候，这个终止的时刻就是我们求值的结果，那我们要问什么时候停止呢？ 开头的表格告诉了关于前面这些问题的答案. 当然有一些东西也没有出现在表格里面，但是它们同样重要，例如不能在对false，true，0这些东西再求值；求值的顺序等等.
+\end{annotation}
+
+
+\begin{definition}
+\rm An instance of an inference rule is obtained by consistently replacing each metavariable by the same term in the rule’s conclusion and all its premises (if any).
+
+{\color{blue} 一个推导规则的实例，就是把里面的metavariable替换成具体的terms，但是一定需要注意对应关系}.
+\end{definition}
+
+
+\begin{definition}
+
+\end{definition}
 
 \end{document}
