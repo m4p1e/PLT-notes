@@ -160,7 +160,21 @@ proof (2). 考虑任意follow Definition2.1的集合$S'$，我们需要证明$S 
 
 
 \begin{definition}
-
+\rm Evaluation relations: 一步求值 (基本evaluation relation)；多步求值 (evaluation relation的传递闭包产生的新的relation， 这个relation包含原来的所有evaluation relation);
 \end{definition}
+
+
+\begin{definition}
+\rm A term t is in normal form if no evaluation rule applies to it.
+
+{\color{blue} 范式是一个term无法继续求值的状态}.
+\end{definition}
+
+\begin{definition}
+\rm A closed term is stuck if it is in normal form but not a value.
+
+{\color{blue} 受阻项是一种特殊的范式，这个范式不是一个合法的值}.
+\end{definition}
+
 
 \end{document}
