@@ -1,0 +1,15 @@
+core.cmi: support.cmi syntax.cmi 
+parser.cmi: support.cmi syntax.cmi 
+syntax.cmi: support.cmi 
+core.cmo: support.cmi syntax.cmi core.cmi 
+core.cmx: support.cmx syntax.cmx core.cmi 
+lexer.cmo: parser.cmi support.cmi 
+lexer.cmx: parser.cmx support.cmx 
+main.cmo: core.cmi lexer.cmo parser.cmi support.cmi syntax.cmi 
+main.cmx: core.cmx lexer.cmx parser.cmx support.cmx syntax.cmx 
+parser.cmo: support.cmi syntax.cmi parser.cmi 
+parser.cmx: support.cmx syntax.cmx parser.cmi 
+support.cmo: support.cmi 
+support.cmx: support.cmi 
+syntax.cmo: support.cmi syntax.cmi 
+syntax.cmx: support.cmx syntax.cmi 
