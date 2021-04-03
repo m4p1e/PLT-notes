@@ -45,8 +45,54 @@ let rec eval1 t = match t with
       TmIsZero(fi, t1')
   | _ -> 
       raise NoRuleApplies
-
+(*          
 let rec eval t =
   try let t' = eval1 t
       in eval t'
   with NoRuleApplies -> t
+*)
+
+let rec evaln t = match t with
+		TmFalse(_) -> 
+			t
+	|	TmTrue(_) ->
+			t
+	| TmZero(_) ->
+			t				
+	| TmIf(_, TmTrue(_), t2, t3) ->
+    	evaln t2
+  | TmIf(_, TmFalse(_), t2, t3) ->
+    	evaln t3
+  | TmIf(fi,t1,t2,t3) -> 
+			(match evaln t1 with
+						TmTrue(_) -> evaln t2
+					| TmFalse(_) -> evaln t3
+					|  _ -> raise NoRuleApplies    
+			)
+  | TmSucc(fi,t1) -> 
+    	TmSucc(fi,evaln(t1))
+	| TmPred(fi,t1) ->
+		(match evaln t1 with
+				TmZero(_) -> 
+					TmZero(dummyinfo)
+			| TmSucc(_,nv1) when (isnumericval nv1) ->
+				nv1
+			| _ ->
+				raise NoRuleApplies	
+		)
+	| TmIsZero(fi,t1) ->
+		(match evaln t1 with
+				TmZero(_) ->
+					TmTrue(dummyinfo)
+			| TmSucc(_,nv1) when (isnumericval nv1) ->
+					TmFalse(dummyinfo)
+			| _ ->
+				raise NoRuleApplies
+		)
+	| _ ->
+			raise NoRuleApplies		
+
+
+let eval t = 
+	try evaln t
+	with NoRuleApplies -> t
