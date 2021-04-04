@@ -263,6 +263,7 @@ where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replaci
 \rm {\color{red} 可约表达式} A term of the form $(\lam{x}{\term{t_{12}}})~\term{t_2}$ is called {\color{red} redex} (reducible expression), and the operation of rewriting a redex according to the above rule is called {\color{red} $\beta$-reduction}.
 \end{definition}
 
+%https://en.wikipedia.org/wiki/Evaluation_strategy
 \begin{definition}
 \rm {\color{red} 几种规约策略} Each strategy defines which redex or redexes in a term can fire on the next step of evaluation. 
 \begin{enumerate}
@@ -307,10 +308,37 @@ where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replaci
 	\nrightarrow
 	\end{aligned}
 	$$
-	most languages use a call by value strategy.
+	\item Most languages use a {\color{red} call by value} strategy, in which only outermost redexes are reduced and where a redex is reduced only when its right-hand side has already been reduced to a value-a term that is finished computation and cannot be reduced and further.
+	$$
+	\begin{aligned}
+	& \term{id}~\underline{(\term{id}~(\lam{z}{\term{id}~z}))} \\
+	\rightarrow & \underline{\term{id}~(\lam{z}{\term{id}}~z)} \\
+	\rightarrow & \lam{z}{\term{id}~z} \\
+	\nrightarrow
+	\end{aligned}
+	$$
 \end{enumerate}
 
-{\color{blue} 值得一提是call by name规约，它从最外面开始规约直到碰到不能规约为止. 实际它是在对函数的apply过程进行规约，直到一个函数定义，不会继续处理函数里面的terms}.
+{\color{blue} 注意call by name和 call by value的区别，call by name是在$\lambda$函数调用前不对参数进行规约而直接替换到函数body内，换言之如果一个参数不会被用到，那么它永远都不会被evaluated，call by value是其对立情况，先对参数进行规约}.
+
+{\color{red} Evaluation strategies are used by programming languages to determine two things—when to evaluate the arguments of a function call and what kind of value to pass to the function}.
 \end{definition}
+
+\newpage
+\subsection{Programming in the Lambda-Calculus}
+
+\begin{definition}
+\rm {\color{red} 高阶函数} A higher order function is a function that takes a function as an argument, or returns a function.
+\end{definition}
+
+\begin{annotation}
+\rm {\color{red} 多参数} Motivation is that the lambda-calculus provides no built-in support for multi-argument functions. The solution here is higher-order functions. 
+
+Instead of writing $f = \lam{(x,y)}{\term{s}}$, as we might in a richer programming language, we write $f = \lam{x}{\lam{y}{\term{s}}}$. we then apply $f$ to it arguments one at times, write $f~v~w$, which reduces to
+$$
+f~v~w \rightarrow \lam{y}{\left[ x \mapsto v \right] s} \rightarrow \left[ x \mapsto v \right]\left[ y \mapsto w \right]s.
+$$
+This transformation of multi-arguments function into higher-order function is called {\color{red} currying} in honor of Haskell Curry,a contemporary of Church.
+\end{annotation}
 
 \end{document}
