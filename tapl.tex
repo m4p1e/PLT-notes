@@ -46,6 +46,32 @@
 \newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
 \newcommand\SET[2]{\Set{#1}{\text{#2}}} %
 
+\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp #2}} %lamx.y
+\newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
+\newcommand{\projone}[1]{\ensuremath{#1.1}}
+\newcommand{\projtwo}[1]{\ensuremath{#1.2}}
+\newcommand{\caseof}[3]{\ensuremath{{\textbf{case}}~#1~{\textbf{of}}~\inl{x_1}\mapsto #2\mid\inr{x_2}\mapsto #3}}
+\newcommand{\Lam}[2]{\ensuremath{\Lambda #1\ldotp #2}}
+\newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
+\newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
+
+\newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
+\newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
+\newcommand{\mat}[0]{\matgen{\alpha}{\tau}} %ua.t
+\newcommand{\fatgen}[2]{\ensuremath{\forall #1\ldotp#2}}
+\newcommand{\fat}[0]{\fatgen{\alpha}{\tau}}
+\newcommand{\eatgen}[2]{\ensuremath{\exists #1\ldotp#2}}
+\newcommand{\eat}[0]{\eatgen{\alpha}{\tau}}
+\newcommand{\fatgent}[2]{\ensuremath{\trgb{\forall} #1\ldotp#2}}
+\newcommand{\fatt}[0]{\fatgent{\alpt}{\tat}}
+\newcommand{\eatgent}[2]{\ensuremath{\trgb{\exists} #1\ldotp#2}}
+\newcommand{\eatt}[0]{\eatgent{\alpt}{\tat}}
+
+\newcommand{\fail}[0]{\mi{fail}}
+
+\newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
+\newcommand{\term}[1]{\ensuremath\mathsf{#1}}
+
 \begin{document}
 \title{Types and Programming Language}
 \author{枫聆}
@@ -176,5 +202,115 @@ proof (2). 考虑任意follow Definition2.1的集合$S'$，我们需要证明$S 
 {\color{blue} 受阻项是一种特殊的范式，这个范式不是一个合法的值}.
 \end{definition}
 
+
+\newpage
+\subsection{The Untyped Lambda-Calculus}
+
+\begin{annotation}
+\rm {\color{red} 过程抽象} Procedural (or functional) abstraction is a key feature of essentially all pro-gramming languages
+\end{annotation}
+
+\begin{definition}
+\rm {\color{red} $\lambda$演算的定义} The lambda-calculus (or -calculus) embodies this kind of function defi-nition and application in the purest possible form. In the lambda-calculus everything is a function: the arguments accepted by functions are themselves functions and the result returned by a function is another function.
+
+The syntax of the lambda-calculus comprises just three sorts of terms.
+$$
+\begin{aligned}
+\term{t} \bnfdef & \\
+&\ \term{x} \\
+&\ \lam{x}{\term{t}} \\
+&\ \term{t}\ \term{t}.
+\end{aligned}
+$$
+A variable $\term{x}$ by itself is a term; the abstraction of a variable $\term{x}$ from a term $\term{t_1}$, written $\lam{x}{t_1}$, is a term; and the application of a term $\term{t_1}$ to another term $\term{t_2}$, written $\term{t_1}\ \term{t_2}$, is a term.
+
+{\color{blue} 在 pure lambda-calculus里面所有的terms都是函数，同时一个函数的application得到的结果还是一个函数}.
+\end{definition}
+
+\begin{definition}
+\rm {\color{red}两个重要的约定} First, application associates to the left, means
+$$
+\term{s}~\term{t}~\term{u} = (\term{s}~\term{t})~\term{u}.
+$$
+Second, the bodies of abstractions are taken to extend as far to the right
+as possible.
+$$
+\lam{x}{\lam{y}{x~y~x}} = \lam{x}{(\lam{y}{((x~y)~x)})}.
+$$
+
+{\color{blue} 第一个是说函数的apply操作是左结合，第二是说lambda函数的抽象体尽量向右扩展}.
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} 作用域scope} An occurrence of the variable x is said to be {\color{red} bound} when it occurs in the body $\term{t}$ of an abstraction $\lam{x}{\term{t}}.$(More precisely, it is bound by this abstraction.
+Equivalently, we can say that $\lambda x$ is a binder whose scope is $\term{t}$.) An occurrence of $x$ is {\color{red} free} if it appears in a position where it is not bound by an enclosing abstraction on $x$. i.e. $x$ in $\lam{y}{x\ y}$ and $x\ y$ are free. 
+
+A term with no free variables is said to be {\color{red} closed}; closed terms are also called {\color{red}combinators}. The simplest combinator, called the identity function,
+$$
+\term{id} = \lam{x}{x}.
+$$
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} 操作语义} Each step in the computation consists of rewriting an application whose left-hand component is an abstraction, by substituting the right-hand component for the bound variable in the abstraction's body.Graphically, we write
+$$
+(\lam{x}{\term{t_{12}}})~\term{t_2} \rightarrow \left[ x \mapsto \term{t_2} \right] \term{t_{12}},
+$$
+where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replacing all free occurences of $x$ in $\term{t_{12}}$ by $t_2$". 
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} 可约表达式} A term of the form $(\lam{x}{\term{t_{12}}})~\term{t_2}$ is called {\color{red} redex} (reducible expression), and the operation of rewriting a redex according to the above rule is called {\color{red} $\beta$-reduction}.
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} 几种规约策略} Each strategy defines which redex or redexes in a term can fire on the next step of evaluation. 
+\begin{enumerate}
+	\item Undering {\color{red} full $\beta$-reduction}, any redex may be reduced at any time. i.e., consider the term
+	$$
+	(\lam{x}{x})~((\lam{x}{x})~(\lam{z}{(\lam{x}{x})~z})),
+	$$
+	we can write more readably as $\term{id}~(\term{id}(\lam{z}{\term{id}}~z))$. This term contains three redexes:
+	$$
+	\begin{aligned}
+	\underline{\term{id}~(\term{id}~(\lam{z}{\term{id}}~z))} \\
+	\term{id}~(\underline{\term{id}~(\lam{z}{\term{id}}~z)}) \\
+	\term{id}~(\term{id}~(\lam{z}{\underline{\term{id}~z}}))
+	\end{aligned}
+	$$
+	under full $\beta$-reduction, we might choose, for example, to begin with the innermost index, then do the one in the middle, then the outermost:
+	$$
+	\begin{aligned}
+	&\term{id}~(\term{id}~(\lam{z}{\underline{\term{id}~z}})) \\
+	\rightarrow & \term{id}~(\underline{\term{id}~(\lam{z}{z})}) \\
+	\rightarrow & \underline{\term{id}~(\lam{z}{z})} \\
+	\rightarrow & \lam{z}{z} \\
+	\nrightarrow
+	\end{aligned}
+	$$
+	\item Undering the {\color{red} normal order} strategy, the leftmost, outermost redex is always reduced first. Under this strategy, the term above would be reduced as follows
+	$$
+	\begin{aligned}
+	& \underline{\term{id}~(\term{id}~(\lam{z}{\term{id}~z}))} \\
+	\rightarrow & \underline{\term{id}~(\lam{z}{\term{id}}~z)} \\
+	\rightarrow & \lam{z}{\underline{\term{id}~z}} \\
+	\rightarrow & \lam{z}{z} \\
+	\nrightarrow
+	\end{aligned}
+	$$
+	\item The {\color{red} call by name} strategy is yet more restrictive, allowing no reductions inside abstractions. 
+	$$
+	\begin{aligned}
+	& \underline{\term{id}~(\term{id}~(\lam{z}{\term{id}~z}))} \\
+	\rightarrow & \underline{\term{id}~(\lam{z}{\term{id}}~z)} \\
+	\rightarrow & \lam{z}{\term{id}~z} \\
+	\nrightarrow
+	\end{aligned}
+	$$
+	most languages use a call by value strategy.
+\end{enumerate}
+
+{\color{blue} 值得一提是call by name规约，它从最外面开始规约直到碰到不能规约为止. 实际它是在对函数的apply过程进行规约，直到一个函数定义，不会继续处理函数里面的terms}.
+\end{definition}
 
 \end{document}
