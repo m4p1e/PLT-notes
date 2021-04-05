@@ -332,7 +332,7 @@ where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replaci
 \end{definition}
 
 \begin{annotation}
-\rm {\color{red} 多参数} Motivation is that the lambda-calculus provides no built-in support for multi-argument functions. The solution here is higher-order functions. 
+\rm {\color{red} 多参数柯里化} Motivation is that the lambda-calculus provides no built-in support for multi-argument functions. The solution here is higher-order functions. 
 
 Instead of writing $f = \lam{(x,y)}{\term{s}}$, as we might in a richer programming language, we write $f = \lam{x}{\lam{y}{\term{s}}}$. we then apply $f$ to it arguments one at times, write $f~v~w$, which reduces to
 $$
@@ -340,5 +340,42 @@ f~v~w \rightarrow \lam{y}{\left[ x \mapsto v \right] s} \rightarrow \left[ x \ma
 $$
 This transformation of multi-arguments function into higher-order function is called {\color{red} currying} in honor of Haskell Curry,a contemporary of Church.
 \end{annotation}
+
+\begin{annotation}
+\rm {\color{red} Church形式的布尔代数} Define the terms \textbf{tru} and \textbf{fls} as follows:
+$$
+\begin{aligned}
+\text{tru} &= \lam{t}{\lam{f}{t}}\\
+\text{fls} &= \lam{t}{\lam{f}{f}}.\\
+\end{aligned}
+$$
+The terms \textbf{tru} and \textbf{fls} can be viewed as representing the boolean values“true” and “false,” then define a combinator \textbf{test} with the property that $\text{test}~b~v~w$ reduces to $v$ when $b$ is \textbf{tru} and reduces $w$ when $b$ is \textbf{fls}.
+$$
+\text{test}~= \lam{l}{\lam{m}{\lam{n}{l~m~n}}}. 
+$$  
+The \textbf{test} combinator does not actually do much: $test~b~v~w$ reduces to $b~v~w$. i.e., the term $\text{test}~\text{tru}~v~w$ reduces as follow:
+$$
+\begin{aligned}
+&\text{test}~\text{tru}~v~w \\
+= & \text{tru}~v~w \\
+\rightarrow & \underline{(\lam{t}{\lam{f}{t}})~v}~w \\
+\rightarrow & \underline{(\lam{f}{v})~w} \\
+\rightarrow & v.
+\end{aligned}
+$$
+We can also define boolean operator like logical conjunction as functions:
+$$
+\text{and} = \lam{b}{\lam{c}{b~c~\text{fls}}} = \lam{b}{\lam{c}{b~c~b}} .
+$$
+Define logical \textbf{or} and \textbf{not} as follow:
+$$
+\begin{aligned}
+\text{or} &= \lam{b}{\lam{c}{b~\text{tru}~c}} = \lam{b}{\lam{c}{b~b~c}} \\
+\text{not} &= \lam{b}{b~\text{fls}~\text{tru}}.
+\end{aligned}
+$$ 
+\end{annotation}
+
+
 
 \end{document}
