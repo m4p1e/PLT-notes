@@ -1,0 +1,139 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\usepackage{unicode-math}
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+\usepackage{listings}
+%\usepackage{minted}% hightlighting
+
+\usepackage{proof} % infer
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\begin{document}
+\title{Abstract Interpretation}
+\author{枫聆}
+\maketitle
+\tableofcontents
+
+\section{Motivation}
+
+实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
+
+\newpage
+\section{Galois connections}
+
+关于galois connection我们通常可以看到两个定义，下面我来说明两个定义是等价，也就是说可以从任意一个推出另外一个.
+
+\begin{definition}
+\rm {\color{red} nlab上的定义更贴近adjunction的味道} Given posets $A$ and $B$, a Galois connection between $A$ and $B$ is a pair of order-preversing functions $\func{f}{A}{B}$ and $\func{g}{B}{A}$ such that $a \leq g(f(a))$ and $b \geq f(g(b))$ for all $a \in A$, $b \in B$. 
+
+{\color{blue} 注意这里的order-preversing，最原始的定义用的是order-reversing，导致我在这里弄出了一些矛盾}.
+\end{definition}
+
+\begin{tikzpicture}
+\filldraw[color=red!60, fill=red!5, very thick](-1,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](4,0) ellipse (1 and 1.5);
+\node (a) at (-1,-1) {$a$};
+\node (fa) at (4,0) {$f(a)$};
+\node (gfa) at (-1, 1) {$g(f(a))$};
+\node (l) at (-1,0) {$\bigsqcup|$};
+\draw [->] (a) edge[bend right=20] (fa) (fa) edge[bend right=20] (gfa);
+
+\filldraw[color=red!60, fill=red!5, very thick](12,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](7,0) ellipse (1 and 1.5);
+\node (b) at (12, 1) {$b$};
+\node (gb) at (7,0) {$g(b)$};
+\node (fgb) at (12,-1) {$f(g(b))$};
+\node (l) at (12,0) {$\bigsqcup|$};
+\draw [->] (b) edge[bend right=20] (gb) (gb) edge[bend right=20] (fgb);
+\end{tikzpicture}
+
+\begin{proposition}
+\rm Given posets $A$ and $B$, a pair of order-preversing functions $\func{f}{A}{B}$ and $\func{g}{B}{A}$ is a Galois connection between $A$ and $B$ if and only if, for all $a \in A$, $b \in B$, we have 
+$$
+f(a) \leq b~\text{if and only if}~a \leq g(b).
+$$
+\end{proposition}
+
+\begin{center}
+\begin{tikzpicture}
+\filldraw[color=red!60, fill=red!5, very thick](-1,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](4,0) ellipse (1 and 1.5);
+\node (a) at (-1,-1) {$a$};
+\node (fa) at (4,-1) {$f(a)$};
+\node (b) at (4, 1) {$b$};
+\node (gb) at (-1,1) {$g(b)$};
+\node (l1) at (-1,0) {$\bigsqcup|$};
+\node (l2) at (4,0) {$\bigsqcup|$};
+\draw [->] (a) edge[bend right=20] (fa) (b) edge[bend right=20] (gb);
+\end{tikzpicture}
+\end{center}
+
+\begin{proof}
+($\Rightarrow$). 前提$(f,g)$是一个galois connection，给定$a \in A$, $b \in B$. 若$f(a) \leq b$, 两边同时apply $g$, 有$g(f(a)) \leq g(b)$，同时有$a \leq g(f(a))$. 那么$a \leq g(b)$. 若$a \leq g(b)$，同理可以得到$f(a) \leq b$.
+
+($\Leftarrow$). 前提$(f,g)$满足$f(a) \leq b~\text{if and only if}~a \leq g(b)$. 我们直接取$b = f(a)$, 那么$f(a) \leq f(b)$当且仅当$a \leq g(f(a))$. 同理直接取$a = g(b)$，那么$g(b) \leq g(b)$当且仅当$f(g(a)) \leq b $.   
+\end{proof}
+
+{\color{blue} 关于adjunction的东西$fg \rightarrow id$和$gf \rightarrow id$，这个箭头是一个natural transform, 至于更细的东西要去看看category theory了! PAAA上说$f$和$g$互为“weak inverse”，看起来也是比较形象啊！所以有下面的一个命题}.
+
+
+\begin{proposition}
+\rm {\color{red} weak inverse} For galois connection $(f,g)$, we have the equations
+$$
+\begin{aligned}
+f \circ g \circ f  = f \\
+g \circ f \circ g = g.
+\end{aligned}
+$$
+\end{proposition}
+
+\begin{proof}
+(1).
+$$
+\begin{array}{ccc}
+ a \leq g(f(a)) \Rightarrow& f(a) \leq f[g(f(a))] & f \circ( g \circ f) \\
+ f(a) \leq f(a) \Rightarrow& f\circ g(f(a))) \leq f(a) & (f \circ g) \circ f, \\
+\end{array}
+$$
+所以$f \circ g \circ f  = f$. 同理可证第二个式子.
+\end{proof}
+
+\end{document}
