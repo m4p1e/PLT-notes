@@ -76,8 +76,8 @@
 \node (l) at (-1,0) {$\bigsqcup|$};
 \draw [->] (a) edge[bend right=20] (fa) (fa) edge[bend right=20] (gfa);
 
-\filldraw[color=red!60, fill=red!5, very thick](12,0) ellipse (1 and 1.5);
-\filldraw[color=blue!60, fill=red!5, very thick](7,0) ellipse (1 and 1.5);
+\filldraw[color=red!60, fill=red!5, very thick](7,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](12,0) ellipse (1 and 1.5);
 \node (b) at (12, 1) {$b$};
 \node (gb) at (7,0) {$g(b)$};
 \node (fgb) at (12,-1) {$f(g(b))$};
@@ -129,11 +129,32 @@ $$
 (1).
 $$
 \begin{array}{ccc}
- a \leq g(f(a)) \Rightarrow& f(a) \leq f[g(f(a))] & f \circ( g \circ f) \\
- f(a) \leq f(a) \Rightarrow& f\circ g(f(a))) \leq f(a) & (f \circ g) \circ f, \\
+ a \leq g(f(a)) \Rightarrow& f(a) \leq f[g(f(a))] & {\color{red} f \circ( g \circ f)} \\
+ f(a) \leq f(a) \Rightarrow& f\circ g(f(a))) \leq f(a) & {\color{red}(f \circ g) \circ f}, \\
 \end{array}
 $$
 所以$f \circ g \circ f  = f$. 同理可证第二个式子.
 \end{proof}
+
+\begin{proposition}
+\rm {\color{red} Galois connection引发的semilattice homomorphism} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
+\begin{enumerate}
+	\item $f(\perp) = \perp$;
+	\item $f(x \vee y) = f(x) \vee f(y)$.
+\end{enumerate}
+
+{\color{blue} 啧啧，没想到啊galois connection竟然弄了一个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism}. 
+\end{proposition}
+
+\begin{proof}
+(1) 由于$B$上的$\perp$的性质，有$f(\perp) \geq \perp$. 反过来由于$A$上的$\perp$性质，有$g(\perp) \geq \perp$，再用一下galois connection的性质，有$f(\perp) \leq \perp$. 综上两边夹，所以$f(\perp) = \perp$.
+
+(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$. 最关键的是证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，那么
+$$
+x \vee y \leq g(f(x) \vee f(y))
+$$
+再用一下galois connection，就有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$.
+\end{proof}
+
 
 \end{document}
