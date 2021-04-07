@@ -160,7 +160,7 @@ $$
 \subsection{Inducing along the Concretisation Function}
 
 \begin{definition}
-\rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
+\rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
 
 {\color{blue} 这个$\nabla$表示widening，这个序列第$n$个元素是$n$个元素做apply widening之后的结果，最终会趋于稳定}.
 \end{definition}
@@ -176,9 +176,34 @@ $$
 \begin{proposition}
 \rm If $\nabla$ is a strong widening then
 $$
-x_1 \nabla \cdots \nabla d_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}
+x_1 \nabla \cdots \nabla x_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}
 $$
 for all $n > 0$.
 \end{proposition}
+
+\begin{proof}
+当$n=1$时
+$$
+x_1 \leq x_1 \nabla x_2.
+$$
+这是显然地，假设对任意的$n = k$有$x_1 \nabla \cdots \nabla x_k \leq x_1 \nabla \cdots \nabla x_k \nabla x_{k+1}$成立，那么当$n = k+1$时
+$$
+\begin{aligned}
+(x_1 \nabla \cdots \nabla x_k \nabla x_{k+1}) \nabla x_{k+2} &\geq (x_1 \nabla \cdots \nabla x_k \nabla x_{k+1}) \vee x_{k+2} \\
+& \geq x_1 \nabla \cdots \nabla x_k \nabla x_{k+1}.
+\end{aligned}
+$$
+所以原式在任意$n >0$时成立.
+\end{proof}
+
+\begin{proposition}
+\rm If $D$ satisfies the ACC then the join operation $\vee$ is a strong widening.
+\end{proposition}
+
+\begin{proof}
+这太显然了, 简直trivial，ACC在这里保证了任意非空集合都有最大元素，那么它们的join肯定不会超过它，也就是eventually stabilises.
+\end{proof}
+
+
 
 \end{document}
