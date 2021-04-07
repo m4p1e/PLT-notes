@@ -156,5 +156,29 @@ $$
 再用一下galois connection，就有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$.
 \end{proof}
 
+\newpage
+\subsection{Inducing along the Concretisation Function}
+
+\begin{definition}
+\rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
+
+{\color{blue} 这个$\nabla$表示widening，这个序列第$n$个元素是$n$个元素做apply widening之后的结果，最终会趋于稳定}.
+\end{definition}
+
+\begin{definition}
+\rm An operator $\func{\nabla}{D \times D}{D}$ is a {\color{red} strong widening }whenever
+\begin{itemize}
+	\item $x_1 \nabla x_2 \geq x_1 \vee x_2$ holds for all $x_1,x_2 \in D$ and
+	\item the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises for all choices of sequence $x_1, x_2 ,\cdots$.
+\end{itemize}
+\end{definition}
+
+\begin{proposition}
+\rm If $\nabla$ is a strong widening then
+$$
+x_1 \nabla \cdots \nabla d_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}
+$$
+for all $n > 0$.
+\end{proposition}
 
 \end{document}
