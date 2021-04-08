@@ -346,14 +346,14 @@ This transformation of multi-arguments function into higher-order function is ca
 $$
 \begin{aligned}
 \text{tru} &= \lam{t}{\lam{f}{t}}\\
-\text{fls} &= \lam{t}{\lam{f}{f}}.\\
+\text{fls} &= \lam{t}{\lam{f}{f}}\\
 \end{aligned}
 $$
 The terms \textbf{tru} and \textbf{fls} can be viewed as representing the boolean values“true” and “false,” then define a combinator \textbf{test} with the property that $\text{test}~b~v~w$ reduces to $v$ when $b$ is \textbf{tru} and reduces $w$ when $b$ is \textbf{fls}.
 $$
-\text{test}~= \lam{l}{\lam{m}{\lam{n}{l~m~n}}}. 
+\text{test}~= \lam{l}{\lam{m}{\lam{n}{l~m~n}}};
 $$  
-The \textbf{test} combinator does not actually do much: $test~b~v~w$ reduces to $b~v~w$. i.e., the term $\text{test}~\text{tru}~v~w$ reduces as follow:
+The \textbf{test} combinator does not actually do much: $test~b~v~w$ reduces to $b~v~w$. i.e., the term $\text{test}~\text{tru}~v~w$ reduces as follows:
 $$
 \begin{aligned}
 &\text{test}~\text{tru}~v~w \\
@@ -365,17 +365,105 @@ $$
 $$
 We can also define boolean operator like logical conjunction as functions:
 $$
-\text{and} = \lam{b}{\lam{c}{b~c~\text{fls}}} = \lam{b}{\lam{c}{b~c~b}} .
+\text{and} = \lam{b}{\lam{c}{b~c~\text{fls}}} = \lam{b}{\lam{c}{b~c~b}} 
 $$
-Define logical \textbf{or} and \textbf{not} as follow:
+Define logical \textbf{or} and \textbf{not} as follows:
 $$
 \begin{aligned}
 \text{or} &= \lam{b}{\lam{c}{b~\text{tru}~c}} = \lam{b}{\lam{c}{b~b~c}} \\
-\text{not} &= \lam{b}{b~\text{fls}~\text{tru}}.
+\text{not} &= \lam{b}{b~\text{fls}~\text{tru}};
 \end{aligned}
 $$ 
 \end{annotation}
 
+\begin{annotation}
+\rm {\color{red} 有序对} Using booleans, we can encode pairs of values as terms.
+$$
+\begin{aligned}
+\text{pair} &= \lam{f}{\lam{s}{\lam{b}{b~f~s}}} \\
+\text{fst} &= \lam{p}{p~\text{tru}} \\
+\text{snd} &= \lam{p}{p~\text{fls}} \\
+\end{aligned}
+$$
 
+{\color{blue} pair变成了一个函数，它可以接收一个tru或者fal来返回第一个值或者第二个值，fst和snd就是pair的一个applying过程，比较有趣}.
+\end{annotation}
+
+\begin{annotation}
+\rm {\color{red}Church形式的序数} Define the Church numerals as follows
+$$
+\begin{aligned}
+c_0 &=  \lam{s}{\lam{z}{z}} \\
+c_1 &=  \lam{s}{\lam{z}{s~z}} \\
+c_2 &=  \lam{s}{\lam{z}{s~(s~z)}} \\
+c_3 &=  \lam{s}{\lam{z}{s~(s~(s~z))}}  \\
+&\cdots
+\end{aligned}
+$$
+
+{\color{blue} 这是以自然数为下标的序列，你需要提供一个succ和zero. 你会注意到$c_0$和\textbf{fls}是同一个term，常规语言里面很多情况下$0$和false是一个东西}.
+\end{annotation}
+
+
+\begin{annotation}
+\rm {\color{red}Church形式序数的运算符} We can define the successor function on Church numerals as follows
+$$
+\text{succ} = \lam{n}{\lam{s}{\lam{z}{s~(n~s~z))}}}
+$$
+
+{\color{blue} successor function需要一个Church numeral返回新的Church numeral，分解一下上面的apply过程，首先是$(n~s~z)$得到相对应的数，然后在对它做succ操作}.
+
+另外一种形式
+$$
+\text{succ} = \lam{n}{\lam{s}{\lam{z}{n~s~(s~z)}}}
+$$
+{\color{blue} 这个方式也很巧妙，相当于把zero = zero + 1}.
+\end{annotation}
+
+\begin{annotation}
+\rm The addition of Church numerals can be preformed by a term \textbf{plus} that takes two Church numerals $m$ and $n$, as arguments, and yields another Church numeral. 
+$$
+\text{plus} = \lam{m}{\lam{n}{\lam{s}{\lam{n}{m~s~(n~s~z)}}}}
+$$
+
+{\color{blue} 很自然地把其中的一个number当做了另一个church numeral的zero}.
+\end{annotation} 
+
+\begin{annotation} \rm
+$$
+\text{times} = \lam{m}{\lam{n}{m~(\text{plus}~n)~c_0}}
+$$
+
+{\color{blue} 这个就非常有趣了，这里先固定$m$，把它succ设为$\text{plus}~n$和zero设为$c_0$，相当于$(\text{plus}~n)^m(c_0)$}.
+
+另一种更简洁的形式:
+$$
+\text{times} = \lam{m}{\lam{n}{\lam{s}{\lam{z}{m~(n~s)~z}}}}
+$$
+\end{annotation}
+
+\begin{annotation} \rm 
+$$
+\text{exp} = \lam{m}{\lam{n}{n~m}}
+$$
+
+推一个来看看，注意其中的几次$\alpha$变换，避免产生变量名的冲突.
+$$
+\begin{aligned}
+\text{exp}~c_3~c_2 &= c_2~c_3 \\
+			&= (\lam{s}{\lam{z}{s~(s~z)}})~c_3 \\
+			&= \lam{z}{c_3~(c_3~z)} \\
+	{\color{red}\leadsto_\alpha} &= \lam{z}{(\lam{f}{\lam{x}{f~(f~(f~x))}})~((\lam{f}{\lam{x}{f~(f~(f~x))}})~z)} \\
+			&= \lam{z}{(\lam{f}{\lam{x}{f~(f~(f~x))}})~(\lam{x}{z~(z~(z~x))})} \\
+	{\color{red}\leadsto_\alpha} &= \lam{z}{(\lam{f}{\lam{x}{f~(f~(f~x))}})~(\lam{g}{z~(z~(z~g))})} \\
+			&= \lam{z}{\lam{x}{(\lam{g}{z~(z~(z~g))})~((\lam{g}{z~(z~(z~g))})~((\lam{g}{z~(z~(z~g))})~x))}} \\
+			&= \lam{z}{\lam{x}{(\lam{g}{z~(z~(z~g))})~((\lam{g}{z~(z~(z~g))})~(z~z~z~x))}}\\
+			&= \lam{z}{\lam{x}{(\lam{g}{z~(z~(z~g))})~(z~z~z~z~z~z~x)}} \\
+			&= \lam{z}{\lam{x}{z~z~z~z~z~z~z~z~z~x}} \\
+			&= \lam{s}{\lam{z}{s~s~s~s~s~s~s~s~s~z}} \\
+			&= c_9 \\	
+\end{aligned}
+$$
+\end{annotation}
 
 \end{document}
