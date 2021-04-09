@@ -224,7 +224,7 @@ $$
 $$
 A variable $\term{x}$ by itself is a term; the abstraction of a variable $\term{x}$ from a term $\term{t_1}$, written $\lam{x}{t_1}$, is a term; and the application of a term $\term{t_1}$ to another term $\term{t_2}$, written $\term{t_1}\ \term{t_2}$, is a term.
 
-{\color{blue} 在 pure lambda-calculus里面所有的terms都是函数，同时一个函数的application得到的结果还是一个函数}.
+{\color{blue} 在 pure lambda-calculus里面所有的terms都是函数，第一个term表示变量，第二个term表示abstraction，第三个term表示application. 言下之意一个lambda函数的参数和返回值也都是函数}. 
 \end{definition}
 
 \begin{definition}
@@ -249,6 +249,15 @@ A term with no free variables is said to be {\color{red} closed}; closed terms a
 $$
 \term{id} = \lam{x}{x}.
 $$
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} $\alpha$等价} A basic form of equivalence, definable on lambda terms, is alpha equivalence. It captures the intuition that the particular choice of a bound variable, in an abstraction, does not (usually) matter. 
+$$
+\lam{x}{x} \cong \lam{y}{y}
+$$
+
+{\color{blue} 简而言之，同时对一个lambda函数替换所有bound variable得到的term是等价的, $\alpha$变换在进行$\beta$规约的时候，用于解决变量名冲突特别有用）}.
 \end{definition}
 
 \begin{definition}
@@ -329,6 +338,9 @@ where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replaci
 
 \begin{definition}
 \rm {\color{red} 高阶函数} A higher order function is a function that takes a function as an argument, or returns a function.
+$$
+f^{\circ n} = \underbrace{f \circ f \circ \cdots \circ f}_{n~\text{times}}.
+$$
 \end{definition}
 
 \begin{annotation}
@@ -400,6 +412,19 @@ c_3 &=  \lam{s}{\lam{z}{s~(s~(s~z))}}  \\
 &\cdots
 \end{aligned}
 $$
+
+\begin{center}
+\begin{tabular}{r |l |l }
+ \text{Number} & \text{Function definition} & \text{Lambda expression} \\
+\hline
+ 0 & $0~f~x = x$  & $0 = \lam{f}{\lam{x}{x}}$ \\ 
+ 1 & $1~f~x = f~x$ & $1 = \lam{f}{\lam{x}{f~x}}$ \\  
+ 2 & $2~f~x = f~(f~x)$ & $2 = \lam{f}{\lam{x}{f~(f~x)}}$ \\
+ 3 & $3~f~x = f~(f~(f~x))$ & $3 = \lam{f}{\lam{x}{f~(f~(f~x))}}$ \\
+ \vdots & \vdots & \vdots \\
+ n & $n~f~x = f^n~x$ & $2 = \lam{f}{\lam{x}{f^{\circ n}~x}}$ \\
+\end{tabular}
+\end{center}
 
 {\color{blue} 这是以自然数为下标的序列，你需要提供一个succ和zero. 你会注意到$c_0$和\textbf{fls}是同一个term，常规语言里面很多情况下$0$和false是一个东西}.
 \end{annotation}
