@@ -204,6 +204,13 @@ $$
 这太显然了, 简直trivial，ACC在这里保证了任意非空集合都有最大元素，那么它们的join肯定不会超过它，也就是eventually stabilises.
 \end{proof}
 
+\begin{definition}
+\rm {\color{red} widening operartion的构造} Given galois connection pair $(f,g)$ of $A$ between $B$, we defined widening operation as follows
+$$
+x \nabla y = g(f(x) \vee f(y)) 
+$$
+where $x,y \in A$.
+\end{definition}
 
 
 \end{document}
