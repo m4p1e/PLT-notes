@@ -162,7 +162,7 @@ $$
 \begin{definition}
 \rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
 
-{\color{blue} 这个$\nabla$表示widening，这个序列第$n$个元素是$n$个元素做apply widening之后的结果，最终会趋于稳定}.
+{\color{blue} 这个$\nabla$表示widening，这个序列第$n$个元素是$x_1 \nabla \cdots \nabla x_n$，最终会趋于稳定}.
 \end{definition}
 
 \begin{definition}
@@ -171,10 +171,12 @@ $$
 	\item $x_1 \nabla x_2 \geq x_1 \vee x_2$ holds for all $x_1,x_2 \in D$ and
 	\item the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises for all choices of sequence $x_1, x_2 ,\cdots$.
 \end{itemize}
+
+{\color{blue} widening弄了一个upper bound出来，这个upper bound不需要是确界}.
 \end{definition}
 
 \begin{proposition}
-\rm If $\nabla$ is a strong widening then
+\rm {\color{red} 任意次widening操作upper bound的性质依然保留} If $\nabla$ is a strong widening then
 $$
 x_1 \nabla \cdots \nabla x_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}
 $$
@@ -205,12 +207,24 @@ $$
 \end{proof}
 
 \begin{definition}
-\rm {\color{red} widening operartion的构造} Given galois connection pair $(f,g)$ of $A$ between $B$, we defined widening operation as follows
+\rm {\color{red} widening operation的构造} Given galois connection pair $(f,g)$ of $A$ between $B$, we defined widening operation as follows
 $$
 x \nabla y = g(f(x) \vee f(y)) 
 $$
 where $x,y \in A$.
 \end{definition}
 
+\begin{proposition}
+\rm {\color{red} strong widening operation} Given galois connection pair $(f,g)$ of $A$ between $B$ and $B$ statifies the ACC then $\nabla$ defined above is a strong widening. 
+\end{proposition}
+
+\begin{proof}
+(1) 根据galois connection reduce出来的semilattice homomorphism，有$f(x \vee y) = f(x) \vee f(y)$，再根据galois connection的definition，有
+$$
+ x \vee y \leq g(f(x \vee y)) = x \nabla y.
+$$
+
+(2) 这里需要额外证明$x_1 \nabla \cdots \nabla x_n = g(f(x_1) \vee \cdots \vee f(x_n))$，由于$B$是满足ACC的，所以存在$f(x_1) \vee \cdots \vee f(x_n) \leq f(x_m)$，即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
+\end{proof}
 
 \end{document}
