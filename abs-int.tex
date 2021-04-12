@@ -54,7 +54,41 @@
 
 \section{Motivation}
 
+单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice，还有和每个instruction相关联的transfer functuons，还有一个初始的状态. 几乎现在所有的程序分析手法都可以总结到这个单调分析框架上.
+
+那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指一个collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，知道我们最终可以计算为止. 而抽象解释就是提供这样一种系统的方法来帮助我们.
+
 实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
+
+\newpage
+\section{Correctness Relations}
+
+\begin{definition}
+\rm {\color{red} (Correctness relations).} A relation $R \subseteq V \times L$ is said to be a correctness relation iff it satifies the following two conditions:
+\begin{enumerate}
+	\item $\forall v,l_1,l_2,~(v~\mathcal{R}~l_1)~\text{and}~(l_1 \leq l_2) \rightarrow (v~\mathcal{R}~l_2);$
+	\item $\forall v, \forall L' \subseteq L,~(\forall l \in L',~(v~ \mathcal{R}~l)) \rightarrow v~\mathcal{R}~(\bigwedge L').$
+\end{enumerate} 
+
+{\color{red} 这里$V$表示concrete values，$L$表示abstract values构成的lattice}.
+
+{\color{blue} 用自然语言来描述就是(1) 若$v$对应某个$l_1$，那么对于$l_1$的一个approximation $l_2$, 有$v \in l_2$. (2) 若$v$同时对应多个abstract values，这里应该是一个and的关系，那么$v$可以对应它们的一个greatest lower bound}.
+\end{definition}
+
+
+\begin{lemma}
+\rm If $\mathcal{R} \subseteq V \times L$ is a correctness relation, then
+$$
+\begin{aligned}
+& v~\mathcal{R}~\top \\
+& (v~\mathcal{R}~l_1)~\text{and}~(v~\mathcal{R}~l_2) \rightarrow v~\mathcal{R}~(l_1 \wedge l_2) \\
+& (v~\mathcal{R}~l_1)~\text{or}~(v~\mathcal{R}~l_2) \rightarrow v~\mathcal{R}~(l_1 \vee l_2)
+\end{aligned}
+$$
+\end{lemma}
+
+
+
 
 \newpage
 \section{Galois connections}
@@ -129,8 +163,8 @@ $$
 (1).
 $$
 \begin{array}{ccc}
- a \leq g(f(a)) \Rightarrow& f(a) \leq f[g(f(a))] & {\color{red} f \circ( g \circ f)} \\
- f(a) \leq f(a) \Rightarrow& f\circ g(f(a))) \leq f(a) & {\color{red}(f \circ g) \circ f}, \\
+ a \leq g(f(a)) \Rightarrow& f(a) \leq  f \circ (g \circ f(a)) & {\color{red} f \circ( g \circ f)} \\
+ f(a) \in B \Rightarrow& (f\circ g) \circ f(a) \leq f(a) & {\color{red}(f \circ g) \circ f}, \\
 \end{array}
 $$
 所以$f \circ g \circ f  = f$. 同理可证第二个式子.
@@ -214,6 +248,25 @@ $$
 where $x,y \in A$.
 \end{definition}
 
+\begin{lemma}
+$$
+x_1 \nabla \cdots \nabla x_n = g(f(x_1) \vee \cdots \vee f(x_n)).
+$$
+\end{lemma}
+
+\begin{proof}
+用归纳法来证明，当$n=2$时做为base是显然成立的，假设$n=k$时成立，那么当$n=k+1$时,有
+$$
+\begin{aligned}
+(x_1 \nabla \cdots \nabla x_k) \nabla x_{k+1} &= g(f(x_1 \nabla \cdots \nabla x_k) \vee f(x_{k+1})) \\
+&= g(f(\underline{g(f(x_1) \vee \cdots \vee f(x_n))}) \vee f(x_{n+1})) \\
+&= g(f( \underline{g(f(x_1))} \vee \cdots \vee \underline{g(f(x_n))}) \vee f(x_{n+1})) \\
+&= g(\underline{f(g(f(x_1)))} \vee  \cdots  \vee \underline{f(g(f(x_n)))} \vee  f(x_{n+1})) \\
+\end{aligned} 
+$$
+前面我们证明过$f\circ g \circ f = f$, 所以最后有$ g(f(x_1) \vee \cdots \vee f(x_{k+1}))$.
+\end{proof}
+
 \begin{proposition}
 \rm {\color{red} strong widening operation} Given galois connection pair $(f,g)$ of $A$ between $B$ and $B$ statifies the ACC then $\nabla$ defined above is a strong widening. 
 \end{proposition}
@@ -224,7 +277,78 @@ $$
  x \vee y \leq g(f(x \vee y)) = x \nabla y.
 $$
 
-(2) 这里需要额外证明$x_1 \nabla \cdots \nabla x_n = g(f(x_1) \vee \cdots \vee f(x_n))$，由于$B$是满足ACC的，所以存在$f(x_1) \vee \cdots \vee f(x_n) \leq f(x_m)$，即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n \leq x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
+(2)由于$B$是满足ACC的，所以存在$f(x_1) \vee \cdots \vee f(x_n) \leq f(x_m)$，根据前面的lemma即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
 \end{proof}
+
+\begin{proposition}
+\rm {\color{red} 一般地strong widening构造}
+$$
+x \nabla y = g(f(x) \nabla' f(y)), 
+$$
+if $nabla'$ is a strong widening on $B$, then $\nabla$ is a strong widening on $A$.
+\end{proposition}
+
+\newpage
+\subsection{Inducing along the Abstraction Function}
+
+{\color{red} 这章讲如何把analysis function通过galois connection在analysis domains之间传递}.
+
+\begin{definition}
+\rm {\color{red} 单调分析框架的定义} A specification of an analysis in the extended monotone framework is given by
+\begin{itemize}
+	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
+	\item monotone analysis functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
+	\item an initial element $d_0 \in D$;
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} Galois connection 诱导出来的analysis function} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
+
+\begin{itemize}
+	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
+	\item monotone analysis functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
+	\item an initial element $f(d_0) \in D$;
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}
+\filldraw[color=red!60, fill=red!5, very thick](-3,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](3,0) ellipse (1 and 1.5);
+
+\node (d) at (2.5,0) {} ;
+\node (gd) at (-2.5,0) {} ;
+\node (hgd) at (-3.5,0) {} ;
+\node (fhgd) at (3.5,0) {} ;
+
+\draw [->] (d) edge[bend left=20] node[below] {$g$} (gd) (gd) edge[bend right=20] node[below] {$h$} (hgd); 
+\draw [->] (hgd) edge[bend left=50] node[above] {$f$} (fhgd) (d) edge[bend left=20,dashed] (fhgd); 
+\end{tikzpicture}
+\end{center}
+
+{\color{blue} 搞半天galois connection可以构造这样monotone analysis functions}.
+\end{definition}
+
+
+{\color{red} 在实际中我们不会直接通过上面诱导出来的analysis functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
+
+\begin{proposition}
+\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
+\begin{itemize}
+ \item $f \circ h_n \circ g~(d') \leq h_n'(d');$
+ \item $f(d_0) \leq d_0'.$
+\end{itemize}
+Furthermore, assume that 
+\begin{itemize}
+	\item $\func{AA}{Q}{D'}$ (assignment analysis) sloves constraints obtained from the program graph and the analysis specification $h'$ and $d_0'$ over $D'$.
+\end{itemize}
+Then we also have that 
+\begin{itemize}
+	\item $\func{AA}{Q}{D'}$ sloves the constraints obtained from the analysis specification $f \circ h_n \circ g$ and $f(d_0)$ over $D'$, and 
+	\item $\func{g\circ AA}{Q}{D'}$ solves the constraints obtained from the analysis specification $h_n$ and $d_0$ over $D$.
+\end{itemize}
+
+{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
+\end{proposition}
 
 \end{document}
