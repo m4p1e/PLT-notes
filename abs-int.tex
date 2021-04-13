@@ -54,9 +54,9 @@
 
 \section{Motivation}
 
-单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice，还有和每个instruction相关联的transfer functuons，还有一个初始的状态. 几乎现在所有的程序分析手法都可以总结到这个单调分析框架上.
+单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
 
-那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指一个collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，知道我们最终可以计算为止. 而抽象解释就是提供这样一种系统的方法来帮助我们.
+那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，直到我们最终可以计算为止或者达到一个理想的效果. 而抽象解释就是提供这样一种系统的方法来帮助我们.
 
 实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
 
@@ -70,9 +70,9 @@
 	\item $\forall v, \forall L' \subseteq L,~(\forall l \in L',~(v~ \mathcal{R}~l)) \rightarrow v~\mathcal{R}~(\bigwedge L').$
 \end{enumerate} 
 
-{\color{red} 这里$V$表示concrete values，$L$表示abstract values构成的lattice}.
+{\color{red} 这里$V$表示concrete values，$L$表示abstract values构成的lattice. $v~\mathcal{R}~l_1$表示$l_1$是$v$的一个approximation}.
 
-{\color{blue} 用自然语言来描述就是(1) 若$v$对应某个$l_1$，那么对于$l_1$的一个approximation $l_2$, 有$v \in l_2$. (2) 若$v$同时对应多个abstract values，这里应该是一个and的关系，那么$v$可以对应它们的一个greatest lower bound}.
+{\color{blue} 用自然语言来描述就是(1) 若$v$对应某个$l_1$，那么对于$l_1$的一个upper approximation $l_2$, 有$v \in l_2$. (2) 若$v$同时对应多个abstract values，这里应该是一个and的关系，那么$v$可以对应它们的一个greatest lower bound}.
 \end{definition}
 
 
@@ -87,7 +87,31 @@ $$
 $$
 \end{lemma}
 
+前面简单的描述了一下correctness relation操作含义，但是correctness relation中依然模糊是它里面的lattice到底在刻画一个怎样东西？ 我们的分析中为什么要引入lattice？ 为了让这个lattice is reasonable，我们来具体定义这个lattice的meet和join操作的内在含义.
 
+\begin{definition}
+\rm we need the meet and the join operator in order to combine abstract values: 
+\begin{enumerate}
+	\item If a value is described by both $l_1$ and $l_2$, by combine these two properties, we obtain the more precise information $l_1 \wedge l_2$.
+	\item If a value is described by either $l_1$ or $l_2$, the most precise info that we can infer is $l_1 \vee l_2$. 
+\end{enumerate}
+
+{\color{blue}在上面定义的operations的内在含义下，smaller代表更精准，bigger代表更安全，更安全就是指考虑的更全面，不会丢掉信息而造成一些潜在的问题. $\wedge$等价于逻辑连词的and，$\vee$等价于逻辑连词的or. 在实际分析的过程中$\wedge$和$\vee$这两个operations就要针对我们关注的properties来具体定义，但是它的最本质内在含义是每次都是尽可能在不丢失精确度的可能下，去尽可能的提高结果本身的精确度}.
+\end{definition}
+
+
+\newpage
+\begin{annotation}
+\rm {\color{red} 如何取证明一个分析的正确性} To prove the correctness of the analysis, it is su±cient to prove 
+\begin{enumerate}
+	\item The initial property (abstract state) $l_0$ is a correct approximation of the initial value (concrete state) $v_0: v_0~\mathcal{R}~ l_0$.
+	\item Each transition preserves the correctness relation
+	$$
+	\forall v_1,v_2,l_1,l_2,~(v_1 \rightsquigarrow v_2)~\text{and}~(v_1 ~\mathcal{R}~l_1)~\text{and}~(f_L(l_1) = l_2) \rightarrow v_2~\mathcal{R}~ l_2.
+	$$
+\end{enumerate}
+{\color{blue} 用自然语言来描述就是你首先要保证初始状态下correctness relation的存在，而后在状态传递的过程中这个correctness relation 依然是保持的，这个过程就关系到两个传递函数concrete value transfer function和abstract value transfer function}.
+\end{annotation}
 
 
 \newpage
@@ -148,6 +172,56 @@ $$
 
 {\color{blue} 关于adjunction的东西$fg \rightarrow id$和$gf \rightarrow id$，这个箭头是一个natural transform, 至于更细的东西要去看看category theory了! PAAA上说$f$和$g$互为“weak inverse”，看起来也是比较形象啊！所以有下面的一个命题}.
 
+\begin{annotation}
+\rm 现在我们尝试把galois connection放到抽象解释范畴上，让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 
+
+这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持，反过来亦然，同时galois connection强化的两个条件
+\begin{enumerate}
+	\item $a \leq g(f(a))$表示抽象过程是可能会丢失精度的，但是依然是正确的. {\color{blue} 我的理解是把具体的值通过映射放到抽象域里面做运算得到的结果，再映射回来可能比在具体域里面做运算得到的结果要稍微差一点，但是正确性是可以保证的}.
+	\item $b \geq f(g(b)$表示具体化的过程不会丢失精度. {\color{blue} 本来抽象值，放到具体域里面操作一遍，再映回来是不会丢精度，这也是可以很自然想到的}.
+\end{enumerate}
+如果更细致去刻画一下我自己的annotation就是
+\begin{enumerate}
+	\item $x,y \in A$
+	$$
+	x \vee y \leq g(f(x) \vee f(y)).
+	$$
+	\item $x',y'\in B$
+	$$
+	x' \wedge y' \geq f(g(x) \wedge g(y)).
+	$$
+\end{enumerate}
+为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$.
+\end{annotation}
+
+
+
+\newpage
+
+\begin{proposition}
+\rm {\color{red} Galois connection引发的semilattice homomorphism} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
+\begin{enumerate}
+	\item $f(\perp_A) = \perp_B$;
+	\item $f(x \vee y) = f(x) \vee f(y)$.
+\end{enumerate}
+And similarly 
+\begin{enumerate}
+	\item $g(\top_B) = \top_A$;
+	\item $g(x \wedge y) = f(x) \wedge f(y)$.
+\end{enumerate}
+
+{\color{blue} 啧啧，没想到啊galois connection竟然弄了一个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism}. 
+\end{proposition}
+
+\begin{proof}
+(1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质，有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
+
+(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$是一个upper bound. 最关键是确界证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x') \vee f(y'))$，那么
+$$
+x \vee y \leq g(f(x) \vee f(y))
+$$
+再用一下galois connection，就有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$. {\color{red} 值得关注是$f$和$g$都只是一个semilattice homomorphism，而且是两种不同操作}. 其实我们做分析的时候，也只是使用一个semilattice，至于是meet还是join和原本分析过程的方向是有关的. 
+\end{proof}
 
 \begin{proposition}
 \rm {\color{red} weak inverse} For galois connection $(f,g)$, we have the equations
@@ -157,6 +231,8 @@ f \circ g \circ f  = f \\
 g \circ f \circ g = g.
 \end{aligned}
 $$
+
+{\color{blue} 这个命题内在是在说明你把分析结果用$f$和$g$进行迭代是不会改变精度的！}
 \end{proposition}
 
 \begin{proof}
@@ -170,25 +246,79 @@ $$
 所以$f \circ g \circ f  = f$. 同理可证第二个式子.
 \end{proof}
 
-\begin{proposition}
-\rm {\color{red} Galois connection引发的semilattice homomorphism} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
-\begin{enumerate}
-	\item $f(\perp) = \perp$;
-	\item $f(x \vee y) = f(x) \vee f(y)$.
-\end{enumerate}
+\newpage
+\subsection{New Analysis: Correctness Relation and Transfer Function}
 
-{\color{blue} 啧啧，没想到啊galois connection竟然弄了一个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism}. 
+{\color{red} 这章讲如何把analysis function通过galois connection在analysis domains之间传递}.
+
+\begin{definition}
+\rm The correctness relation $\mathcal{S} \subseteq V \times M$ for the new analysis is defined as follows
+$$
+v~\mathcal{S}~m \iff v~\mathcal{R}~g(m).
+$$
+
+{\color{red} 其中的$M$表示新的analysis domain或者说是abstract domain，它还是一个lattice}.{\color{blue} 这里是在说abstract domain上确定的relations它同样是在原本的concrete domain里面是保持的}.
+\end{definition}
+
+
+\begin{definition}
+\rm {\color{red} 单调分析框架的定义} A specification of an analysis in the extended monotone framework is given by
+\begin{itemize}
+	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
+	\item monotone analysis functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
+	\item an initial element $d_0 \in D$;
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+\rm {\color{red} Galois connection 诱导出来的analysis function} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
+
+\begin{itemize}
+	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
+	\item monotone analysis functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
+	\item an initial element $f(d_0) \in D$;
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}
+\filldraw[color=red!60, fill=red!5, very thick](-3,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](3,0) ellipse (1 and 1.5);
+
+\node (d) at (2.5,0) {} ;
+\node (gd) at (-2.5,0) {} ;
+\node (hgd) at (-3.5,0) {} ;
+\node (fhgd) at (3.5,0) {} ;
+
+\draw [->] (d) edge[bend left=20] node[below] {$g$} (gd) (gd) edge[bend right=20] node[below] {$h$} (hgd); 
+\draw [->] (hgd) edge[bend left=50] node[above] {$f$} (fhgd) (d) edge[bend left=20,dashed] (fhgd); 
+\end{tikzpicture}
+\end{center}
+
+{\color{blue} 搞半天galois connection可以构造这样monotone analysis functions}.
+\end{definition}
+
+
+{\color{red} 在实际中我们不会直接通过上面诱导出来的analysis functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
+
+\begin{proposition}
+\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
+\begin{itemize}
+ \item $f \circ h_n \circ g~(d') \leq h_n'(d');$
+ \item $f(d_0) \leq d_0'.$
+\end{itemize}
+Furthermore, assume that 
+\begin{itemize}
+	\item $\func{AA}{Q}{D'}$ (assignment analysis) sloves constraints obtained from the program graph and the analysis specification $h'$ and $d_0'$ over $D'$.
+\end{itemize}
+Then we also have that 
+\begin{itemize}
+	\item $\func{AA}{Q}{D'}$ sloves the constraints obtained from the analysis specification $f \circ h_n \circ g$ and $f(d_0)$ over $D'$, and 
+	\item $\func{g\circ AA}{Q}{D'}$ solves the constraints obtained from the analysis specification $h_n$ and $d_0$ over $D$.
+\end{itemize}
+
+{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
 \end{proposition}
 
-\begin{proof}
-(1) 由于$B$上的$\perp$的性质，有$f(\perp) \geq \perp$. 反过来由于$A$上的$\perp$性质，有$g(\perp) \geq \perp$，再用一下galois connection的性质，有$f(\perp) \leq \perp$. 综上两边夹，所以$f(\perp) = \perp$.
-
-(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$. 最关键的是证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，那么
-$$
-x \vee y \leq g(f(x) \vee f(y))
-$$
-再用一下galois connection，就有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$.
-\end{proof}
 
 \newpage
 \subsection{Inducing along the Concretisation Function}
@@ -286,69 +416,6 @@ $$
 x \nabla y = g(f(x) \nabla' f(y)), 
 $$
 if $nabla'$ is a strong widening on $B$, then $\nabla$ is a strong widening on $A$.
-\end{proposition}
-
-\newpage
-\subsection{Inducing along the Abstraction Function}
-
-{\color{red} 这章讲如何把analysis function通过galois connection在analysis domains之间传递}.
-
-\begin{definition}
-\rm {\color{red} 单调分析框架的定义} A specification of an analysis in the extended monotone framework is given by
-\begin{itemize}
-	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
-	\item monotone analysis functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
-	\item an initial element $d_0 \in D$;
-\end{itemize}
-\end{definition}
-
-\begin{definition}
-\rm {\color{red} Galois connection 诱导出来的analysis function} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
-
-\begin{itemize}
-	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
-	\item monotone analysis functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
-	\item an initial element $f(d_0) \in D$;
-\end{itemize}
-
-\begin{center}
-\begin{tikzpicture}
-\filldraw[color=red!60, fill=red!5, very thick](-3,0) ellipse (1 and 1.5);
-\filldraw[color=blue!60, fill=red!5, very thick](3,0) ellipse (1 and 1.5);
-
-\node (d) at (2.5,0) {} ;
-\node (gd) at (-2.5,0) {} ;
-\node (hgd) at (-3.5,0) {} ;
-\node (fhgd) at (3.5,0) {} ;
-
-\draw [->] (d) edge[bend left=20] node[below] {$g$} (gd) (gd) edge[bend right=20] node[below] {$h$} (hgd); 
-\draw [->] (hgd) edge[bend left=50] node[above] {$f$} (fhgd) (d) edge[bend left=20,dashed] (fhgd); 
-\end{tikzpicture}
-\end{center}
-
-{\color{blue} 搞半天galois connection可以构造这样monotone analysis functions}.
-\end{definition}
-
-
-{\color{red} 在实际中我们不会直接通过上面诱导出来的analysis functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
-
-\begin{proposition}
-\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
-\begin{itemize}
- \item $f \circ h_n \circ g~(d') \leq h_n'(d');$
- \item $f(d_0) \leq d_0'.$
-\end{itemize}
-Furthermore, assume that 
-\begin{itemize}
-	\item $\func{AA}{Q}{D'}$ (assignment analysis) sloves constraints obtained from the program graph and the analysis specification $h'$ and $d_0'$ over $D'$.
-\end{itemize}
-Then we also have that 
-\begin{itemize}
-	\item $\func{AA}{Q}{D'}$ sloves the constraints obtained from the analysis specification $f \circ h_n \circ g$ and $f(d_0)$ over $D'$, and 
-	\item $\func{g\circ AA}{Q}{D'}$ solves the constraints obtained from the analysis specification $h_n$ and $d_0$ over $D$.
-\end{itemize}
-
-{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
 \end{proposition}
 
 \end{document}
