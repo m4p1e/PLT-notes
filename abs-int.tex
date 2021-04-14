@@ -199,7 +199,7 @@ $$
 \newpage
 
 \begin{proposition}
-\rm {\color{red} (Galois connection引发的semilattice homomorphism)} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
+\rm {\color{red} (Galois connection引发的semilattice homomorphism)} For a Galois connection $(f,g)$ of lattice $A$ and $B$, $f$ preserves finite join:
 \begin{enumerate}
 	\item $f(\perp_A) = \perp_B$;
 	\item $f(x \vee y) = f(x) \vee f(y)$.
@@ -207,7 +207,7 @@ $$
 And similarly 
 \begin{enumerate}
 	\item $g(\top_B) = \top_A$;
-	\item $g(x \wedge y) = f(x) \wedge f(y)$.
+	\item $g(x \wedge y) = g(x) \wedge g(y)$.
 \end{enumerate}
 
 {\color{blue} 啧啧，没想到啊galois connection竟然弄了一个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism}. 
@@ -255,7 +255,10 @@ and $g$ uniquely determines $f$ by
 $$
 f(a) = \bigwedge\Set{b}{a \leq g(b)}.
 $$
+
+{\color{blue} 我个人认为这个性质真的非常好}!
 \end{proposition}
+
 
 \begin{proof}
 对于$g(b)$有
@@ -269,22 +272,104 @@ $$
 再把$g$和$g_1$反过来用一遍也可以得到$g_1(b) \leq g(b)$. 所以有$g(b) = g_1(b)$.
 \end{proof}
 
+\begin{lemma}
+\rm {\color{red} (Galois connection的一种构造方式)} If $\func{f}{A}{B}$ is semilattice homomorphism then there exists $\func{g}{B}{A}$ such that $(f,g)$ is a Galois connection of posets ({\color{red} complete semilattice}) $A$ and $B$.
+\end{lemma}
+
+\begin{proof}
+假设$f$是一个join semilattice homomorphism. 那么$f$也是monotone的，我们得用$f$来定义$g$
+$$
+g(b) = \bigvee\Set{a}{f(a) \leq b}
+$$
+显然$g$是一个单调函数，最重要的是
+$$
+g(f(a)) = \bigvee\Set{a'}{f(a') \leq f(a)} \geq a .
+$$
+因为显然$a \in \Set{a'}{f(a') \leq f(a)}$. 我们再反过来考虑
+$$
+f(g(b)) = f(\bigvee\Set{a}{f(a) \leq b}) = \left\{f(a_1)\vee \cdots \vee f(a_i)\right\}_{a_i \in \Set{a}{f(a) \leq b}} \leq b.
+$$
+因为$f(a_i) \leq b$.
+\end{proof}
+
 \newpage
 \subsection{New Analysis: Correctness Relation and Transfer Function}
 
 {\color{red} 这章讲如何把analysis function通过galois connection在analysis domains之间传递}.
 
 \begin{definition}
-\rm The correctness relation $\mathcal{S} \subseteq V \times M$ for the new analysis is defined as follows
+\rm {\color{red}(新的correctness relations)} The correctness relation $\mathcal{S} \subseteq V \times B$ for the new analysis under Galois connection $(f,g)$ of posets $A$ and $B$ is defined as follows
 $$
-v~\mathcal{S}~m \iff v~\mathcal{R}~g(m).
+v~\mathcal{S}~b \iff v~\mathcal{R}~g(b).
 $$
 
 {\color{red} 其中的$M$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}.
 \end{definition}
 
 
+\begin{definition}
+\rm {\color{red} (新的传递函数)} For the new analysis transfer function, we can choose any function $\func{t_B}{B}{B}$ such that
+$$
+t_B \geq f \circ t_A \circ g.
+$$
+where $\func{t_A}{A}{A}$ is analysis function under $A$.
+\begin{center}
+\begin{tikzpicture}
+\filldraw[color=red!60, fill=red!5, very thick](-3,0) ellipse (1 and 1.5);
+\filldraw[color=blue!60, fill=red!5, very thick](3,0) ellipse (1 and 1.5);
 
+\node (d) at (2.5,0) {} ;
+\node (gd) at (-2.5,0) {} ;
+\node (hgd) at (-3.5,0) {} ;
+\node (fhgd) at (3.5,0) {} ;
+
+\draw [->] (d) edge[bend left=20] node[below] {$g$} (gd) (gd) edge[bend right=20] node[below] {$h$} (hgd); 
+\draw [->] (hgd) edge[bend left=50] node[above] {$f$} (fhgd) (d) edge[bend left=20,dashed] (fhgd); 
+\end{tikzpicture}
+\end{center}
+{\color{blue} 但是在实际中我们不会直接通过上面诱导出来的analysis transfer functions $f \circ t_A \circ g$，因为构造起来太过于繁琐，常常会用一个$t_B$来安全的替换它的使用}
+\end{definition}
+
+
+
+{\color{red} 定义了新的correctness relations和新的analysis tranfer function，我们现在需要来证明这个correctness relations它确实是一个correctness relation，并且$h'$下保持这个relation}.
+
+\begin{proposition}
+\rm $\mathcal{S}$ is a correctness relation.
+\end{proposition}
+
+\begin{proof}
+给定$v \in V$和$b_1,b_2 \in B$且有$b_1 \leq b_2$. 由于$g$是单调的，那么有$g(b_1) \leq g(b_2)$. 若$v~\mathcal{R}~g(b_1) \in A$，那么也有$v~\mathcal{R}~g(b_2)$，即$v~\mathcal{S}~m_2$.
+
+那么再考虑$B' \subseteq B$，若对任意的$b \in B'$都有$v~\mathcal{R}~g(b)$，那么有$v ~\mathcal{R}~(\bigwedge g(b))$，$g$的meet semilattice homomorphism的性质在这里有$v~\mathcal{R}~g(\bigwedge b)$，即$v~\mathcal{S}~(\bigwedge b)$.
+\end{proof}
+
+\begin{lemma} \rm {\color{red}(新传递函数是safe的)}
+$$
+g(t_B(a)) \geq t_A(g(a)).
+$$
+\end{lemma}
+
+\begin{proof}
+$$
+g(t_B(a)) \geq (g \circ f)\circ (t_A(g(a))) \geq t_A(g(a)).
+$$
+\end{proof}
+
+\begin{proposition}
+\rm {\color{red}(correctness relations在新传递函数作用下保持)}
+$$
+\forall v_1,v_2,b_1,b_2,~(v_1 \rightsquigarrow v_2)~\text{and}~(v_1 ~\mathcal{S}~b_1)~\text{and}~(t_B(b_1) = b_2) \rightarrow v_2~\mathcal{S}~ b_2.
+$$
+\end{proposition}
+
+\begin{proof}
+由上面的lemma有
+$$
+g(b_2) \geq t_A(g(b_1))
+$$
+所以$v_2~\mathcal{R}~g(b_2)$，即$v_2~\mathcal{R}~b_2$.
+\end{proof}
 
 \begin{definition}
 \rm {\color{red} (单调分析框架的定义)} A specification of an analysis in the extended monotone framework is given by
@@ -304,55 +389,25 @@ $$
 	\item an initial element $f(d_0) \in D$;
 \end{itemize}
 
-\begin{center}
-\begin{tikzpicture}
-\filldraw[color=red!60, fill=red!5, very thick](-3,0) ellipse (1 and 1.5);
-\filldraw[color=blue!60, fill=red!5, very thick](3,0) ellipse (1 and 1.5);
-
-\node (d) at (2.5,0) {} ;
-\node (gd) at (-2.5,0) {} ;
-\node (hgd) at (-3.5,0) {} ;
-\node (fhgd) at (3.5,0) {} ;
-
-\draw [->] (d) edge[bend left=20] node[below] {$g$} (gd) (gd) edge[bend right=20] node[below] {$h$} (hgd); 
-\draw [->] (hgd) edge[bend left=50] node[above] {$f$} (fhgd) (d) edge[bend left=20,dashed] (fhgd); 
-\end{tikzpicture}
-\end{center}
-
 {\color{blue} 搞半天galois connection可以构造这样monotone analysis transfer functions}.
 \end{definition}
 
-
-{\color{red} 但是在实际中我们不会直接通过上面诱导出来的analysis transfer functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
-
-\begin{definition}
-\rm {\color{red} (新的传递函数)} For the new analysis transfer function, we can choose any function $\func{h'}{D'}{D'}$ such that
-$$
-h \geq f \circ h_n \circ g.
-$$
-\end{definition}
-
-{\color{red} 定义了新的correctness relations和新的analysis tranfer function，我们现在需要来证明这个correctness relations它确实是一个correctness relation，并且$h'$下保持这个relation}.
-
-\begin{proposition}
-\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
-\begin{itemize}
- \item $f \circ h_n \circ g~(d') \leq h_n'(d');$
- \item $f(d_0) \leq d_0'.$
-\end{itemize}
-Furthermore, assume that 
-\begin{itemize}
-	\item $\func{AA}{Q}{D'}$ (assignment analysis) sloves constraints obtained from the program graph and the analysis specification $h'$ and $d_0'$ over $D'$.
-\end{itemize}
-Then we also have that 
-\begin{itemize}
-	\item $\func{AA}{Q}{D'}$ sloves the constraints obtained from the analysis specification $f \circ h_n \circ g$ and $f(d_0)$ over $D'$, and 
-	\item $\func{g\circ AA}{Q}{D'}$ solves the constraints obtained from the analysis specification $h_n$ and $d_0$ over $D$.
-\end{itemize}
-
-{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
-\end{proposition}
-
+%\begin{proposition}
+%\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
+%\begin{itemize}
+% \item $f \circ h_n \circ g~(d') \leq h_n'(d');$
+% \item $f(d_0) \leq d_0'.$
+%\end{itemize}
+%Furthermore, assume that 
+%\begin{itemize}
+%	\item $\func{AA}{Q}{D'}$ (assignment analysis) sloves constraints obtained from the program graph and the analysis specification $h'$ and $d_0'$ over $D'$.
+%\end{itemize}
+%Then we also have that 
+%\begin{itemize}
+%	\item $\func{AA}{Q}{D'}$ sloves the constraints obtained from the analysis specification $f \circ h_n \circ g$ and $f(d_0)$ over $D'$, and 
+%	\item $\func{g\circ AA}{Q}{D'}$ solves the constraints obtained from the analysis specification $h_n$ and $d_0$ over $D$.
+%{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
+%\end{itemize}
 
 \newpage
 \subsection{Inducing along the Concretisation Function}
