@@ -199,7 +199,7 @@ $$
 \newpage
 
 \begin{proposition}
-\rm {\color{red} Galois connection引发的semilattice homomorphism} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
+\rm {\color{red} (Galois connection引发的semilattice homomorphism)} For a Galois connection $(f,g)$ of join semlattice $A$ and $B$, $f$ preserves finite join:
 \begin{enumerate}
 	\item $f(\perp_A) = \perp_B$;
 	\item $f(x \vee y) = f(x) \vee f(y)$.
@@ -224,7 +224,7 @@ $$
 \end{proof}
 
 \begin{proposition}
-\rm {\color{red} weak inverse} For galois connection $(f,g)$, we have the equations
+\rm {\color{red} (weak inverse)} For galois connection $(f,g)$, we have the equations
 $$
 \begin{aligned}
 f \circ g \circ f  = f \\
@@ -238,12 +238,35 @@ $$
 \begin{proof}
 (1).
 $$
-\begin{array}{ccc}
- a \leq g(f(a)) \Rightarrow& f(a) \leq  f \circ (g \circ f(a)) & {\color{red} f \circ( g \circ f)} \\
- f(a) \in B \Rightarrow& (f\circ g) \circ f(a) \leq f(a) & {\color{red}(f \circ g) \circ f}, \\
+\begin{array}{cc}
+ f(a) \leq  f \circ (g \circ f(a)) & {\color{red} f \circ( g \circ f)} \\
+ (f\circ g) \circ f(a) \leq f(a) & {\color{red}(f \circ g) \circ f}, \\
 \end{array}
 $$
 所以$f \circ g \circ f  = f$. 同理可证第二个式子.
+\end{proof}
+
+\begin{proposition}
+\rm {\color{red} ($f$和$g$相互确定)} If the pair $(f,g)$ is Galois connection of join semlattice $A$ and $B$. Then $f$ uniquely determines $g$ by
+$$
+g(b) = \bigvee\Set{a}{f(a) \leq b}.
+$$
+and $g$ uniquely determines $f$ by
+$$
+f(a) = \bigwedge\Set{b}{a \leq g(b)}.
+$$
+\end{proposition}
+
+\begin{proof}
+对于$g(b)$有
+$$
+g(b) = \bigvee\Set{a}{a \leq g(b)} = \bigvee\Set{a}{f(a) \leq b}.
+$$
+那么还要取证明$g$是唯一的，即若存在$g_1$，那么对于任意的$b \in B$，应该有$g(b) = g_1(b)$. 因为
+$$
+g(b) \leq (g_1\circ f)\circ g(b) = g_1 \circ (f \circ g)(b) \leq g_1(b). 
+$$
+再把$g$和$g_1$反过来用一遍也可以得到$g_1(b) \leq g(b)$. 所以有$g(b) = g_1(b)$.
 \end{proof}
 
 \newpage
@@ -257,25 +280,27 @@ $$
 v~\mathcal{S}~m \iff v~\mathcal{R}~g(m).
 $$
 
-{\color{red} 其中的$M$表示新的analysis domain或者说是abstract domain，它还是一个lattice}.{\color{blue} 这里是在说abstract domain上确定的relations它同样是在原本的concrete domain里面是保持的}.
+{\color{red} 其中的$M$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}.
 \end{definition}
 
 
+
+
 \begin{definition}
-\rm {\color{red} 单调分析框架的定义} A specification of an analysis in the extended monotone framework is given by
+\rm {\color{red} (单调分析框架的定义)} A specification of an analysis in the extended monotone framework is given by
 \begin{itemize}
 	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
-	\item monotone analysis functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
+	\item monotone analysis transfer functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
 	\item an initial element $d_0 \in D$;
 \end{itemize}
 \end{definition}
 
 \begin{definition}
-\rm {\color{red} Galois connection 诱导出来的analysis function} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
+\rm {\color{red} (Galois connection 诱导出来的analysis function)} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
 
 \begin{itemize}
 	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
-	\item monotone analysis functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
+	\item monotone analysis transfer functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
 	\item an initial element $f(d_0) \in D$;
 \end{itemize}
 
@@ -294,11 +319,20 @@ $$
 \end{tikzpicture}
 \end{center}
 
-{\color{blue} 搞半天galois connection可以构造这样monotone analysis functions}.
+{\color{blue} 搞半天galois connection可以构造这样monotone analysis transfer functions}.
 \end{definition}
 
 
-{\color{red} 在实际中我们不会直接通过上面诱导出来的analysis functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
+{\color{red} 但是在实际中我们不会直接通过上面诱导出来的analysis transfer functions，因为构造起来太过于繁琐，常常会用一个$h'$来安全的替换它的使用}
+
+\begin{definition}
+\rm {\color{red} (新的传递函数)} For the new analysis transfer function, we can choose any function $\func{h'}{D'}{D'}$ such that
+$$
+h \geq f \circ h_n \circ g.
+$$
+\end{definition}
+
+{\color{red} 定义了新的correctness relations和新的analysis tranfer function，我们现在需要来证明这个correctness relations它确实是一个correctness relation，并且$h'$下保持这个relation}.
 
 \begin{proposition}
 \rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
