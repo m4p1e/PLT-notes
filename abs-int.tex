@@ -371,26 +371,34 @@ $$
 所以$v_2~\mathcal{R}~g(b_2)$，即$v_2~\mathcal{R}~b_2$.
 \end{proof}
 
-\begin{definition}
-\rm {\color{red} (单调分析框架的定义)} A specification of an analysis in the extended monotone framework is given by
-\begin{itemize}
-	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
-	\item monotone analysis transfer functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
-	\item an initial element $d_0 \in D$;
-\end{itemize}
-\end{definition}
+\begin{annotation}
+\rm 可以看到Galois connection确实很多的优美的性质，但是想一想实际中我们可能做到这样吗？ 是否有必要一定对新的analysis domain构造一个Galois connection?
 
-\begin{definition}
-\rm {\color{red} (Galois connection 诱导出来的analysis function)} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
+想象两个analysis domain，都可以很好符合lattice代数结构，并且这两个lattice $A,B$ 还要是complete，通常我们也只考虑finite lattice. Galois connection的存在系统地在$t_A$的基础上诱导出了新的tranfer analysis function $t_B$，而且证明了新构造的correctness relation是正确的，这就是Galois connection起到的重要作用. 我们来具体分析一下在证明它们的过程中哪些是Galois connection导致的直接原因. 
 
-\begin{itemize}
-	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
-	\item monotone analysis transfer functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
-	\item an initial element $f(d_0) \in D$;
-\end{itemize}
+在证明新的correctness relation的时候，第一个条件不需要那么强的条件，只需要$g$单调就行，而第二个条件需要$g$的meet semilattice homomorphism. 而在证明新的tranfer analysis function保持correctness relations过程中需要用到$g \circ f \geq~\text{id}_A$.
+\end{annotation}
 
-{\color{blue} 搞半天galois connection可以构造这样monotone analysis transfer functions}.
-\end{definition}
+%\begin{definition}
+%\rm {\color{red} (单调分析框架的定义)} A specification of an analysis in the extended monotone framework is given by
+%\begin{itemize}
+%	\item an analysis domain $D$ that is semilattice with ordering $\leq$.
+%	\item monotone analysis transfer functions $\func{h_n}{D}{D}$ where $n$ is node of program graph.
+%	\item an initial element $d_0 \in D$;
+%\end{itemize}
+%\end{definition}
+%
+%\begin{definition}
+%\rm {\color{red} (Galois connection 诱导出来的analysis function)} A specification of an analysis in the extended monotone framework and a Galois connection $(f,g)$ from $D$ to the $D'$ gives rise to the induced analysis given by:
+%
+%\begin{itemize}
+%	\item an analysis domain $D'$ that is semilattice with ordering $\leq'$.
+%	\item monotone analysis transfer functions $\func{f \circ h_n \circ g }{D'}{D'}$ where $n$ is node of program graph.
+%	\item an initial element $f(d_0) \in D$;
+%\end{itemize}
+%
+%{\color{blue} 搞半天galois connection可以构造这样monotone analysis transfer functions}.
+%\end{definition}
 
 %\begin{proposition}
 %\rm Assume that we have an analysis specification $h_n'$ and $d_0'$ over $D'$ statifying
@@ -409,8 +417,11 @@ $$
 %{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
 %\end{itemize}
 
+
+\section{Fixed Point Computation Issues}
+
 \newpage
-\subsection{Inducing along the Concretisation Function}
+\subsection{Widening}
 
 \begin{definition}
 \rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
