@@ -54,11 +54,12 @@
 
 \section{Motivation}
 
-单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
+单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice domain，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
 
-那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，直到我们最终可以计算为止或者达到一个理想的效果. 而抽象解释就是提供这样一种系统的方法来帮助我们.
+那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说，我们的想法非常的理想导致它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，直到我们最终可以计算为止或者达到一个理想的效果. 而抽象解释就是提供这样一种系统的方法来帮助我们.
 
 实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
+
 
 \newpage
 \section{Correctness Relations}
@@ -376,7 +377,9 @@ $$
 
 想象两个analysis domain，都可以很好符合lattice代数结构，并且这两个lattice $A,B$ 还要是complete，通常我们也只考虑finite lattice. Galois connection的存在系统地在$t_A$的基础上诱导出了新的tranfer analysis function $t_B$，而且证明了新构造的correctness relation是正确的，这就是Galois connection起到的重要作用. 我们来具体分析一下在证明它们的过程中哪些是Galois connection导致的直接原因. 
 
-在证明新的correctness relation的时候，第一个条件不需要那么强的条件，只需要$g$单调就行，而第二个条件需要$g$的meet semilattice homomorphism. 而在证明新的tranfer analysis function保持correctness relations过程中需要用到$g \circ f \geq~\text{id}_A$.
+在证明新的correctness relation的时候，第一个条件不需要那么强的条件，只需要$g$单调就行，而第二个条件需要$g$的meet semilattice homomorphism. 而在证明新的tranfer analysis function保持correctness relations过程中需要用到$g \circ f \geq~\text{id}_A$，这个条件也算比较强. 在仔细去分析这些条件的时候，我们就可以感受到我们最确切是需要什么. 那么我们反过来问Galois connection在这里是不是太强了一些？
+
+我们考虑新的abstract analysis domain，实际上它里面的元素和原来的domain是联系比较紧密，并且它们之间是可以天然保持我们感兴趣的关系的，例如把$\mathbb{Z}$换成区间.
 \end{annotation}
 
 %\begin{definition}
@@ -417,10 +420,9 @@ $$
 %{\color{blue} 按照条件构造一个新的analysis function得到的结果是包含原来的solution在里面的，然后再把它还原到本身的analysis domain上, 只不过造成over-approximations了}.
 %\end{itemize}
 
-
+\newpage
 \section{Fixed Point Computation Issues}
 
-\newpage
 \subsection{Widening}
 
 \begin{definition}
