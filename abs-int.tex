@@ -52,6 +52,7 @@
 \maketitle
 \tableofcontents
 
+\newpage
 \section{Motivation}
 
 单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice domain，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
@@ -117,6 +118,12 @@ $$
 
 \newpage
 \section{Galois connections}
+
+\begin{annotation}
+\rm 数学家们经常在思考面临一个场景： 有两个“世界”和两个转换函数作为这个两个世界的连接。 更甚之，如果其中某个世界中的对象经过转换到另外一个世界中，然后再把这个对象再转换回去，如此往复迭代最终结果是稳定的. 特别地，无论从哪个世界开始，第三次转换的结果和第一次转换的结果是相同的. 
+
+如果这两个世界各自的对象之间着某种自然规律，转换函数在传递过程中遵守这些自然规律. 在类似我们经常碰见的简单或者复杂的场景中，有一种优雅的方式可以尝试来面对它们--Galois connection。
+\end{annotation}
 
 关于galois connection我们通常可以看到两个定义，下面我来说明两个定义是等价，也就是说可以从任意一个推出另外一个.
 
