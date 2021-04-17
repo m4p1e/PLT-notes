@@ -52,7 +52,6 @@
 \maketitle
 \tableofcontents
 
-\newpage
 \section{Motivation}
 
 单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice domain，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
@@ -118,12 +117,6 @@ $$
 
 \newpage
 \section{Galois connections}
-
-\begin{annotation}
-\rm 数学家们经常在思考面临一个场景： 有两个“世界”和两个转换函数作为这个两个世界的连接。 更甚之，如果其中某个世界中的对象经过转换到另外一个世界中，然后再把这个对象再转换回去，如此往复迭代最终结果是稳定的. 特别地，无论从哪个世界开始，第三次转换的结果和第一次转换的结果是相同的. 
-
-如果这两个世界各自的对象之间着某种自然规律，转换函数在传递过程中遵守这些自然规律. 在类似我们经常碰见的简单或者复杂的场景中，有一种优雅的方式可以尝试来面对它们--Galois connection。
-\end{annotation}
 
 关于galois connection我们通常可以看到两个定义，下面我来说明两个定义是等价，也就是说可以从任意一个推出另外一个.
 
@@ -386,7 +379,9 @@ $$
 
 在证明新的correctness relation的时候，第一个条件不需要那么强的条件，只需要$g$单调就行，而第二个条件需要$g$的meet semilattice homomorphism. 而在证明新的tranfer analysis function保持correctness relations过程中需要用到$g \circ f \geq~\text{id}_A$，这个条件也算比较强. 在仔细去分析这些条件的时候，我们就可以感受到我们最确切是需要什么. 那么我们反过来问Galois connection在这里是不是太强了一些？
 
-我们考虑新的abstract analysis domain，实际上它里面的元素和原来的domain是联系比较紧密，并且它们之间是可以天然保持我们感兴趣的关系的，例如把$\mathbb{Z}$换成区间.
+Salcianu在论文里面提到可以尝试去掉correctness relations的第二个条件，把第二个条件去掉之后我们就不需要$g$保持semilattice homomorphism这么强的条件，为什么可以这样做呢？我们考虑新的abstract analysis domain，实际上它里面的元素和原来的domain是联系比较紧密，并且它们之间是可以天然保持我们感兴趣的关系的，例如把$\mathbb{Z}$换成区间，区间和区间之间定义的包含关系，在对应的lattice上，值和区间关系天然是可以满足更大的 the approximation of 区间继续保持这个关系的. 那么现在来回答Galois connection是不是太强了这个问题，我答案确实是太强了，如果站在我们要去证明一个分析的正确性这个命题而言，它是一个充分条件，而不是必要条件.
+
+前面关于Galois connection构造性命题中，我们在已知一个semilattice homomorphism的情况下，就可以去构造另外一个方向的映射，站在分析的角度而言，我们确实经常有一个semilattice homomorphism介于从concrete domain到abstract domain，但是通常是没有必要把从abstract domain到concrete domain符合Galois connection的映射给构造出来，这也就是上面我们提到的，$g$不需要保持semilattice homomorphism的性质. 但是为了证明新分析过程的正确性我们还是需要$g$是monotone并且$g\circ f \geq ~ \text{id}_A$.
 \end{annotation}
 
 %\begin{definition}
