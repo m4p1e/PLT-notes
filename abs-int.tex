@@ -56,9 +56,9 @@
 
 单调分析框架的诞生让做程序分析的人可以构造一个精准的，数学形式化的分析. 在这个框架下，我们需要一个lattice domain，每个instruction相关联的transfer functuons和一个初始的状态. 几乎先有的程序分析手法都可以总结到这个单调分析框架上.
 
-那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说，我们的想法非常的理想导致它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，直到我们最终可以计算为止或者达到一个理想的效果. 而抽象解释就是提供这样一种系统的方法来帮助我们.
+那么抽象解释可以理解为在单调分析框架上又迈出了一步. 我们经常的设计分析思路：开始从一个简单的分析开始，分析结果的正确性可以很容易得到证明. 这里的分析是指collecting semantics，即从程序的语义里面收集我们想要的信息. 最开始的分析一般来说，我们的想法是非常的理想导致它的可行性或者可计算性是比较难处理的或者说根本不可能处理，因为有可能我们关注的property所在lattice对应的underlying set的基数是比较大的，或者不满足一些良好的性质例如ACC. 因此我们尝试使用近似计算的方法，把property所在的lattice变小，这个过程可能是一个迭代的过程，直到我们最终可以计算为止或者达到一个理想的效果. 而抽象解释就是提供这样一种系统的方法来帮助我们.
 
-实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
+%实际分析domain太复杂，也许这个实际分析domain满足一些不错的性质比如ACC等等，但是还是掩盖不了它过于复杂. 所以我们尝试使用某个抽象的domain来代替分析，这个抽象的domain要比实际分析的domain更小，我们分析起来更加得心应手，但是问题是如何构造这个抽象的domain? 它分析出来的结果是否可以作为真的truth? 它的结果能在多大程度上说明一些问题? 后期我们是否可以考虑优化抽象的domain来让结果更好一点？
 
 
 \newpage
@@ -67,7 +67,7 @@
 \begin{definition}
 \rm {\color{red} (Correctness relations).} A relation $R \subseteq V \times L$ is said to be a correctness relation iff it satifies the following two conditions:
 \begin{enumerate}
-	\item $\forall v,l_1,l_2,~(v~\mathcal{R}~l_1)~\text{and}~(l_1 \leq l_2) \rightarrow (v~\mathcal{R}~l_2);$
+	\item $\forall v \in V,l_1,l_2 \in L,~(v~\mathcal{R}~l_1)~\text{and}~(l_1 \leq l_2) \rightarrow (v~\mathcal{R}~l_2);$
 	\item $\forall v, \forall L' \subseteq L,~(\forall l \in L',~(v~ \mathcal{R}~l)) \rightarrow v~\mathcal{R}~(\bigwedge L').$
 \end{enumerate} 
 
@@ -117,6 +117,12 @@ $$
 
 \newpage
 \section{Galois connections}
+
+\begin{annotation}
+\rm 数学家们经常在思考面临一个场景： 有两个“世界”和两个转换函数作为这个两个世界的连接。 更甚之，如果其中某个世界中的对象经过转换到另外一个世界中，然后再把这个对象再转换回去，如此往复迭代最终结果是稳定的. 特别地，无论从哪个世界开始，第三次转换的结果和第一次转换的结果是相同的. 
+
+如果这两个世界各自的对象之间着某种自然规律，转换函数在传递过程中遵守这些自然规律. 在类似我们经常碰见的简单或者复杂的场景中，有一种优雅的方式可以尝试来面对它们--Galois connection。
+\end{annotation}
 
 关于galois connection我们通常可以看到两个定义，下面我来说明两个定义是等价，也就是说可以从任意一个推出另外一个.
 
@@ -425,7 +431,107 @@ Salcianu在论文里面提到可以尝试去掉correctness relations的第二个
 \newpage
 \section{Fixed Point Computation Issues}
 
-\subsection{Widening}
+在单调框架下，我们去计算一个分析结果的时候，实际上计算一个analysis transfer function的一个不动点，为什么我们可以这样去做？ 因为在我们analysis domain限定为一个complete lattice，它有一个很好判定性质: {\color{red}一个lattice $\mathcal{L}$是complete的当且仅所有的order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$都有一个不动点}. 所以我们需要analysis transfer function是一个单调函数的情况下，$(f^n(I))_n$满足ACC或者DCC，其中$I$对应$\perp$或者$\top$. 例如$(f^n(I))_n$满足ACC言下之意就有$f^{n+1}(I) \geq f^n(I)$，并且在$n > N$时有$f^{n+1}(I) = f^n(I)$，也就是说$f(f^n(I)) = f^n(I)$，这样确实可以保证我们得到一个不动点，{\color{blue} 但是这和complete lattice的endomorphism不动点存在性又有什么关系呢？} 换句话说我们去判定$f$满足$ACC$或者$DCC$它和complete lattice的endomorphism不动点存在性有必然关系吗？ 再进一步说，这样得到的不动点是不是可以作为complete lattice endomorphism不动点存在性证明中的那个不动点来说? 似乎这个complete lattice的性质套在这，这个帽子变得好大啊!
+
+换一种思考方式，我们构造了一个单调的analysis transfer function满足$f^{n+1}(I) \geq f^n(I)$，那么如何判定它是不是$ACC$的呢？ 除非$(f^n(I))_n$是连续的，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最小的不动点lfp. 其实这只是在考虑一般情况，通常情况下我们的analysis domain是finite，那么你升链就一个upper bound，所以一定是可以满足$ACC$，同时finite lattice也是一个complete lattice. 那么在analysis domain不是finite的时候，或者基数比较大的时候，通过升链来计算一个不动点可行性是非常低的. {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. widening计算得到的结果是lfp的一个upper approximation.
+
+\newpage
+\subsection{Basic Fixed Points Notions}
+
+\begin{definition}
+\rm Given a order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$. 
+\begin{enumerate}
+	\item $x \in \mathcal{L}$ is a {\color{red} fixed point} for $f$ iff $f(x) = x$ and $\text{Fix}(f) = \Set{x}{f(x) = x}$ denote the set of fixed points;
+	\item $f$ is {\color{red} reductive} at $x \in \mathcal{L}$ iff $f(x) \leq x$ and $\text{Red}(f) = \Set{x}{f(x) \leq x}$ denote the set of elements upon which $f$ is reductive;
+	\item $f$ is {\color{red} extensive} at $x \in \mathcal{L}$ iff $f(x) \geq x$ and $\text{Ext}(f) = \Set{x}{f(x) \geq x}$ denote the set of elements upon which $f$ is extensive.
+\end{enumerate}
+\end{definition}
+
+
+\begin{lemma} \rm
+$$
+\text{Fix}(f) = \text{Red}(f) \cap \text{Ext}(f). 
+$$
+\end{lemma}
+
+\begin{definition}
+\rm Given a order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$.
+$$
+\begin{aligned}
+\bigwedge \text{Fix}(f) &= \text{lfp}(f) \\
+\bigvee \text{Fix}(f) &= \text{gfp}(f) \\
+\end{aligned}
+$$
+
+{\color{blue} 支撑这个definition的本质是complete lattice上order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$的不动点构成的集合是一个non-empty complete lattice}. 
+\end{definition}
+
+
+\begin{lemma} \rm
+$$
+\begin{aligned}
+\bigwedge \text{Fix}(f) &= \bigwedge \text{Red}(f) \\
+\bigvee \text{Fix}(f) &= \bigvee \text{Ext}(f) \\
+\end{aligned}
+$$
+\end{lemma}
+
+\begin{proof}
+在我的lattice notes中的complete lattice一节的最后一处，我证明了$\bigvee \text{Ext}(f)$确实是一个fixed point，由于它的定义它还是greatest的. 同理可证$\bigwedge \text{Red}(f)$也是fixed point并且它还是least的.
+\end{proof}
+
+\newpage
+%https://core.ac.uk/download/pdf/4886291.pdf
+\begin{lemma} \rm
+Let $\eta$ be an ordinal number with cardinality greater than $\mathcal{L}$, let $\xi = \eta + 1$. Define $\func{g}{\xi}{\mathcal{L}}$ by transfinite recurison as $g(0) = \perp$, and
+$$
+g(\beta) = \bigvee\Set{f(g(\alpha))}{\alpha < \beta}.
+$$
+Then for all $e \in \text{Fix}(f)$，$g(\alpha) \leq e$ implies thats
+$$
+g(\alpha + 1) = f(g(\alpha)) \leq f(e) = e.
+$$ 
+
+{\color{blue} 这是一个非常有趣的lemma，它可以告诉你$f$是有不动点的，并且帮你刻画出$f$的最小不动点}.
+\end{lemma}
+
+\begin{proof}
+我们首先考察$g$的定义，考虑$\alpha < \beta$，那么有$g(\alpha) \leq g(\beta)$，这是马上可以从定义的出来的结论. 更甚之，有$g(\alpha + 1) = f(g(\alpha))$， 因为$f$是order-preserving的，有$f(g(\beta)) \geq f(g(\alpha))$. 所以$g(\alpha) \leq e$可以改成
+$$
+g(\alpha + 1) = f(g(\alpha)) \leq f(e) = e.
+$$
+
+因为$\xi$的基数是大于$\mathcal{L}$的基数，所以必有$\gamma \in \xi$，使得$g(\gamma + 1) = f(g(\gamma)) = g(\gamma)$，所以$g(\gamma)$也是$f$的一个fixed point. 我们考虑这样最小的$\underline{\gamma}$. $g(\underline{\gamma})$是上面不等式的一个solution，并且是最小的那个，同时它自己也是一个fixed point，所以它是least fixed point.
+\end{proof}
+
+
+\begin{proposition}\rm
+$$
+f^\beta(\perp) \leq \bigvee\Set{f^\alpha(\perp)}{\alpha \in \xi} \leq \text{lfp}(f).
+$$
+\end{proposition}
+
+\begin{proof}
+似乎在这里不需要前面的lemma来标注least fixed point，这里考虑一个新的函数$\func{F}{\xi}{\mathcal{M}}$
+$$
+F(\alpha) = \bigvee\limits_{i \leq \alpha} f^i(\perp).
+$$
+$F$也是一个单调函数，我们考虑任意一个$e \in \text{Fix}(f)$，用归纳法证明对任意的$\alpha \in \xi$都有$F(\alpha) \leq e$. 当$\alpha = 0$时，有$\perp \leq e$，假设$\alpha >= 0$时有$F(\alpha) \leq e$成立，那么当$\alpha+1$时，有
+$$
+F(\alpha+1) = F(\alpha) \vee f^{\alpha+1}(\perp) \leq e \vee f^{\alpha+1}(e) = e.
+$$
+所以原始成立. 
+
+\color{blue} 应该直接考虑$\mathbb{N}$的，没必要兼容前面的lemma，ordinal number完全不熟悉...
+\end{proof}
+
+
+\newpage 
+\subsection{Widening and Narrowing}
+\begin{definition}
+\rm Widening and narrowing are both an binary opertor, we use $\func{\nabla}{\mathcal{L} \times \mathcal{L}}{\mathcal{L}}$ denote widening and $\func{\Delta}{\mathcal{L} \times \mathcal{L}}{\mathcal{L}}$ denote narrowing.
+
+\end{definition}
 
 \begin{definition}
 \rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
@@ -434,7 +540,7 @@ Salcianu在论文里面提到可以尝试去掉correctness relations的第二个
 \end{definition}
 
 \begin{definition}
-\rm An operator $\func{\nabla}{D \times D}{D}$ is a {\color{red} strong widening }whenever
+\rm An operator $\func{\nabla}{\mathcal{L} \times \mathcal{L}}{\mathcal{L}}$ is a {\color{red} strong widening }whenever
 \begin{itemize}
 	\item $x_1 \nabla x_2 \geq x_1 \vee x_2$ holds for all $x_1,x_2 \in D$ and
 	\item the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises for all choices of sequence $x_1, x_2 ,\cdots$.
@@ -467,7 +573,7 @@ $$
 \end{proof}
 
 \begin{proposition}
-\rm If $D$ satisfies the ACC then the join operation $\vee$ is a strong widening.
+\rm If $\mathcal{L}$ satisfies the ACC then the join operation $\vee$ is a strong widening.
 \end{proposition}
 
 \begin{proof}
@@ -493,9 +599,9 @@ $$
 $$
 \begin{aligned}
 (x_1 \nabla \cdots \nabla x_k) \nabla x_{k+1} &= g(f(x_1 \nabla \cdots \nabla x_k) \vee f(x_{k+1})) \\
-&= g(f(\underline{g(f(x_1) \vee \cdots \vee f(x_n))}) \vee f(x_{n+1})) \\
-&= g(f( \underline{g(f(x_1))} \vee \cdots \vee \underline{g(f(x_n))}) \vee f(x_{n+1})) \\
-&= g(\underline{f(g(f(x_1)))} \vee  \cdots  \vee \underline{f(g(f(x_n)))} \vee  f(x_{n+1})) \\
+&= g(f(\underline{g(f(x_1) \vee \cdots \vee f(x_k))}) \vee f(x_{k+1})) \\
+&= g(f( \underline{g(f(x_1))} \vee \cdots \vee \underline{g(f(x_k))}) \vee f(x_{k+1})) \\
+&= g(\underline{f(g(f(x_1)))} \vee  \cdots  \vee \underline{f(g(f(k_n)))} \vee  f(x_{k+1})) \\
 \end{aligned} 
 $$
 前面我们证明过$f\circ g \circ f = f$, 所以最后有$ g(f(x_1) \vee \cdots \vee f(x_{k+1}))$.
@@ -511,7 +617,7 @@ $$
  x \vee y \leq g(f(x \vee y)) = x \nabla y.
 $$
 
-(2)由于$B$是满足ACC的，所以存在$f(x_1) \vee \cdots \vee f(x_n) \leq f(x_m)$，根据前面的lemma即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
+(2)由于$B$是满足ACC的，所以存在$\bigvee\limits_{i \in I}^{I} f(x_i) \leq f(x_m), m \in I$，根据前面的lemma即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
 \end{proof}
 
 \begin{proposition}
@@ -519,7 +625,41 @@ $$
 $$
 x \nabla y = g(f(x) \nabla' f(y)), 
 $$
-if $nabla'$ is a strong widening on $B$, then $\nabla$ is a strong widening on $A$.
+if $\nabla'$ is a strong widening on $B$, then $\nabla$ is a strong widening on $A$.
 \end{proposition}
+
+\begin{definition}
+\rm Similarly, An operator $\func{\Delta}{\mathcal{L}}{\mathcal{L}}$ is a {\color{red} strong narrowing operator} iff
+\begin{enumerate}
+	\item For all $x_1 \leq x_2$, then $x_1 \leq x_1 \Delta x_2 \leq x_2$;
+	\item The sequence $(x_1 \Delta \cdots \Delta x_n)_n$ eventually stabilises (there is a number $N$ such that $x_1 \Delta \cdots \Delta x_n = x_1 \Delta \cdots \Delta x_n \Delta x_{n+1}$ for all $n > N$) for all choices of sequence $x_1,x_2,\cdots$.
+\end{enumerate}
+\end{definition}
+
+\newpage
+\subsection{Applying widening and narrowing}
+
+我们在定义widening和narrowing之后，如何应用这两个binary operator呢？ 
+
+\begin{proposition}
+\rm {\color{red}(构造ACC收敛序列)} Given a monotone transfer function $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, and a strong widening operator $\nabla$ on $\mathcal{L}$, we define the new transfer function as follow
+$$
+f^n_\nabla = \left\{ \begin{array}{ll} \perp & \text{if}~n=0 \\ 
+f^{n-1}_\nabla & \text{if}~n > 0~\text{and}~f(f^{n-1}_\nabla) \leq f^{n-1}_\nabla \\
+f^{n-1}_\nabla \nabla f(f^{n-1}_\nabla) & \text{otherwise}
+\end{array} \right.
+$$
+The $(f^n_\nabla)_n$ evetually stabilizes at value $f^m_\nabla$. i.e., $\forall n > m, f^n_\nabla = f^m_\nabla$.
+
+\color{blue}  
+\end{proposition}
+
+\begin{proof}
+很显然$(f^n_\nabla)_n$是个升链，假设$(f^n_\nabla)_n$不收敛，那么必有对于任意的$n > 0$，存在$k > n$有$f(f^{k-1}_\nabla) > f^{k-1}_\nabla$， 即有
+$$
+f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla) \geq f(f^{k-1}_\nabla) > f^{k-1}_\nabla.
+$$
+这和$\nabla$是个strong widening矛盾，所以原命题得证.
+\end{proof}
 
 \end{document}
