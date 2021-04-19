@@ -655,11 +655,37 @@ The $(f^n_\nabla)_n$ evetually stabilizes at value $f^m_\nabla$. i.e., $\forall 
 \end{proposition}
 
 \begin{proof}
-很显然$(f^n_\nabla)_n$是个升链，假设$(f^n_\nabla)_n$不收敛，那么必有对于任意的$n > 0$，存在$k > n$有$f(f^{k-1}_\nabla) > f^{k-1}_\nabla$， 即有
+很显然$(f^n_\nabla)_n$是个升链，假设$(f^n_\nabla)_n$不收敛，那么必有对于任意的$n > 0$，存在$k > n$有$f(f^{k-1}_\nabla) \nleq f^{k-1}_\nabla$， 即有
 $$
-f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla) \geq f(f^{k-1}_\nabla) > f^{k-1}_\nabla.
+f^k_\nabla=f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla) > f^{k-1}_\nabla.
+$$
+把所以这样的$f(k)$做一个widening操作
+$$
+f^{k_1}_\nabla \nabla \cdots \nabla f^{k_n}_\nabla > f^{k_n-1}_\nabla.
 $$
 这和$\nabla$是个strong widening矛盾，所以原命题得证.
 \end{proof}
+
+\begin{lemma}\rm
+$$
+f^m_\nabla \geq \text{lfp}(f). 
+$$
+
+{\color{blue} 新的transfer function得到的结果是safe的}.
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
+
+\begin{proposition}
+\rm {\color{red}(构造DCC收敛序列二次逼近)} Given a monotone transfer function $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, and a strong narrowing operator $\nabla$ on $\mathcal{L}$, we define the new transfer function as follow
+$$
+f^n_\Delta = \left\{ \begin{array}{ll} 
+f^m_\nabla & \text{if}~n = 0 \\
+f^n_\Delta \Delta f(f^{n-1}_\Delta) & \text{if}~n > 0\\
+\end{array} \right.
+$$
+\end{proposition}
 
 \end{document}
