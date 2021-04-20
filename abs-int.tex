@@ -434,7 +434,7 @@ Salcianu在论文里面提到可以尝试去掉correctness relations的第二个
 
 在单调框架下，我们去计算一个分析结果的时候，实际上计算一个analysis transfer function的一个不动点，为什么我们可以这样去做？ 因为在我们analysis domain限定为一个complete lattice，它有一个很好判定性质: {\color{red}一个lattice $\mathcal{L}$是complete的当且仅所有的order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$都有一个不动点}. 所以我们需要analysis transfer function是一个单调函数的情况下，$(f^n(I))_n$满足ACC或者DCC，其中$I$对应$\perp$或者$\top$. 例如$(f^n(I))_n$满足ACC言下之意就有$f^{n+1}(I) \geq f^n(I)$，并且在$n > N$时有$f^{n+1}(I) = f^n(I)$，也就是说$f(f^n(I)) = f^n(I)$，这样确实可以保证我们得到一个不动点，{\color{blue} 但是这和complete lattice的endomorphism不动点存在性又有什么关系呢？} 换句话说我们去判定$f$满足$ACC$或者$DCC$它和complete lattice的endomorphism不动点存在性有必然关系吗？ 再进一步说，这样得到的不动点是不是可以作为complete lattice endomorphism不动点存在性证明中的那个不动点来说? 似乎这个complete lattice的性质套在这，这个帽子变得好大啊!
 
-换一种思考方式，我们构造了一个单调的analysis transfer function满足$f^{n+1}(I) \geq f^n(I)$，那么如何判定它是不是$ACC$的呢？ 除非$(f^n(I))_n$是连续的，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最小的不动点lfp. 其实这只是在考虑一般情况，通常情况下我们的analysis domain是finite，那么你升链就一个upper bound，所以一定是可以满足$ACC$，同时finite lattice也是一个complete lattice. 那么在analysis domain不是finite的时候，或者基数比较大的时候，通过升链来计算一个不动点可行性是非常低的. {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. widening计算得到的结果是lfp的一个upper approximation.
+换一种思考方式，我们构造了一个单调的analysis transfer function满足$f^{n+1}(I) \geq f^n(I)$，那么如何判定它是不是$ACC$的呢？ 除非$(f^n(I))_n$是连续的，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最小的不动点lfp. 其实这只是在考虑一般情况，通常情况下我们的analysis domain是finite，那么你升链就一个upper bound，所以一定是可以满足$ACC$，同时finite lattice也是一个complete lattice. 那么在analysis domain不是finite的时候，或者基数比较大的时候，通过升链来计算一个不动点可行性是非常低的. {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. widening可以让计算过程快速收敛，并且计算得到的结果是lfp的一个upper approximation. 而narrowing就是在这个upper approximation的基础上，再去构造一个收敛速度快的降链去二次逼近lfp.
 
 \newpage
 \subsection{Basic Fixed Points Notions}
@@ -676,17 +676,70 @@ $$
 \end{lemma}
 
 \begin{proof}
-这是因为$f(f^m_\Delta) \leq f^m_\Delta$，所以$f^m_\Delta \in \text{Red}(f)$, 自然地有$f^m_\Delta \geq \bigwedge \text{Red}(f) = \text{lfp}(f)$.
+这是因为$f(f^m_\nabla) \leq f^m_\nabla$，所以$f^m_\Delta \in \text{Red}(f)$, 自然地有$f^m_\nabla \geq \bigwedge \text{Red}(f) = \text{lfp}(f)$.
 \end{proof}
+
+\begin{lemma}\rm
+$$
+(f^n(f^m_\nabla))_n
+$$
+is a descending chain of elements in $\text{Red}(f)$.
+\end{lemma}
+
+\begin{proof}
+当$n=1$时，$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$时，有$f^k(f^m_\nabla) \leq f^{k-1}(f^m_\nabla)$成立，那么当$n= k+1$时有
+$$
+f^{k+1}(f^m_\nabla)= f(f^k(f^m_\nabla)) \leq f(f^{k-1}(f^m_\nabla)) = f^k(f^m_\nabla).
+$$
+\end{proof}
+
+\begin{annotation} \rm
+前面两个lemma说明通过widening得到结果是safe的，它是lfp的一个upper approximation. 并且观察到$(f^n(f^m_\nabla))_n$是一个降链，并且这个链上所有元素在$f$上都是reductive的，那么$(f^n(f^m_\nabla))_n \leq \text{lfp}(f)$，如果按照这个降链再次逼近lfp得到的结果也是safe的. 但是同样需要考虑逼近的速度，所以进一步提出了narrowing的策略，这就是narrowing的motivation.
+\end{annotation}
 
 \begin{proposition}
 \rm {\color{red}(构造DCC收敛序列二次逼近)} Given a monotone transfer function $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, and a strong narrowing operator $\nabla$ on $\mathcal{L}$, we define the new transfer function as follow
 $$
 f^n_\Delta = \left\{ \begin{array}{ll} 
 f^m_\nabla & \text{if}~n = 0 \\
-f^n_\Delta \Delta f(f^{n-1}_\Delta) & \text{if}~n > 0\\
+f^{n-1}_\Delta \Delta f(f^{n-1}_\Delta) & \text{if}~n > 0\\
 \end{array} \right.
 $$
 \end{proposition}
+
+\begin{proof}
+这个证明过程是trivial的，注意到$f^{n-1}_\Delta \Delta f(f^{n-1}_\Delta)$，我们需要证明$f(f^{n-1}_\Delta) \leq f^{n-1}_\Delta$. 当$n=1$时，有$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$有$f(f^{k-1}_\Delta) \leq f^{k-1}_\Delta$成立. 当$n=k+1$时，有
+$$
+f(f^k_\Delta)= f(f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta)) \leq f(f^{k-1}_\Delta) \leq f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta).
+$$
+\end{proof}
+
+\begin{example}
+\rm 在range analysis或者interval analysis里面，analysis domain为
+$$
+\textbf{Interval} = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in \mathbb{Z} \cup \{-\infty\}, z^+ \in \mathbb{Z} \cup \{+\infty\}, z^- \leq z^+ }.
+$$
+我们定义widening operation如下
+$$
+\text{int}_1 \nabla_K \text{int}_2 =\left\{ \begin{array}{ll} 
+\perp & \text{if}~\text{int}_1 = \text{int}_2 = \perp\\
+\left[\lfloor z^- \rfloor, \lceil z^+ \rceil \right] & \text{if}~\text{int}_1 = [z^-,z^+] ,\text{int}_2 = \perp \\
+\left[\lfloor z^- \rfloor, \lceil z^+ \rceil \right] & \text{if}~\text{int}_1 = \perp ,\text{int}_2 = [z^-,z^+] \\
+\left[\lfloor z^- \rfloor, \lceil z^+ \rceil \right] & \text{if}~\text{int}_1 = [z_1^-,z_1^+] ,\text{int}_2 = [z_2^-,z_2^+] ~ \text{and}~ z^- = \min(z_1^-,z_2^-), z^+ = \max(z_1^+,z_2^+)\\
+\end{array} \right.
+$$
+这个widening operator需要作用在finite analysis domain上.
+$$
+\textbf{Interval}_K = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in \mathbb{K} \cup \{-\infty\}, z^+ \in \mathbb{K} \cup \{+\infty\}, z^- \leq z^+ }.
+$$
+这个$K$是一个finite set. 例如给定$K = [2^3, 2^3-1] = [-8,7]$，给定下面区间包含关系下的升链
+$$
+[0, 1],\;[-1,2],\;[-2,4],\;[-4,8],\;[-8,16],\;[-16,32],\;[-32,64]\;\cdots
+$$
+在widening operation的作用下
+$$
+[0, 1],\;[-1,2],\;[-2,4],\;[-4,\infty],\;[-8,\infty],\;\mathbb{Z},\;\mathbb{Z}\;\cdots
+$$
+\end{example}
 
 \end{document}
