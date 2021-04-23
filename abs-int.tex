@@ -660,7 +660,7 @@ The $(f^n_\nabla)_n$ evetually stabilizes at value $f^m_\nabla$. i.e., $\forall 
 $$
 f^k_\nabla=f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla) > f^{k-1}_\nabla.
 $$
-把所以这样的$f(k)$做一个widening操作
+把所有这样的$f(k)$做一个widening操作
 $$
 f^{k_1}_\nabla \nabla \cdots \nabla f^{k_n}_\nabla > f^{k_n-1}_\nabla.
 $$
@@ -715,11 +715,33 @@ $$
 \end{proof}
 
 \begin{example}
-\rm 在range analysis或者interval analysis里面，analysis domain为
+\rm 在range analysis或者interval analysis里面，concrete analysis domain为
 $$
 \textbf{Interval} = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in \mathbb{Z} \cup \{-\infty\}, z^+ \in \mathbb{Z} \cup \{+\infty\}, z^- \leq z^+ }.
 $$
-我们定义widening operation如下
+我们考虑对应的lattice代数结构，我们得来定义一下meet和join两个operation. 先定义区间之间的包含关系，若$[x_1,y_1] \subseteq [x_2,y_2]$，那么当且仅当$x_1 \geq x_2$和$y_1 \leq y_2$. 注意区间的定义有$x_1 \leq y_1$和$x_2 \leq y_2$. 定义两个区间的并$[x_1, y_1] \cup [x_2, y_2] = [\min(x_1,x_2),\max(y_1,y_2)]$为同时包含两个区间的最小区间. 再定义两个区间的交为$[x_1, y_1] \cap [x_2, y_2] = [\max(x_1,x_2),\min(y_1,y_2)]$两个区间同时包含最大的区间. 注意这两个operation我们同时要考虑$\perp$的情况，我在这里省略了. 所以lattice上的meet对应区间的交，join对应区间的并，元素之间的order为区间的包含.
+
+这个concrete analysis domain构成的是一个infinite lattice，可以想象一个上述不含有$[-\infty, +\infty]$构成的升链，它是不可能收敛的，即不满足ACC. 所以我们自然的考虑下面的abstract analysis domain
+$$
+\textbf{Interval}_K = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in K \cup \{-\infty\}, z^+ \in \mathbb{K} \cup \{+\infty\}, z^- \leq z^+ }.
+$$
+其中$K$是一个finite set，在$K$限制下现在的analysis domain是一个finite lattice. 我们可以定义$\textbf{Interval}$和$\textbf{Interval}_K$之间的一个galois connection. 从$\textbf{Interval}_K$到$\textbf{Interval}$的$g$是比较直接的
+$$
+\begin{aligned}
+g(\perp) &= \perp \\
+g([k^-,k^+]) &= [k^-, k^+] \\
+\end{aligned}
+$$
+
+我们应用一下前面galois connection的构造方式来尝试构造一下$f$,
+$$
+f(a) = \bigwedge\Set{b}{a \leq g(b)}.
+$$
+考虑$a = [z^-, z^+]$，那么
+$$
+f([z^-,z^+]) =[\inf\Set{k \in K}{k \leq z^-}, \sup\Set{k \in K}{k \geq z^+}] = [\lfloor z^- \rfloor, \lceil z^+ \rceil]
+$$
+特别的$f(\perp) = \perp$. 最后我们定义widening operation $\func{\nabla}{\textbf{Interval} \times \textbf{Interval}}{\textbf{Interval}}$如下
 $$
 \text{int}_1 \nabla_K \text{int}_2 =\left\{ \begin{array}{ll} 
 \perp & \text{if}~\text{int}_1 = \text{int}_2 = \perp\\
@@ -728,18 +750,21 @@ $$
 \left[\lfloor z^- \rfloor, \lceil z^+ \rceil \right] & \text{if}~\text{int}_1 = [z_1^-,z_1^+] ,\text{int}_2 = [z_2^-,z_2^+] ~ \text{and}~ z^- = \min(z_1^-,z_2^-), z^+ = \max(z_1^+,z_2^+)\\
 \end{array} \right.
 $$
-这个widening operator需要作用在finite analysis domain上.
+这个widening operator是直接作用在concrete analysis domain上，可以理解为
 $$
-\textbf{Interval}_K = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in \mathbb{K} \cup \{-\infty\}, z^+ \in \mathbb{K} \cup \{+\infty\}, z^- \leq z^+ }.
+\text{int}_1 \nabla \text{int}_2 = g(f(\text{int}_1) \vee f(\text{int}_2)).
 $$
-这个$K$是一个finite set. 例如给定$K = [2^3, 2^3-1] = [-8,7]$，给定下面区间包含关系下的升链
+呼！终于make sense了.
+
+这个$K$是一个finite set. 例如给定$K = [-2^3, 2^3-1] = [-8,7]$，给定下面区间包含关系下的升链
 $$
 [0, 1],\;[-1,2],\;[-2,4],\;[-4,8],\;[-8,16],\;[-16,32],\;[-32,64]\;\cdots
 $$
-在widening operation的作用下
+在$g \circ f$的作用下
 $$
 [0, 1],\;[-1,2],\;[-2,4],\;[-4,\infty],\;[-8,\infty],\;\mathbb{Z},\;\mathbb{Z}\;\cdots
 $$
+或者你可以尝试两两做下widening操作，也会eventually stabilises.
 \end{example}
 
 \end{document}
