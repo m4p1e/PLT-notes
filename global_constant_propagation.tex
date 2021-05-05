@@ -1,0 +1,282 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\begin{document}
+\section{Definitions}
+
+\begin{definition}
+\rm 一个有限有向图$G=(N,E)$由有限集合$N$和集合$E \subseteq N \times N$构成. 对定义的补充: 取$N$上两个顶点$n_1$和$n_2$，若有一条$n_1$到$n_2$有向边$e$，那么$e \in E$. 
+\end{definition}
+
+\begin{definition}
+\rm 一个程序图是一个有限有向图$G=(N,E)$，其中$N$表示程序中的所有指令（instruction）构成的集合，$E$表示指令之间的控制流（control flow）构成的集合.
+\end{definition}
+ 
+\tikzstyle{entrynode}=[
+    draw=blue!70,   % draw the border with 70% transparent blue
+    rectangle,      % the shape of the node is a rectangle
+    fill=blue!10,   % fill the box with 20% blue
+    text width=2cm,
+    text centered]
+    
+\tikzstyle{normalnode}=[
+    draw=blue!70,   % draw the border with 70% transparent blue
+    rectangle,      % the shape of the node is a rectangle
+    fill=yellow!10,   % fill the box with 20% blue
+    text width=2cm,
+    text centered]
+    
+\tikzstyle{exitnode}=[
+    draw=blue!70,   % draw the border with 70% transparent blue
+    rectangle,      % the shape of the node is a rectangle
+    fill=red!10,   % fill the box with 20% blue
+    text width=2cm,
+    text centered]     	
+    
+
+\begin{example}
+\rm 通篇将使用下面的例子来阐述.
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,auto, very thick, scale=5]
+        % Draw the vertices.
+        %\node[midnode] (s) {Start};
+        %\node[smallnode, right of=s, node distance=1.8cm] (a) {1};
+        %\node[smallnode, below of=a] (b) {2};
+        %\node[smallnode, right of=a, node distance=1.8cm] (c) {3};
+        %\node[smallnode, below of=c] (d) {4};
+        %\node[smallnode, right of=c, node distance=1.8cm] (e) {5};
+        %\node[midnode, below of=e] (x) {Stopp};
+		\node[entrynode,label=170:{$A$},label=30:{\textbf{entry}}] (a) {a:=1};
+		\node[normalnode, below of=a, label=170:{$B$}] (b) {c:=0};
+		\node[normalnode, below of=b, label=170:{$C$}] (c) {b:=2};
+		\node[normalnode, below of=c, label=170:{$D$}] (d) {d:=a+b};
+		\node[normalnode, below of=d, label=170:{$E$}] (e) {e:=b+c};
+		\node[normalnode, below of=e, label=170:{$F$}] (f) {c:=4};
+
+
+        % Connect vertices with edges
+        %\path (s) edge node {} (a);
+        %\path (a) edge node {} (c);
+        %\path (a) edge node {} (b);
+        %\path (b) edge node {} (c);
+        %\path (c) edge node {} (d);
+        %\path (c) edge node {} (e);
+        %\path (d) edge node {} (e);
+        %\path (e) edge node {} (x);
+        \path (a) edge node {} (b);
+        \path (b) edge node {} (c);
+        \path (c) edge node {} (d);
+        \path (d) edge node {} (e);
+        \path (e) edge node {} (f);
+        \path (f.west) edge [bend left=70] node {} (c.west);
+\end{tikzpicture}
+\end{center}
+\end{example}
+
+\begin{definition}
+\rm {\color{red} Constant pool}表示由一群有序对(order pair)$(v,c)$ 构成的集合，记为$\mathbf{P}$. 其中$v$表示程序中某个具体的变量，$c$表示某个常量. $G$上某顶点$i$处的Constant pool记为$\mathbf{P}_i$，若$(v,c) \in \mathbf{P}_i$，那么表示在程序动态运行时变量$v$可以取到常量$c$，所以是可以存在$(v,c_1),(v,c_2) \in \mathbf{P}_i$
+\end{definition}
+
+
+\begin{definition}
+\rm 给定$G$上某个顶点$i$和从entry到$i$的一条路径$\pi=(p_1,\cdots,p_n)$，其中$p_1$为entry，$p_n$为顶点$i$. 用$\mathbf{P}_i^{\pi}$表示{\color{red} 限制在路径$\pi$上$i$点的constant pool}，注意其含义是在路径$\pi$确定的情况下，沿着$\pi$执行到顶点$i$处时，这一点的程序状态是确定的，所以若$(v,c) \in \mathbf{P}_i^{\pi}$，则不会同时存在$(v,c') \in \mathbf{P}_i^{\pi}$.
+\end{definition}
+
+%显然地$\mathbf{P}_i$取决于node $i$，我们再考虑把$\mathbf{P}_i$限制在某条具体的从entry到$i$的路径$\pi$上.
+
+\begin{example} 
+\rm 以上图的$D$点举例，如果我们关注的路径是$\pi_1 = (A,B,C,D)$，那么
+$$
+\mathbf{P}_D^{\pi_1} = \{(a,1),(c,0),(b,2)\}.
+$$
+如果我们关注的路径是$\pi_2 = (A,B,C,D,E,F,C,D)$，那么
+$$
+\mathbf{P}_D^{\pi_2} = \{(a,1),(c,4),(b,2),(d,3),(e,2)\}.
+$$
+\end{example}
+
+%由此引入我们做常量传播时需要的constant pool.
+
+\begin{definition}
+\rm 给定程序图$G = (N,E)$中的某个顶点$i$，那么它的{\color{red} Propagated constant pool}表示为
+$$
+\mathcal{P}_{i} = \bigcap\limits_{k \in K} \mathbf{P}_i^{\pi_k}.
+$$
+其中$G$上总共有$K$条entry到$i$的路径.
+\end{definition}
+
+\begin{definition}
+\rm 给定程序图$G=(N,E)$，定义集合$V$表示$G$上所有的变量，集合$C$表示图上所有的常量和集合$U = V \times C$表示可能出现在任意顶点上constant pool中order pairs. 那么一个{\color{red} 常量传播函数}表示为
+$$
+\func{f}{\overline{N} \times \mathfrak{P}(U)}{\mathfrak{P}(U)}. 
+$$
+给定某个具体顶点$i$和constant pool $\mathbf{P}$，若$(v,c) \in f(i,\mathbf{P})$当且仅当{\color{red} (1)}在$(v,c) \in \mathbf{P}$且顶点$i$处没有对$v$进行赋值或者{\color{red} (2)}对$v$赋值表达式的结果是常量$c$.
+
+前面的{\color{red} Propagated constant pool}的定义可以改写为
+$$
+\mathcal{P}_i  = \bigcap\limits_{u \in F^{i}} u,
+$$
+其中$F^{i} = \{f({p_k}_n,f({p_k}_{n-1},\cdots,f(p_1,\mathbf{P}_{\varepsilon}))\cdots),\cdots\}$，$({p_k}_1,\cdots,{p_k}_n)$是一个entry $\varepsilon$到$i$的路径$\pi_k, k \in K$，$\mathbf{P}_{\varepsilon}$表示entry处的初始化的constant pool.
+\end{definition}
+
+\begin{example}
+\rm 例如在上图$A$点的constant pool是一个$\emptyset$，那么
+$$
+f(A,\emptyset) = \{(a,1)\}.$$
+如果我们把得到的结果当做$B$点的constant pool，那么就有
+$$
+f(B,f(A,\emptyset)) = \{(a,1),(c,0)\}
+$$
+\end{example}
+
+\begin{definition}
+\rm 一个{\color{red} semilattice(半格)} $\mathcal{S}$ 由一个非空集合$S$和一个二元运算$\cdot$构成，其中$\cdot$需要满足下面的条件
+\begin{enumerate}
+	\item $x \cdot x = x,$
+	\item $x \cdot y =  y \cdot x,$
+	\item $x \cdot (y \cdot z) = (x \cdot y) \cdot z.$
+\end{enumerate}
+通常我们把$\cdot$用$\wedge$或者$\vee$来表示.
+\end{definition}
+
+\begin{definition}
+\rm 给定一个semilattice $\mathcal{S}$. 在其上构造一个partial order set，我们定义若$x \wedge y = x$，则$x \leq y$，这个特殊的poset(后面用它代称partial order set)我们称之为{\color{red} meet semilattice}. 对偶地定义若$x \vee y = y$，则$x \leq y$，这个poset我们称之为{ \color{red} join semilattice}.
+\end{definition}
+
+\begin{definition}
+\rm 给定一个meet semilattice $\mathcal{S}$，且$\mathcal{S}$里面有一个最大元1(maximum element),即对于任意的$x \in \mathcal{S}$，都有$x \wedge 1 = x$. 我们称$\mathcal{S}$为一个{\color{red} finite meet semilattice}. 同理给定一个join semilattice里面有一个最小元0(minimum element)，则称其为{\color{red} finite join semilattice}.
+\end{definition}
+
+\begin{lemma}
+\rm 下面等式成立 homomorphism???
+$$
+f(i,x \wedge y) = f(i,x) \wedge f(i,y).
+$$
+其中$y,u \in \mathfrak{P}(U)$.
+\end{lemma}
+
+\begin{proof}
+\rm 分四种情况来分别说明
+\begin{enumerate}
+	\item 若$(v,c) \in x$和$(v,c) \in y$. 那么$(v,c) \in x \wedge y$，若$(v,c) \in f(i,x \wedge y)$，则满足$f$定义提到的条件(1)(2)，那么在满足(1)(2)的前提下有$(v,c) \in f(i,x)$和$(v,c) \in f(i,y)$，即$(v,c) \in f(i,x) \wedge f(i,y)$. 同理若$(v,c) \notin f(i,x \wedge y)$，也可以得到$(v,c) \notin f(i,x) \wedge f(i,y)$.
+	\item 若$(v,c) \in x$和$y$里面没有关于$v$的variable-constant pair. 同下
+	\item 若$x$里面没有关于$v$的variable-constant pair和$(v,c) \in y$. 同下
+	\item 若$(v,c_1) \in x$和$(v,c_2) \in y$. 那么$(v,c_1) \notin x \wedge$且$(v,c_2) \notin x \wedge y$. 若$(v,c_3) \in f(i,x \wedge y)$，则满足$f$定义中条件(2). 那么满足(2)的前提下，有$(v,c_3) \in f(i,x)$和$(v,c_3) \in f(i,y)$，即$(v,c_3) \in f(i,x) \wedge f(i,x)$. 若$f(i,x \wedge y)$中没有关于$v$的variable-constant pair，那么$f$中没有对$v$进行重新赋值，则$(v,c_1) \in f(i,x)$和$(v,c_2) \in f(i,y)$，即$f(1,x) \wedge f(1,y)$里面也没有关于$v$的variable-constant pair.
+\end{enumerate}
+由于我们选取的$i$和$x,y$都是任意的，综上原式成立.
+\end{proof}
+
+\begin{definition}
+\rm 给定有向图$G=(N,E)$上一个顶点$i$，若$s \in N$且$(i,s) \in E$，则$s$为$i$的{\color{red} 立即后继}(immediate successor)，把$i$的所有立即后继记为$\text{IS}(i)$; 同理若$p \in N$且$(p,i) \in E$，则$s$为$i$的{\color{red} 立即前驱}(immediate predecessor)，把所有的立即后继记为$\text{IP}(i)$.
+\end{definition}
+
+\newpage
+\section{Algorithm}
+\IncMargin{1em}
+\begin{algorithm} 
+\SetKwData{Up}{up} 
+\SetKwFunction{f}{f}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+	
+	\Input{A program graph $G=(N,E)$} 
+	\Output{The propagated constant pool $\mathcal{P}_i$ of every node $i$}
+	\Begin{
+	 \tcc{我们只关注整个图只有一个entry $\varepsilon$. 经典worklist的应用}
+	 $W \longleftarrow \{(\varepsilon,\mathbf{P}_\varepsilon)\}$\;
+	
+	 \tcc{所有顶点的propagated constant pool初始化为整个lattice里面的最大值}	
+	 \ForEach{$i$ in $N$ }{
+	 	$\mathcal{P}_i = 1$
+	 }	
+	 
+	 \While{$W \neq \emptyset$}{
+		$X \longleftarrow (i,\mathbf{P}_{i}) \in W$\;
+		$W \longleftarrow W - \{(i,\mathbf{P}_{i})\}$\;
+		
+		\tcc{这里做meet是很自然的}
+		\If{$X \wedge \mathcal{P}_i < \mathcal{P}_i$}{
+			$\mathcal{P}_i \longleftarrow X \wedge \mathcal{P}_i$\;
+			\tcc{考虑所有后继}
+			$W \longleftarrow W \cup \Set{(s,f(i,\mathcal{P}_i))}{s \in \text{IS}(i)}$
+		}
+	 }	
+	 }
+	 	  \label{algo1}
+ 	 	  \caption{global analysis}
+ 	 	  %\label{algo_disjdecomp} 
+ 	 \end{algorithm}
+ \DecMargin{1em} 
+
+\begin{theorem}
+\rm 算法1的步骤是有限的.
+\end{theorem}
+
+\newpage
+
+\begin{theorem}
+\rm 算法1计算得到的结果$\mathcal{P}_i = \bigwedge\limits_{u \in F^{i}} u$，其中$F^{i} = \{f(p_n,f(p_{n-1},\cdots,f(p_1,\mathbf{P}_{\varepsilon}))\cdots),\cdots\}$.
+\end{theorem}
+
+\begin{proof}
+注意上面的$\bigwedge$在这里是和$\bigcap$等价的，因为我们的semilattice的underlying set是$\mathfrak{B}(U)$. 对于从$\varepsilon$到$i$的任意一条路径$\pi_k = ({p_k}_1,\cdots,{p_k}_n)$，其中${p_k}_1 = \varepsilon$, ${p_k}_n = i$，那么
+$$
+\bigwedge\limits_{u \in F^{i}} u = \bigwedge\limits_{k \in K} f({p_k}_n,f({p_k}_{n-1},\cdots,f({p_k}_1,\mathbf{P}_{\varepsilon}))\cdots).
+$$
+我们注意到对于任意的$k \in K$都有${p_k}_n = i$，那么应用lemma 1.13就有
+$$
+f(i, \bigwedge\limits_{k \in K} f({p_k}_{n-1},\cdots,f({p_k}_1,\mathbf{P}_{\varepsilon})\cdots).
+$$
+我们在想这个$\bigwedge$能不能继续往里面推呢？考虑对于任意的$k \in K$，集合$\{{p_k}_{n-1}\}$可能就不是一个单点集了(single set)，这个集合就是$i$的所有的立即前驱$\text{IP}(i)$. 我们又可以尝试用lemma 1.13合并一些项
+$$
+f(i, \bigwedge\limits_{i^{-1}\in \text{IP}(i)} f(i^{-1},\bigwedge\limits_{k \in K\ \text{and}\ {p_k}_{n-1} = i^{-1}} f({p_k}_{n-2},\cdots,f({p_k}_1,\mathbf{P}_{\varepsilon})\cdots))
+$$
+那么最后我们可以给出一般式
+$$
+f(i, \bigwedge\limits_{i^{-1}\in \text{IP}(i)} f(i^{-1},\bigwedge\limits_{k \in K\ \text{and}\ {p_k}_{n-1} = i^{-1}} f(i^{-2},\cdots \bigwedge\limits_{k \in K\ \text{and}\ {p_k}_{3} = i^{-(n-3)}} f(i^{-(n-3)}, \bigwedge\limits_{k \in K\ \text{and}\ {p_k}_{2} = i^{-(n-2)}} f(i^{-(n-2)}, f({p_k}_1,\mathbf{P}_{\varepsilon})))\cdots))).
+$$
+体会这个一般式子，我们已经证明了.
+\end{proof}
+\end{document}
