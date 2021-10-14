@@ -383,10 +383,20 @@ Define logical \textbf{or} and \textbf{not} as follows:
 $$
 \begin{aligned}
 \text{or} &= \lam{b}{\lam{c}{b~\text{tru}~c}} = \lam{b}{\lam{c}{b~b~c}} \\
-\text{not} &= \lam{b}{b~\text{fls}~\text{tru}};
+\text{not} &= \lam{b}{b~\text{fls}~\text{tru}} \\
+\text{xor} &= \lam{b}{\lam{c}{b~(\text{not}~c)~c}}
 \end{aligned}
 $$ 
 \end{annotation}
+
+$$
+\begin{aligned}
+\text{tru} &= \lam{t}{\lam{f}{t}}\\
+\text{xor} &= \lam{a}{\lam{b}{a~(\text{not}~b)~b}} \\
+\text{xor}~\text{tru}~b &= \text{tru}~(\text{not}~b)~b \\
+						&= \text{not}~b 
+\end{aligned}
+$$
 
 \begin{annotation}
 \rm {\color{red} 有序对} Using booleans, we can encode pairs of values as terms.
@@ -433,7 +443,7 @@ $$
 \begin{annotation}
 \rm {\color{red}Church形式序数的运算符} We can define the successor function on Church numerals as follows
 $$
-\text{succ} = \lam{n}{\lam{s}{\lam{z}{s~(n~s~z))}}}
+\text{succ} = \lam{n}{\lam{s}{\lam{z}{s~(n~s~z)}}}
 $$
 
 {\color{blue} successor function需要一个Church numeral返回新的Church numeral，分解一下上面的apply过程，首先是$(n~s~z)$得到相对应的数，然后在对它做succ操作}.
