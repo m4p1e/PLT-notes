@@ -436,7 +436,7 @@ $$
 \end{tabular}
 \end{center}
 
-{\color{blue} 这是以自然数为下标的序列，你需要提供一个succ和zero. 你会注意到$c_0$和\textbf{fls}是同一个term，常规语言里面很多情况下$0$和false是一个东西}.
+{\color{blue} 这是以自然数为下标的序列，你需要提供一个succ和zero(参考皮亚诺公理). 你会注意到$c_0$和\textbf{fls}是同一个term，常规语言里面很多情况下$0$和false是一个东西}.
 \end{annotation}
 
 
@@ -458,10 +458,10 @@ $$
 \begin{annotation}
 \rm The addition of Church numerals can be preformed by a term \textbf{plus} that takes two Church numerals $m$ and $n$, as arguments, and yields another Church numeral. 
 $$
-\text{plus} = \lam{m}{\lam{n}{\lam{s}{\lam{n}{m~s~(n~s~z)}}}}
+\text{plus} = \lam{m}{\lam{n}{\lam{s}{\lam{z}{m~s~(n~s~z)}}}}
 $$
 
-{\color{blue} 很自然地把其中的一个number当做了另一个church numeral的zero}.
+{\color{blue} 很自然地把其中的一个number当做了另一个Church numeral的zero}.
 \end{annotation} 
 
 \begin{annotation} \rm
@@ -475,6 +475,7 @@ $$
 $$
 \text{times} = \lam{m}{\lam{n}{\lam{s}{\lam{z}{m~(n~s)~z}}}}
 $$
+{\color{blue} 这里的$(n~s)$变成了一个特殊abstraction $s^{\circ n} = \lam{z}{s(s(\cdots(s~z)\cdots))}$，它并不是一个标准的$\text{succ}$形式}
 \end{annotation}
 
 \begin{annotation} \rm 
