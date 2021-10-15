@@ -422,7 +422,7 @@ c_3 &=  \lam{s}{\lam{z}{s~(s~(s~z))}}  \\
 &\cdots
 \end{aligned}
 $$
-
+这里我们使用高阶函数来描述这一性质
 \begin{center}
 \begin{tabular}{r |l |l }
  \text{Number} & \text{Function definition} & \text{Lambda expression} \\
@@ -432,11 +432,11 @@ $$
  2 & $2~f~x = f~(f~x)$ & $2 = \lam{f}{\lam{x}{f~(f~x)}}$ \\
  3 & $3~f~x = f~(f~(f~x))$ & $3 = \lam{f}{\lam{x}{f~(f~(f~x))}}$ \\
  \vdots & \vdots & \vdots \\
- n & $n~f~x = f^n~x$ & $2 = \lam{f}{\lam{x}{f^{\circ n}~x}}$ \\
+ n & $n~f~x = f^n~x$ & $n = \lam{f}{\lam{x}{f^{\circ n}~x}}$ \\
 \end{tabular}
 \end{center}
 
-{\color{blue} 这是以自然数为下标的序列，你需要提供一个succ和zero(参考皮亚诺公理). 你会注意到$c_0$和\textbf{fls}是同一个term，常规语言里面很多情况下$0$和false是一个东西}.
+{\color{blue} 参考皮亚诺公理，对应这里我们构建自然数需要有一个$0$和一个后继函数$f$. 你会注意到$c_0$和\textbf{fls}是同一个term，常规编程语言里面很多情况下$0$和false是一个东西}.
 \end{annotation}
 
 
@@ -446,13 +446,13 @@ $$
 \text{succ} = \lam{n}{\lam{s}{\lam{z}{s~(n~s~z)}}}
 $$
 
-{\color{blue} successor function需要一个Church numeral返回新的Church numeral，分解一下上面的apply过程，首先是$(n~s~z)$得到相对应的数，然后在对它做succ操作}.
+{\color{blue} 注意这里的后继函数接受对象是一个Church numeral，从而返回新的Church numeral，和我们构造Church number中的后继不是一个东西，它的作用就是让对应具体的数再复合一次$f$. 因此分解一下上面的apply过程，首先是$(n~s~z)$得到相对应的数，然后在对它复合一次$f$}.
 
 另外一种形式
 $$
 \text{succ} = \lam{n}{\lam{s}{\lam{z}{n~s~(s~z)}}}
 $$
-{\color{blue} 这个方式也很巧妙，相当于把zero = zero + 1}.
+{\color{blue} 这个方式也很巧妙，相当于把$0' = 0 + 1$作为新的零元}.
 \end{annotation}
 
 \begin{annotation}
@@ -461,7 +461,7 @@ $$
 \text{plus} = \lam{m}{\lam{n}{\lam{s}{\lam{z}{m~s~(n~s~z)}}}}
 $$
 
-{\color{blue} 很自然地把其中的一个number当做了另一个Church numeral的zero}.
+{\color{blue} 这里遵循函数复合的结合律$f^{\circ(m+n)}(z) = f^{\circ m}(f^{\circ n}(x))$，相对于把其中的一个Church number对应的具体数当做了另一个Church numeral的zero}.
 \end{annotation} 
 
 \begin{annotation} \rm
