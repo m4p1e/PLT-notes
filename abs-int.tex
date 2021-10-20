@@ -19,6 +19,17 @@
 \setlength{\parindent}{2em} 
 \usepackage{indentfirst}
 
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
 \usepackage{listings}
 %\usepackage{minted}% hightlighting
 
@@ -45,6 +56,9 @@
 
 \newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
 \newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
 
 \begin{document}
 \title{Abstract Interpretation}
@@ -104,7 +118,7 @@ $$
 
 \newpage
 \begin{annotation}
-\rm {\color{red} 如何取证明一个分析的正确性} To prove the correctness of the analysis, it is su±cient to prove 
+\rm {\color{red} 如何取证明一个分析的正确性} To prove the correctness of the analysis, it is sufficient to prove 
 \begin{enumerate}
 	\item The initial property (abstract state) $l_0$ is a correct approximation of the initial value (concrete state) $v_0: v_0~\mathcal{R}~ l_0$.
 	\item Each transition preserves the correctness relation
@@ -122,7 +136,7 @@ $$
 \begin{annotation}
 \rm 数学家们经常在思考面临一个场景： 有两个“世界”和两个转换函数作为这个两个世界的连接。 更甚之，如果其中某个世界中的对象经过转换到另外一个世界中，然后再把这个对象再转换回去，如此往复迭代最终结果是稳定的. 特别地，无论从哪个世界开始，第三次转换的结果和第一次转换的结果是相同的. 
 
-如果这两个世界各自的对象之间着某种自然规律，转换函数在传递过程中遵守这些自然规律. 在类似我们经常碰见的简单或者复杂的场景中，有一种优雅的方式可以尝试来面对它们--Galois connection。
+如果这两个世界各自的对象之间着某种自然规律，转换函数在传递过程中遵守这些自然规律(有点像structure-preserving). 在类似我们经常碰见的简单或者复杂的场景中，有一种优雅的方式可以尝试来面对它们--Galois connection。
 \end{annotation}
 
 关于galois connection我们通常可以看到两个定义，下面我来说明两个定义是等价，也就是说可以从任意一个推出另外一个.
@@ -151,7 +165,7 @@ $$
 \draw [->] (b) edge[bend right=20] (gb) (gb) edge[bend right=20] (fgb);
 \end{tikzpicture}
 
-\begin{proposition}
+\begin{proposition}\label{gc-second-def}
 \rm Given posets $A$ and $B$, a pair of order-preversing functions $\func{f}{A}{B}$ and $\func{g}{B}{A}$ is a Galois connection between $A$ and $B$ if and only if, for all $a \in A$, $b \in B$, we have 
 $$
 f(a) \leq b~\text{if and only if}~a \leq g(b).
@@ -196,7 +210,7 @@ $$
 	$$
 	\item $x',y'\in B$
 	$$
-	x' \wedge y' \geq f(g(x) \wedge g(y)).
+	x' \wedge y' \geq f(g(x') \wedge g(y')).
 	$$
 \end{enumerate}
 为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$.
@@ -205,6 +219,10 @@ $$
 
 
 \newpage
+
+\begin{annotation}
+\rm \redt{(关于lattice的一些说明)} 下述提到的lattice都理解为一个poset，其中$\wedge=g.l.b(x,y),\vee = l.u.b(x,y)$，semilattice上的操作一样，不做特殊说明，提到的所有semilattice都是complete的. 
+\end{annotation}
 
 \begin{proposition}
 \rm {\color{red} (Galois connection引发的semilattice homomorphism)} For a Galois connection $(f,g)$ of lattice $A$ and $B$, $f$ preserves finite join:
@@ -222,9 +240,9 @@ And similarly
 \end{proposition}
 
 \begin{proof}
-(1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质，有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
+(1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质$f\circ g(\perp_B) = \perp_B$，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质，有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
 
-(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$是一个upper bound. 最关键是确界证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x') \vee f(y'))$，那么
+(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$是一个upper bound. 最关键是确界证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，那么
 $$
 x \vee y \leq g(f(x) \vee f(y))
 $$
@@ -244,7 +262,6 @@ $$
 \end{proposition}
 
 \begin{proof}
-(1).
 $$
 \begin{array}{cc}
  f(a) \leq  f \circ (g \circ f(a)) & {\color{red} f \circ( g \circ f)} \\
@@ -255,7 +272,7 @@ $$
 \end{proof}
 
 \begin{proposition}
-\rm {\color{red} ($f$和$g$相互确定)} If the pair $(f,g)$ is Galois connection of join semlattice $A$ and $B$. Then $f$ uniquely determines $g$ by
+\rm {\color{red} ($f$和$g$相互确定)} If the pair $(f,g)$ is Galois connection of lattice $A$ and $B$. Then $f$ uniquely determines $g$ by
 $$
 g(b) = \bigvee\Set{a}{f(a) \leq b}.
 $$
@@ -269,11 +286,25 @@ $$
 
 
 \begin{proof}
-对于$g(b)$有
+假设给定单调函数$f$，我们先来证明上面构造的$g$是符合galois connection的definition. $g(b)$单调是显然的. 假设$c \leq g(d)$，由\ref{gc-second-def}，有
 $$
-g(b) = \bigvee\Set{a}{a \leq g(b)} = \bigvee\Set{a}{f(a) \leq b}.
+g(b) = \bigvee\Set{a}{f(a) \leq b} = \bigvee\Set{a}{a \leq g(b)}.
 $$
-那么还要取证明$g$是唯一的，即若存在$g_1$，那么对于任意的$b \in B$，应该有$g(b) = g_1(b)$. 因为
+因为$c \in \Set{a}{a \leq g(d)}$，那么
+$$
+f(c) \leq f \circ g (d) \leq d.  
+$$
+其中后面这个不等号是因为我们可以用$f$的semilattice homomorphism性质展开
+$$
+f \circ g (d) = \bigvee_{x \in \Set{a}{f(a) \leq d}}f(x) \leq d  
+$$
+反过来若$f(c) \leq d$，那么$f$
+$$
+c \leq g \circ f(c) \leq g(d).
+$$
+其中$g \circ f(c) = \Set{a}{f(a) \leq f(c)}$，由于$f$是单调的，那么$\forall a \leq c$. 
+
+再证明$g$是唯一的，即若存在$g_1$，那么对于任意的$b \in B$，应该有$g(b) = g_1(b)$. 因为
 $$
 g(b) \leq (g_1\circ f)\circ g(b) = g_1 \circ (f \circ g)(b) \leq g_1(b). 
 $$
