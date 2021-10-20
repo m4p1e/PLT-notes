@@ -272,7 +272,7 @@ $$
 \end{proof}
 
 \begin{proposition}
-\rm {\color{red} ($f$和$g$相互确定)} If the pair $(f,g)$ is Galois connection of lattice $A$ and $B$. Then $f$ uniquely determines $g$ by
+\rm \redt{(galois connection的构造1)} If the pair $(f,g)$ is Galois connection of lattice $A$ and $B$. Then $f$ uniquely determines $g$ by
 $$
 g(b) = \bigvee\Set{a}{f(a) \leq b}.
 $$
@@ -286,11 +286,7 @@ $$
 
 
 \begin{proof}
-假设给定单调函数$f$，我们先来证明上面构造的$g$是符合galois connection的definition. $g(b)$单调是显然的. 假设$c \leq g(d)$，由\ref{gc-second-def}，有
-$$
-g(b) = \bigvee\Set{a}{f(a) \leq b} = \bigvee\Set{a}{a \leq g(b)}.
-$$
-因为$c \in \Set{a}{a \leq g(d)}$，那么
+假设给定单调函数$f$，我们先来证明上面构造的$g$是符合galois connection的definition. $g(b)$单调是显然的. 假设$c \leq g(d)$，那么
 $$
 f(c) \leq f \circ g (d) \leq d.  
 $$
@@ -308,27 +304,15 @@ $$
 $$
 g(b) \leq (g_1\circ f)\circ g(b) = g_1 \circ (f \circ g)(b) \leq g_1(b). 
 $$
-再把$g$和$g_1$反过来用一遍也可以得到$g_1(b) \leq g(b)$. 所以有$g(b) = g_1(b)$.
+再把$g$和$g_1$反过来用一遍也可以得到$g_1(b) \leq g(b)$. 所以有$g(b) = g_1(b)$. 
 \end{proof}
 
-\begin{lemma}
-\rm {\color{red} (Galois connection的一种构造方式)} If $\func{f}{A}{B}$ is semilattice homomorphism then there exists $\func{g}{B}{A}$ such that $(f,g)$ is a Galois connection of posets ({\color{red} complete semilattice}) $A$ and $B$.
-\end{lemma}
+\begin{corollary}
+\rm {\color{red} (galois connection的构造2)} If $\func{f}{A}{B}$ is semilattice homomorphism then there exists $\func{g}{B}{A}$ such that $(f,g)$ is a Galois connection of posets ({\color{red} complete semilattice}) $A$ and $B$.
+\end{corollary}
 
 \begin{proof}
-假设$f$是一个join semilattice homomorphism. 那么$f$也是monotone的，我们得用$f$来定义$g$
-$$
-g(b) = \bigvee\Set{a}{f(a) \leq b}
-$$
-显然$g$是一个单调函数，最重要的是
-$$
-g(f(a)) = \bigvee\Set{a'}{f(a') \leq f(a)} \geq a .
-$$
-因为显然$a \in \Set{a'}{f(a') \leq f(a)}$. 我们再反过来考虑
-$$
-f(g(b)) = f(\bigvee\Set{a}{f(a) \leq b}) = \left\{f(a_1)\vee \cdots \vee f(a_i)\right\}_{a_i \in \Set{a}{f(a) \leq b}} \leq b.
-$$
-因为$f(a_i) \leq b$.
+若$f$是一个join semilattice homomorphism，那么$f$也是monotone的. 
 \end{proof}
 
 \newpage
@@ -342,7 +326,7 @@ $$
 v~\mathcal{S}~b \iff v~\mathcal{R}~g(b).
 $$
 
-{\color{red} 其中的$M$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}.
+{\color{red} 其中的$B$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}.
 \end{definition}
 
 
