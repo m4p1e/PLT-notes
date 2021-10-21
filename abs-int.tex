@@ -362,9 +362,9 @@ where $\func{t_A}{A}{A}$ is analysis function under $A$.
 \end{proposition}
 
 \begin{proof}
-给定$v \in V$和$b_1,b_2 \in B$且有$b_1 \leq b_2$. 由于$g$是单调的，那么有$g(b_1) \leq g(b_2)$. 若$v~\mathcal{R}~g(b_1) \in A$，那么也有$v~\mathcal{R}~g(b_2)$，即$v~\mathcal{S}~m_2$.
+给定$v~\mathcal{S}~b_1$和$b_1 \leq b_2$，证明$v ~ \mathcal{S}~b_2$. 由于$g$是单调的，那么有$g(b_1) \leq g(b_2)$，再由新定义的$B$上的correctness relation$v~\mathcal{R}~g(b_1)$配合已知$A$上的correctness relation $V \times A$，从而也有$v~\mathcal{R}~g(b_2)$，因此最终得到$v ~ \mathcal{S}~b_2$. 
 
-那么再考虑$B' \subseteq B$，若对任意的$b \in B'$都有$v~\mathcal{R}~g(b)$，那么有$v ~\mathcal{R}~(\bigwedge g(b))$，$g$的meet semilattice homomorphism的性质在这里有$v~\mathcal{R}~g(\bigwedge b)$，即$v~\mathcal{S}~(\bigwedge b)$.
+给定$v \in V$，设$B' = \Set{b \in B}{v~\mathcal{S}~b }$，证明$v \in \bigwedge B'$. 根据新的correctness relation定义，对任意的$b \in B'$都有$v~\mathcal{R}~g(b)$，那么再由$A$上的correctness relations有$v ~\mathcal{R}~(\bigwedge g(b))$，又因为$g$是一个meet semilattice homomorphism，那么在这里有$v~\mathcal{R}~g(\bigwedge b)$，即$v~\mathcal{S}~(\bigwedge b)$.
 \end{proof}
 
 \begin{lemma} \rm {\color{red}(新传递函数是safe的)}
