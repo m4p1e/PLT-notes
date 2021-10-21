@@ -286,7 +286,7 @@ $$
 
 
 \begin{proof}
-假设给定单调函数$f$，我们先来证明上面构造的$g$是符合galois connection的definition. $g(b)$单调是显然的. 假设$c \leq g(d)$，那么
+假设给定join semlattice homomorphism $f$，我们先来证明上面构造的$g$是符合galois connection的definition. $g(b)$单调是显然的. 假设$c \leq g(d)$，那么
 $$
 f(c) \leq f \circ g (d) \leq d.  
 $$
@@ -326,7 +326,7 @@ $$
 v~\mathcal{S}~b \iff v~\mathcal{R}~g(b).
 $$
 
-{\color{red} 其中的$B$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}.
+{\color{red} 其中的$B$表示新的analysis domain或者说是abstract domain，它还是一个lattice}. {\color{blue} 这里是在说abstract domain上一个correctness relations 当且仅当$g$的作用下是concrete domain上一个correctness relation}. 其中在$R \subseteq V \times A$，$R$是已知的correctness relation. 
 \end{definition}
 
 
@@ -362,9 +362,9 @@ where $\func{t_A}{A}{A}$ is analysis function under $A$.
 \end{proposition}
 
 \begin{proof}
-给定$v~\mathcal{S}~b_1$和$b_1 \leq b_2$，证明$v ~ \mathcal{S}~b_2$. 由于$g$是单调的，那么有$g(b_1) \leq g(b_2)$，再由新定义的$B$上的correctness relation$v~\mathcal{R}~g(b_1)$配合已知$A$上的correctness relation $V \times A$，从而也有$v~\mathcal{R}~g(b_2)$，因此最终得到$v ~ \mathcal{S}~b_2$. 
+给定$v~\mathcal{S}~b_1$和$b_1 \leq b_2$，证明$v ~ \mathcal{S}~b_2$. 由于$g$是单调的，那么有$g(b_1) \leq g(b_2)$，再由新定义的$B$上的correctness relation $v~\mathcal{R}~g(b_1)$配合已知$A$上的correctness relation $V \times A$，从而也有$v~\mathcal{R}~g(b_2)$，因此最终得到$v ~ \mathcal{S}~b_2$. 
 
-给定$v \in V$，设$B' = \Set{b \in B}{v~\mathcal{S}~b }$，证明$v \in \bigwedge B'$. 根据新的correctness relation定义，对任意的$b \in B'$都有$v~\mathcal{R}~g(b)$，那么再由$A$上的correctness relations有$v ~\mathcal{R}~(\bigwedge g(b))$，又因为$g$是一个meet semilattice homomorphism，那么在这里有$v~\mathcal{R}~g(\bigwedge b)$，即$v~\mathcal{S}~(\bigwedge b)$.
+给定$v \in V$，设$B' = \Set{b \in B}{v~\mathcal{S}~b }$，证明$v~\mathcal{S}~(\bigwedge B')$. 根据新的correctness relation定义，对任意的$b \in B'$都有$v~\mathcal{R}~g(b)$，那么再由$A$上的correctness relations有$v ~\mathcal{R}~(\bigwedge g(b))$，又因为$g$是一个meet semilattice homomorphism，那么在这里有$v~\mathcal{R}~g(\bigwedge B')$，即$v~\mathcal{S}~(\bigwedge B')$.
 \end{proof}
 
 \begin{lemma} \rm {\color{red}(新传递函数是safe的)}
@@ -395,13 +395,13 @@ $$
 \end{proof}
 
 \begin{annotation}
-\rm 可以看到Galois connection确实很多的优美的性质，但是想一想实际中我们可能做到这样吗？ 是否有必要一定对新的analysis domain构造一个Galois connection?
+\rm 可以看到Galois connection确实很多的优美的性质，但是想一想实际中我们可能做到这样吗？ 是否有必要一定将新的analysis domain和原来的domain构造成一个Galois connection?
 
 想象两个analysis domain，都可以很好符合lattice代数结构，并且这两个lattice $A,B$ 还要是complete，通常我们也只考虑finite lattice. Galois connection的存在系统地在$t_A$的基础上诱导出了新的tranfer analysis function $t_B$，而且证明了新构造的correctness relation是正确的，这就是Galois connection起到的重要作用. 我们来具体分析一下在证明它们的过程中哪些是Galois connection导致的直接原因. 
 
 在证明新的correctness relation的时候，第一个条件不需要那么强的条件，只需要$g$单调就行，而第二个条件需要$g$的meet semilattice homomorphism. 而在证明新的tranfer analysis function保持correctness relations过程中需要用到$g \circ f \geq~\text{id}_A$，这个条件也算比较强. 在仔细去分析这些条件的时候，我们就可以感受到我们最确切是需要什么. 那么我们反过来问Galois connection在这里是不是太强了一些？
 
-Salcianu在论文里面提到可以尝试去掉correctness relations的第二个条件，把第二个条件去掉之后我们就不需要$g$保持semilattice homomorphism这么强的条件，为什么可以这样做呢？我们考虑新的abstract analysis domain，实际上它里面的元素和原来的domain是联系比较紧密，并且它们之间是可以天然保持我们感兴趣的关系的，例如把$\mathbb{Z}$换成区间，区间和区间之间定义的包含关系，在对应的lattice上，值和区间关系天然是可以满足更大的 the approximation of 区间继续保持这个关系的. 那么现在来回答Galois connection是不是太强了这个问题，我答案确实是太强了，如果站在我们要去证明一个分析的正确性这个命题而言，它是一个充分条件，而不是必要条件.
+Salcianu在论文\cite{salcianu}里面提到可以尝试去掉correctness relations的第二个条件，把第二个条件去掉之后我们就不需要$g$保持semilattice homomorphism这么强的条件，为什么可以这样做呢？我们考虑新的abstract analysis domain，实际上它里面的元素和原来的domain是联系比较紧密，并且它们之间是可以天然保持我们感兴趣的关系的，例如把$\mathbb{Z}$中的某个数映射到某个包含它的区间，区间和区间之间的partial order我们用区间包含来表示(如果区间$A$可以盖住$B$，那么$B \leq A$)，在对应的lattice上，如果一个小区间可以盖住某个值，那么包含这个小区间更大的区间一定也是盖住这个值的. 那么现在来回答Galois connection是不是太强了这个问题，我答案确实是太强了，\bluet{如果站在我们要去证明一个分析的正确性这个命题而言，它是一个充分条件，而不是必要条件}.
 
 前面关于Galois connection构造性命题中，我们在已知一个semilattice homomorphism的情况下，就可以去构造另外一个方向的映射，站在分析的角度而言，我们确实经常有一个semilattice homomorphism介于从concrete domain到abstract domain，但是通常是没有必要把从abstract domain到concrete domain符合Galois connection的映射给构造出来，这也就是上面我们提到的，$g$不需要保持semilattice homomorphism的性质. 但是为了证明新分析过程的正确性我们还是需要$g$是monotone并且$g\circ f \geq ~ \text{id}_A$.
 \end{annotation}
@@ -447,9 +447,11 @@ Salcianu在论文里面提到可以尝试去掉correctness relations的第二个
 \newpage
 \section{Fixed Point Computation Issues}
 
-在单调框架下，我们去计算一个分析结果的时候，实际上计算一个analysis transfer function的一个不动点，为什么我们可以这样去做？ 因为在我们analysis domain限定为一个complete lattice，它有一个很好判定性质: {\color{red}一个lattice $\mathcal{L}$是complete的当且仅所有的order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$都有一个不动点}. 所以我们需要analysis transfer function是一个单调函数的情况下，$(f^n(I))_n$满足ACC或者DCC，其中$I$对应$\perp$或者$\top$. 例如$(f^n(I))_n$满足ACC言下之意就有$f^{n+1}(I) \geq f^n(I)$，并且在$n > N$时有$f^{n+1}(I) = f^n(I)$，也就是说$f(f^n(I)) = f^n(I)$，这样确实可以保证我们得到一个不动点，{\color{blue} 但是这和complete lattice的endomorphism不动点存在性又有什么关系呢？} 换句话说我们去判定$f$满足$ACC$或者$DCC$它和complete lattice的endomorphism不动点存在性有必然关系吗？ 再进一步说，这样得到的不动点是不是可以作为complete lattice endomorphism不动点存在性证明中的那个不动点来说? 似乎这个complete lattice的性质套在这，这个帽子变得好大啊!
+在单调框架下，我们去计算一个分析结果的时候，最后得到的结果是当前analysis transfer function的一个不动点，为什么结果会收敛于某个不动点？ 当我们analysis domain限定为一个complete lattice，它有一个很好判定性质: {\color{red}一个lattice $\mathcal{L}$是complete的当且仅所有的order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$都有一个不动点}. 并且考虑我们在分析的过程做，中间结果通常是一个ascending chain或者descending chain，这区别于我们从$\perp$开始分析或者从$\top$. 这里假设我们做分析过程是一个descending chain，我们希望它最后会下降到一个值之后就稳定了，这一条件我们称为descending chain condition，简称DCC，形式化的描述即为: 设中间分析结果序列为$(f^i(I))_n$，其中$I = \top,f^0(I) = I$，该序列满足descending chain，即$f^{i+1}(I) \leq f^i(I)$，若该序列满足DCC则存在一个$N$，使得$n > N$时都有$f(f^n(I)) = f^n(I)$. 设complete lattice在$f$上的某个不动点为$u$，即$f(u) = u$，如果我们的descend chain刚好reach到这个$u$，显然我们的分析就停止了，但是reach不到跳过了或者在前面还有一个不动点该怎么？ 因此如果要用complete lattice这个性质兜底，就需要好好思考一下这个$f$除了monotone之外还需要保持哪些性质？
 
-换一种思考方式，我们构造了一个单调的analysis transfer function满足$f^{n+1}(I) \geq f^n(I)$，那么如何判定它是不是$ACC$的呢？ 除非$(f^n(I))_n$是连续的，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最小的不动点lfp. 其实这只是在考虑一般情况，通常情况下我们的analysis domain是finite，那么你升链就一个upper bound，所以一定是可以满足$ACC$，同时finite lattice也是一个complete lattice. 那么在analysis domain不是finite的时候，或者基数比较大的时候，通过升链来计算一个不动点可行性是非常低的. {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. widening可以让计算过程快速收敛，并且计算得到的结果是lfp的一个upper approximation. 而narrowing就是在这个upper approximation的基础上，再去构造一个收敛速度快的降链去二次逼近lfp.
+顺着上面的思路，我们构造了一个单调的analysis transfer function，并且满足$f^{i+1}(I) \leq f^i(I)$，那么如何判定它是不是$DCC$的呢？ 这里有个trival的充分条件，若$(f^i(I))_n$中的每一个元素都是join irreducible(刻画了lattice是一条直线)，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最大的不动点gfp. 其实前面一直都在考虑一般情况，通常情况下我们的analysis domain是finite，所以不管是ascending chain和descending chain终于都会收敛，而finite lattice也是一个complete lattice. 
+
+最后我们假设有DCC或者ACC之后，但是在analysis domain不是finite的时候，或者基数比较大的时候，如何快速保证ascending chain或者descending chian收敛呢？ {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. 如果计算中间过程是一个ascending chain，那么widening可以让计算过程快速收敛，并且计算得到的结果是lfp的一个upper approximation. 而narrowing就是在这个upper approximation的基础上，再去构造一个收敛速度快的降链去二次逼近lfp.
 
 \newpage
 \subsection{Basic Fixed Points Notions}
@@ -478,12 +480,15 @@ $$
 \bigvee \text{Fix}(f) &= \text{gfp}(f) \\
 \end{aligned}
 $$
-
-{\color{blue} 支撑这个definition的本质是complete lattice上order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$的不动点构成的集合是一个non-empty complete lattice}. 
 \end{definition}
 
+\begin{proof}
+\rm 只要证明下面这个lemma，就证明了当且这个命题. 
+\end{proof}
 
-\begin{lemma} \rm
+
+\begin{lemma}\label{fixpoint-bound}
+\rm 
 $$
 \begin{aligned}
 \bigwedge \text{Fix}(f) &= \bigwedge \text{Red}(f) \\
@@ -493,13 +498,24 @@ $$
 \end{lemma}
 
 \begin{proof}
-在我的lattice notes中的complete lattice一节的最后一处，我证明了$\bigvee \text{Ext}(f)$确实是一个fixed point，由于它的定义它还是greatest的. 同理可证$\bigwedge \text{Red}(f)$也是fixed point并且它还是least的.
+在我的lattice notes中的complete lattice一节中的Knaster–Tarski theorem的开头证明里面证明了$\bigvee \text{Ext}(f) = \bigvee \text{Fix}(f)$.
+\end{proof}
+
+\begin{proposition}
+\rm Given a order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, then 
+$$
+f^\beta(\perp) \leq \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} \leq \text{lfp}(f) \leq \text{glp}(f) \leq  \bigwedge\Set{f^\alpha(\top)}{\alpha \in \mathbb{N}} \leq f^\beta(\top) .
+$$
+\end{proposition}
+
+\begin{proof}
+\rm 因$\perp \leq f(\perp)$，那么$\perp \in \text{Ext}(f)$，由于$f$是monotone的，那么$f(\perp) \leq f^2(\perp)$，推广至一般结论, 有$\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} \subseteq \text{Ext}(f)$. 同理$\top \geq f(\top)$，推广至一般结论有$\Set{f^\alpha(\top)}{\alpha \in \mathbb{N}} \subseteq \text{Red}(f)$. 最后配合Lemma \ref{fixpoint-bound}即可证明. 
 \end{proof}
 
 \newpage
 %https://core.ac.uk/download/pdf/4886291.pdf
 \begin{lemma} \rm
-Let $\eta$ be an ordinal number with cardinality greater than $\mathcal{L}$, let $\xi = \eta + 1$. Define $\func{g}{\xi}{\mathcal{L}}$ by transfinite recurison as $g(0) = \perp$, and
+Let $\eta$ be an ordinal number with cardinality greater than $|\mathcal{L}|$, let $\xi = \eta + 1$. Define $\func{g}{\xi}{\mathcal{L}}$ by transfinite recurison as $g(0) = \perp$, and
 $$
 g(\beta) = \bigvee\Set{f(g(\alpha))}{\alpha < \beta}.
 $$
@@ -508,7 +524,7 @@ $$
 g(\alpha + 1) = f(g(\alpha)) \leq f(e) = e.
 $$ 
 
-{\color{blue} 这是一个非常有趣的lemma，它可以告诉你$f$是有不动点的，并且帮你刻画出$f$的最小不动点}.
+{\color{blue} 这是一个非常有趣的lemma，它可以告诉你$f$是有不动点的，并且帮你构造出$f$的最小不动点}.
 \end{lemma}
 
 \begin{proof}
@@ -517,30 +533,14 @@ $$
 g(\alpha + 1) = f(g(\alpha)) \leq f(e) = e.
 $$
 
-因为$\xi$的基数是大于$\mathcal{L}$的基数，所以必有$\gamma \in \xi$，使得$g(\gamma + 1) = f(g(\gamma)) = g(\gamma)$，所以$g(\gamma)$也是$f$的一个fixed point. 我们考虑这样最小的$\underline{\gamma}$. $g(\underline{\gamma})$是上面不等式的一个solution，并且是最小的那个，同时它自己也是一个fixed point，所以它是least fixed point.
+因此这个结论告诉我们如果能找到某个$\alpha$使得$g(\alpha) \leq e$，那么对于所有$\beta > \alpha$，也有$g(\beta) \leq e$. 我们可以直接选$\alpha = 0$，并且对任意$e$都有$g(0) = \perp \leq e$，也就是说对任意的$\beta \in \xi$都有$g(\beta) \leq \bigwedge\text{Fix}(f)$. 
+
+接下来我们证某个$g(\beta)$是$f(x)$的不动点. 由于$\xi$的基数是大于$\mathcal{L}$的基数，因此存在$\delta,\gamma \in \xi$，使得$g(\delta) = g(\gamma)$. 假设$\delta < \gamma$，由于$g$是monotone，那么对于所有的$\delta \leq \beta \leq \gamma$都有$g(\delta) = g(\gamma) = g(\beta)$，因此我们总可以选取$\beta$，使得$\beta+1$也在$\delta$和$\gamma$中间，那么有
+$$
+g(\beta+1) = f(g(\beta)) = g(\beta),
+$$
+结合前述条件，那么这样$g(\beta)$就是我们找到的least fixpoint. 
 \end{proof}
-
-
-\begin{proposition}\rm
-$$
-f^\beta(\perp) \leq \bigvee\Set{f^\alpha(\perp)}{\alpha \in \xi} \leq \text{lfp}(f).
-$$
-\end{proposition}
-
-\begin{proof}
-似乎在这里不需要前面的lemma来标注least fixed point，这里考虑一个新的函数$\func{F}{\xi}{\mathcal{M}}$
-$$
-F(\alpha) = \bigvee\limits_{i \leq \alpha} f^i(\perp).
-$$
-$F$也是一个单调函数，我们考虑任意一个$e \in \text{Fix}(f)$，用归纳法证明对任意的$\alpha \in \xi$都有$F(\alpha) \leq e$. 当$\alpha = 0$时，有$\perp \leq e$，假设$\alpha >= 0$时有$F(\alpha) \leq e$成立，那么当$\alpha+1$时，有
-$$
-F(\alpha+1) = F(\alpha) \vee f^{\alpha+1}(\perp) \leq e \vee f^{\alpha+1}(e) = e.
-$$
-所以原始成立. 
-
-\color{blue} 应该直接考虑$\mathbb{N}$的，没必要兼容前面的lemma，ordinal number完全不熟悉...
-\end{proof}
-
 
 \newpage 
 \subsection{Widening and Narrowing}
@@ -782,4 +782,9 @@ $$
 或者你可以尝试两两做下widening操作，也会eventually stabilises.
 \end{example}
 
+
+\begin{thebibliography}{9}
+\bibitem{salcianu}
+Alexandru S$\breve{a}$lcianu (2001) Notes on Abstract Interpretation.
+\end{thebibliography}
 \end{document}
