@@ -449,9 +449,9 @@ Salcianu在论文\cite{salcianu}里面提到可以尝试去掉correctness relati
 
 在单调框架下，我们去计算一个分析结果的时候，最后得到的结果是当前analysis transfer function的一个不动点，为什么结果会收敛于某个不动点？ 当我们analysis domain限定为一个complete lattice，它有一个很好判定性质: {\color{red}一个lattice $\mathcal{L}$是complete的当且仅所有的order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$都有一个不动点}. 并且考虑我们在分析的过程做，中间结果通常是一个ascending chain或者descending chain，这区别于我们从$\perp$开始分析或者从$\top$. 这里假设我们做分析过程是一个descending chain，我们希望它最后会下降到一个值之后就稳定了，这一条件我们称为descending chain condition，简称DCC，形式化的描述即为: 设中间分析结果序列为$(f^i(I))_n$，其中$I = \top,f^0(I) = I$，该序列满足descending chain，即$f^{i+1}(I) \leq f^i(I)$，若该序列满足DCC则存在一个$N$，使得$n > N$时都有$f(f^n(I)) = f^n(I)$. 设complete lattice在$f$上的某个不动点为$u$，即$f(u) = u$，如果我们的descend chain刚好reach到这个$u$，显然我们的分析就停止了，但是reach不到跳过了或者在前面还有一个不动点该怎么？ 因此如果要用complete lattice这个性质兜底，就需要好好思考一下这个$f$除了monotone之外还需要保持哪些性质？
 
-顺着上面的思路，我们构造了一个单调的analysis transfer function，并且满足$f^{i+1}(I) \leq f^i(I)$，那么如何判定它是不是$DCC$的呢？ 这里有个trival的充分条件，若$(f^i(I))_n$中的每一个元素都是join irreducible(刻画了lattice是一条直线)，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最大的不动点gfp. 其实前面一直都在考虑一般情况，通常情况下我们的analysis domain是finite，所以不管是ascending chain和descending chain终于都会收敛，而finite lattice也是一个complete lattice. 
+顺着上面的思路，我们构造了一个单调的analysis transfer function，并且满足$f^{i+1}(I) \leq f^i(I)$，那么如何判定它是不是$DCC$的呢？ 这里有个trival的充分条件，若$(f^i(I))_n$中的每一个元素都是join irreducible(刻画了lattice是一条直线)，那么它从$\perp$开始一定就会碰到不动点，并且这个不动点是最大的不动点gfp. 其实前面一直都在考虑一般情况，通常情况下我们的analysis domain是finite，所以不管是ascending chain和descending chain终于都会收敛，而finite lattice也是一个天然的complete lattice. 
 
-最后我们假设有DCC或者ACC之后，但是在analysis domain不是finite的时候，或者基数比较大的时候，如何快速保证ascending chain或者descending chian收敛呢？ {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. 如果计算中间过程是一个ascending chain，那么widening可以让计算过程快速收敛，并且计算得到的结果是lfp的一个upper approximation. 而narrowing就是在这个upper approximation的基础上，再去构造一个收敛速度快的降链去二次逼近lfp.
+最后我们假设有DCC或者ACC之后，但是在analysis domain不是finite的时候，或者基数比较大的时候，如何快速保证ascending chain或者descending chian收敛呢？ {\color{red}所以由此提出了widening和narrowing的概念，来加快计算不动点过程中收敛的速度}. 如果计算中间过程是一个ascending chain，那么widening可以让计算过程快速收敛，并且计算得到的结果是lfp的一个upper approximation. 而narrowing就是在这个upper approximation的基础上，再去构造一个safe的降链去二次逼近lfp.
 
 \newpage
 \subsection{Basic Fixed Points Notions}
@@ -498,24 +498,12 @@ $$
 \end{lemma}
 
 \begin{proof}
-在我的lattice notes中的complete lattice一节中的Knaster–Tarski theorem的开头证明里面证明了$\bigvee \text{Ext}(f) = \bigvee \text{Fix}(f)$.
+在我的lattice notes中的complete lattice一节中的Knaster–Tarski theorem证明的开头里面证明了$\bigvee \text{Ext}(f) = \bigvee \text{Fix}(f)$.
 \end{proof}
 
-\begin{proposition}
-\rm Given a order-preserving map $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, then 
-$$
-f^\beta(\perp) \leq \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} \leq \text{lfp}(f) \leq \text{glp}(f) \leq  \bigwedge\Set{f^\alpha(\top)}{\alpha \in \mathbb{N}} \leq f^\beta(\top) .
-$$
-\end{proposition}
-
-\begin{proof}
-\rm 因$\perp \leq f(\perp)$，那么$\perp \in \text{Ext}(f)$，由于$f$是monotone的，那么$f(\perp) \leq f^2(\perp)$，推广至一般结论, 有$\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} \subseteq \text{Ext}(f)$. 同理$\top \geq f(\top)$，推广至一般结论有$\Set{f^\alpha(\top)}{\alpha \in \mathbb{N}} \subseteq \text{Red}(f)$. 最后配合Lemma \ref{fixpoint-bound}即可证明. 
-\end{proof}
-
-\newpage
 %https://core.ac.uk/download/pdf/4886291.pdf
-\begin{lemma} \rm
-Let $\eta$ be an ordinal number with cardinality greater than $|\mathcal{L}|$, let $\xi = \eta + 1$. Define $\func{g}{\xi}{\mathcal{L}}$ by transfinite recurison as $g(0) = \perp$, and
+\begin{lemma}\label{lfp-construct}
+\rm Let $\eta$ be an ordinal number with cardinality greater than $|\mathcal{L}|$, let $\xi = \eta + 1$. Define $\func{g}{\xi}{\mathcal{L}}$ by transfinite recurison as $g(0) = \perp$, and
 $$
 g(\beta) = \bigvee\Set{f(g(\alpha))}{\alpha < \beta}.
 $$
@@ -542,6 +530,33 @@ $$
 结合前述条件，那么这样$g(\beta)$就是我们找到的least fixpoint. 
 \end{proof}
 
+\begin{theorem}\label{Kleene-fp}
+\rm \redt{Kleene fixed-point theorem} Given a order-preserving $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, then 
+$$
+f^\beta(\perp) \leq \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} \leq \text{lfp}(f).
+$$
+\end{theorem}
+
+\begin{proof}
+\rm 由Lemma \ref{lfp-construct}，这里显然$g(\alpha) = f^\alpha(\perp)$，但是$\mathbb{N} < \xi$，因此这里并不能直接把lfp找出来，从而我们只能写成一个不等式. 如果加强$f$使之变成一个meet homomorphism，那么我们可以直接证明$\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}}$是一个fixed point，即 
+$$
+\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} = f^0(\perp) \cup \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}^+} = f\left(\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}}\right),
+$$
+\end{proof}
+
+\begin{proposition}
+\rm 
+$$
+\text{glp}(f) \leq  \bigwedge\Set{f^\alpha(\top)}{\alpha \in \mathbb{N}} \leq f^\beta(\top),
+$$
+\end{proposition}
+
+\begin{proof}
+同\ref{Kleene-fp}. 
+\end{proof}
+
+
+
 \newpage 
 \subsection{Widening and Narrowing}
 \begin{definition}
@@ -550,7 +565,7 @@ $$
 \end{definition}
 
 \begin{definition}
-\rm We shall say that the sequence $(x_1 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
+\rm We shall say that the sequence $(x_1 \nabla x_2 \nabla \cdots \nabla x_n)_n$ {\color{red} eventaully stabilises} whenever there is a number $N$ such that $x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$ for all $n > N$.
 
 {\color{blue} 这个$\nabla$表示widening，这个序列第$n$个元素是$x_1 \nabla \cdots \nabla x_n$，最终会趋于稳定}.
 \end{definition}
@@ -604,7 +619,7 @@ $$
 where $x,y \in A$.
 \end{definition}
 
-\begin{lemma}
+\begin{lemma}\label{widening-by-galois-connection}
 $$
 x_1 \nabla \cdots \nabla x_n = g(f(x_1) \vee \cdots \vee f(x_n)).
 $$
@@ -616,8 +631,7 @@ $$
 \begin{aligned}
 (x_1 \nabla \cdots \nabla x_k) \nabla x_{k+1} &= g(f(x_1 \nabla \cdots \nabla x_k) \vee f(x_{k+1})) \\
 &= g(f(\underline{g(f(x_1) \vee \cdots \vee f(x_k))}) \vee f(x_{k+1})) \\
-&= g(f( \underline{g(f(x_1))} \vee \cdots \vee \underline{g(f(x_k))}) \vee f(x_{k+1})) \\
-&= g(\underline{f(g(f(x_1)))} \vee  \cdots  \vee \underline{f(g(f(k_n)))} \vee  f(x_{k+1})) \\
+&= g(f(g(f(\underline{x_1 \vee \cdots \vee x_k}))) \vee f(x_{k+1})) \\
 \end{aligned} 
 $$
 前面我们证明过$f\circ g \circ f = f$, 所以最后有$ g(f(x_1) \vee \cdots \vee f(x_{k+1}))$.
@@ -633,7 +647,7 @@ $$
  x \vee y \leq g(f(x \vee y)) = x \nabla y.
 $$
 
-(2)由于$B$是满足ACC的，所以存在$\bigvee\limits_{i \in I}^{I} f(x_i) \leq f(x_m), m \in I$，根据前面的lemma即$x_1 \nabla \cdots \nabla x_n \leq g(f(x_m))$，那么只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
+(2)由于$B$是满足ACC的，对于任意的$\{(x_1 \nabla \cdots \nabla x_i)\}_{i \in I}$，存在最大元素$(x_1 \nabla \cdots \nabla x_m)$，因此只要$n > m-1$就有$x_1 \nabla \cdots \nabla x_n = x_1 \nabla \cdots \nabla x_n \nabla x_{n+1}$成立. 所以$(x_1 \nabla \cdots \nabla x_n)_n$ eventually stabilises.
 \end{proof}
 
 \begin{proposition}
@@ -686,12 +700,10 @@ $$
 $$
 f^m_\nabla \geq \text{lfp}(f). 
 $$
-
-{\color{blue} 新的transfer function得到的结果是safe的}.
 \end{lemma}
 
 \begin{proof}
-这是因为$f(f^m_\nabla) \leq f^m_\nabla$，所以$f^m_\Delta \in \text{Red}(f)$, 自然地有$f^m_\nabla \geq \bigwedge \text{Red}(f) = \text{lfp}(f)$.
+这是因为总有$f(f^n_\nabla) \geq f^n_\nabla$，所以$f^m_\Delta \in \text{Ext}(f)$, 自然地有$f^m_\nabla \leq \bigvee \text{Ext}(f) = \text{gfp}(f)$.
 \end{proof}
 
 \begin{lemma}\rm
@@ -715,17 +727,17 @@ $$
 \begin{proposition}
 \rm {\color{red}(构造DCC收敛序列二次逼近)} Given a monotone transfer function $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, and a strong narrowing operator $\nabla$ on $\mathcal{L}$, we define the new transfer function as follow
 $$
-f^n_\Delta = \left\{ \begin{array}{ll} 
+f^n_\nabla = \left\{ \begin{array}{ll} 
 f^m_\nabla & \text{if}~n = 0 \\
-f^{n-1}_\Delta \Delta f(f^{n-1}_\Delta) & \text{if}~n > 0\\
+f^{n-1}_\nabla \nabla f(f^{n-1}_\nabla) & \text{if}~n > 0\\
 \end{array} \right.
 $$
 \end{proposition}
 
 \begin{proof}
-这个证明过程是trivial的，注意到$f^{n-1}_\Delta \Delta f(f^{n-1}_\Delta)$，我们需要证明$f(f^{n-1}_\Delta) \leq f^{n-1}_\Delta$. 当$n=1$时，有$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$有$f(f^{k-1}_\Delta) \leq f^{k-1}_\Delta$成立. 当$n=k+1$时，有
+这个证明过程是trivial的，我们需要证明$f(f^{n-1}_\Delta) \leq f^{n-1}_\Delta$. 当$n=1$时，有$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$有$f(f^{k-1}_\nabla) \leq f^{k-1}_\nabla$成立. 当$n=k+1$时，有
 $$
-f(f^k_\Delta)= f(f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta)) \leq f(f^{k-1}_\Delta) \leq f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta).
+f(f^k_\nabla)= f(f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla)) \leq f(f^{k-1}_\nabla) \leq f^{k-1}_\nabla .
 $$
 \end{proof}
 
