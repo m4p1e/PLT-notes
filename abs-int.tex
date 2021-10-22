@@ -538,7 +538,7 @@ $$
 \end{theorem}
 
 \begin{proof}
-\rm 由Lemma \ref{lfp-construct}，这里显然$g(\alpha) = f^\alpha(\perp)$，但是$\mathbb{N} < \xi$，因此这里并不能直接把lfp找出来，从而我们只能写成一个不等式. 如果加强$f$使之变成一个meet homomorphism，那么我们可以直接证明$\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}}$是一个fixed point，即 
+\rm 由Lemma \ref{lfp-construct}，这里显然$g(\alpha) = f^\alpha(\perp)$，但是$\mathbb{N} \leq \xi$，因此这里并不能直接把lfp找出来，从而我们只能写成一个不等式. 如果加强$f$使之变成一个meet homomorphism，那么我们可以直接证明$\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}}$是一个fixed point，即 
 $$
 \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}} = f^0(\perp) \cup \bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}^+} = f\left(\bigvee\Set{f^\alpha(\perp)}{\alpha \in \mathbb{N}}\right),
 $$
@@ -703,7 +703,7 @@ $$
 \end{lemma}
 
 \begin{proof}
-这是因为总有$f(f^n_\nabla) \geq f^n_\nabla$，所以$f^m_\Delta \in \text{Ext}(f)$, 自然地有$f^m_\nabla \leq \bigvee \text{Ext}(f) = \text{gfp}(f)$.
+因为${f^n_\nabla}_n$最终会收敛于$f^m_\nabla$，那么肯定当$n=m$时，肯定是满足$f(f^m_\nabla) \leq f^m_\nabla$，因此$f^m_\nabla \in \text{Red}(f)$，从而$f^m_\nabla \geq \bigwedge \text{Red}$. 
 \end{proof}
 
 \begin{lemma}\rm
@@ -714,7 +714,7 @@ is a descending chain of elements in $\text{Red}(f)$.
 \end{lemma}
 
 \begin{proof}
-当$n=1$时，$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$时，有$f^k(f^m_\nabla) \leq f^{k-1}(f^m_\nabla)$成立，那么当$n= k+1$时有
+当$n=1$时，$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k$时，有$f^k(f^m_\nabla) \leq f^{k-1}(f^m_\nabla)$成立，那么当$n= k+1$时有
 $$
 f^{k+1}(f^m_\nabla)= f(f^k(f^m_\nabla)) \leq f(f^{k-1}(f^m_\nabla)) = f^k(f^m_\nabla).
 $$
@@ -727,18 +727,19 @@ $$
 \begin{proposition}
 \rm {\color{red}(构造DCC收敛序列二次逼近)} Given a monotone transfer function $\func{f}{\mathcal{L}}{\mathcal{L}}$ on a complete lattice $\mathcal{L}$, and a strong narrowing operator $\nabla$ on $\mathcal{L}$, we define the new transfer function as follow
 $$
-f^n_\nabla = \left\{ \begin{array}{ll} 
+f^n_\Delta = \left\{ \begin{array}{ll} 
 f^m_\nabla & \text{if}~n = 0 \\
-f^{n-1}_\nabla \nabla f(f^{n-1}_\nabla) & \text{if}~n > 0\\
+f^{n-1}_\Delta \Delta f(f^{n-1}_\Delta) & \text{if}~n > 0\\
 \end{array} \right.
 $$
 \end{proposition}
 
 \begin{proof}
-这个证明过程是trivial的，我们需要证明$f(f^{n-1}_\Delta) \leq f^{n-1}_\Delta$. 当$n=1$时，有$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k, k \geq 1$有$f(f^{k-1}_\nabla) \leq f^{k-1}_\nabla$成立. 当$n=k+1$时，有
+首先证明$f(f^{n-1}_\Delta) \leq f^{n-1}_\Delta$，即$(f^{n}_\Delta)_n$是一个descending chain. 当$n=0$时，有$f(f^m_\nabla) \leq f^m_\nabla$，假设$n=k-1$有$f(f^{k-1}_\nabla) \leq f^{k-1}_\nabla$成立. 当$n=k$时，有
 $$
-f(f^k_\nabla)= f(f^{k-1}_\nabla \nabla f(f^{k-1}_\nabla)) \leq f(f^{k-1}_\nabla) \leq f^{k-1}_\nabla .
+f(f^k_\Delta)= f(f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta)) \leq f(f^{k-1}_\Delta) \leq f^{k-1}_\Delta \Delta f(f^{k-1}_\Delta) = f^k_\Delta.
 $$
+那么$(f^{n}_\Delta)_n \in \text{Red}(f)$，即若它收敛，它必定收敛于$\text{lfp}(f)$的一个upper bound，显然在strong narrowing的限制下它是收敛的. 
 \end{proof}
 
 \begin{example}
