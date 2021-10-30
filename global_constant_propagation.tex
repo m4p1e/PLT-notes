@@ -152,9 +152,16 @@ $$
 $$
 \func{f}{\overline{N} \times \mathfrak{P}(U)}{\mathfrak{P}(U)}. 
 $$
-给定某个具体顶点$i$和constant pool $\mathbf{P}$，若$(v,c) \in f(i,\mathbf{P})$当且仅当{\color{red} (1)}在$(v,c) \in \mathbf{P}$且顶点$i$处没有对$v$进行赋值或者{\color{red} (2)}对$v$赋值表达式的结果是常量$c$.
+其中$\mathfrak{P}(U)$表示$U$的幂集.
 
-前面的{\color{red} Propagated constant pool}的定义可以改写为
+给定某个具体顶点$i$和constant pool $\mathbf{P}$，若$(v,c) \in f(i,\mathbf{P})$当且仅当
+
+\begin{enumerate}
+	\item $(v,c) \in \mathbf{P}$且顶点$i$处没有对$v$进行赋值，或
+	\item 对$v$赋值表达式的结果是常量$c$.  
+\end{enumerate}
+
+那么前面的{\color{red} Propagated constant pool}的定义可以改写为
 $$
 \mathcal{P}_i  = \bigcap\limits_{u \in F^{i}} u,
 $$
@@ -186,7 +193,11 @@ $$
 \end{definition}
 
 \begin{definition}
-\rm 给定一个meet semilattice $\mathcal{S}$，且$\mathcal{S}$里面有一个最大元1(maximum element),即对于任意的$x \in \mathcal{S}$，都有$x \wedge 1 = x$. 我们称$\mathcal{S}$为一个{\color{red} finite meet semilattice}. 同理给定一个join semilattice里面有一个最小元0(minimum element)，则称其为{\color{red} finite join semilattice}.
+\rm 给定一个meet semilattice $\mathcal{S}$，若$\mathcal{S}$里面有一个最大元1(maximum element)，即对于任意的$x \in \mathcal{S}$，都有$x \wedge 1 = x$，且对任意$A \subseteq S$，有$\bigwedge S$存在. 我们称$\mathcal{S}$为一个{\color{red} complete meet semilattice}. 同理给定一个join semilattice里面有一个最小元0(minimum element)，且对任意$A \subseteq S$，有$\bigvee S$存在，则称其为{\color{red} complete join semilattice}.
+\end{definition}
+
+\begin{definition}
+\rm 给定常量域$U$，设$L = (\mathfrak{P}(U),\cap)$为一个meet semilattice. 
 \end{definition}
 
 \begin{lemma}
@@ -200,10 +211,10 @@ $$
 \begin{proof}
 \rm 分四种情况来分别说明
 \begin{enumerate}
-	\item 若$(v,c) \in x$和$(v,c) \in y$. 那么$(v,c) \in x \wedge y$，若$(v,c) \in f(i,x \wedge y)$，则满足$f$定义提到的条件(1)(2)，那么在满足(1)(2)的前提下有$(v,c) \in f(i,x)$和$(v,c) \in f(i,y)$，即$(v,c) \in f(i,x) \wedge f(i,y)$. 同理若$(v,c) \notin f(i,x \wedge y)$，也可以得到$(v,c) \notin f(i,x) \wedge f(i,y)$.
+	\item 若$(v,c) \in x$和$(v,c) \in y$. 那么$(v,c) \in x \wedge y$，若$(v,c) \in f(i,x \wedge y)$，则满足$f$定义提到的条件(1)(2)，那么在满足(1)(2)的前提下均有$(v,c) \in f(i,x)$和$(v,c) \in f(i,y)$，即$(v,c) \in f(i,x) \wedge f(i,y)$. 同理若$(v,c) \notin f(i,x \wedge y)$，也可以得到$(v,c) \notin f(i,x) \wedge f(i,y)$.
 	\item 若$(v,c) \in x$和$y$里面没有关于$v$的variable-constant pair. 同下
 	\item 若$x$里面没有关于$v$的variable-constant pair和$(v,c) \in y$. 同下
-	\item 若$(v,c_1) \in x$和$(v,c_2) \in y$. 那么$(v,c_1) \notin x \wedge$且$(v,c_2) \notin x \wedge y$. 若$(v,c_3) \in f(i,x \wedge y)$，则满足$f$定义中条件(2). 那么满足(2)的前提下，有$(v,c_3) \in f(i,x)$和$(v,c_3) \in f(i,y)$，即$(v,c_3) \in f(i,x) \wedge f(i,x)$. 若$f(i,x \wedge y)$中没有关于$v$的variable-constant pair，那么$f$中没有对$v$进行重新赋值，则$(v,c_1) \in f(i,x)$和$(v,c_2) \in f(i,y)$，即$f(1,x) \wedge f(1,y)$里面也没有关于$v$的variable-constant pair.
+	\item 若$(v,c_1) \in x$和$(v,c_2) \in y$. 那么$(v,c_1) \notin x \wedge$且$(v,c_2) \notin x \wedge y$. 若$(v,c_3) \in f(i,x \wedge y)$，则满足$f$定义中条件(2). 那么满足(2)的前提下，有$(v,c_3) \in f(i,x)$和$(v,c_3) \in f(i,y)$，即$(v,c_3) \in f(i,x) \wedge f(i,x)$. 若$f(i,x \wedge y)$中没有关于$v$的variable-constant pair，那么$f$中没有对$v$进行重新赋值，则$(v,c_1) \in f(i,x)$和$(v,c_2) \in f(i,y)$，即$f(i,x) \wedge f(i,y)$里面也没有关于$v$的variable-constant pair.
 \end{enumerate}
 由于我们选取的$i$和$x,y$都是任意的，综上原式成立.
 \end{proof}
@@ -236,7 +247,7 @@ $$
 		$X \longleftarrow (i,\mathbf{P}_{i}) \in W$\;
 		$W \longleftarrow W - \{(i,\mathbf{P}_{i})\}$\;
 		
-		\tcc{这里做meet是很自然的}
+		\tcc{注意到这里propagated constant pool是不增的}
 		\If{$X \wedge \mathcal{P}_i < \mathcal{P}_i$}{
 			$\mathcal{P}_i \longleftarrow X \wedge \mathcal{P}_i$\;
 			\tcc{考虑所有后继}
@@ -261,7 +272,7 @@ $$
 \end{theorem}
 
 \begin{proof}
-注意上面的$\bigwedge$在这里是和$\bigcap$等价的，因为我们的semilattice的underlying set是$\mathfrak{B}(U)$. 对于从$\varepsilon$到$i$的任意一条路径$\pi_k = ({p_k}_1,\cdots,{p_k}_n)$，其中${p_k}_1 = \varepsilon$, ${p_k}_n = i$，那么
+注意上面的$\bigwedge$在这里就是集合上的$\bigcap$，因为我们的semilattice的underlying set是$\mathfrak{B}(U)$. 对于从$\varepsilon$到$i$的任意一条路径$\pi_k = ({p_k}_1,\cdots,{p_k}_n)$，其中${p_k}_1 = \varepsilon$, ${p_k}_n = i$，那么
 $$
 \bigwedge\limits_{u \in F^{i}} u = \bigwedge\limits_{k \in K} f({p_k}_n,f({p_k}_{n-1},\cdots,f({p_k}_1,\mathbf{P}_{\varepsilon}))\cdots).
 $$
