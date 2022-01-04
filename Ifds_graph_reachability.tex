@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+
+\begin{document}
+\title{IFDS: Dataflow Analysis via Graph Reachability}
+\author{枫聆}
+\maketitle
+\tableofcontents
+\end{document}
