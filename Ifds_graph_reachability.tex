@@ -85,11 +85,55 @@
 \end{definition}
 
 \begin{annotation}
-\rm \redt{怎么理解"separable"?} separable对应的是位运算过程不同位bit是不会相互相互影响的，也就是两个不同dataflow fact是不会相互依赖的. 例如在reaching-definitions中两个不同变量的定义的作用域是不会相互影响的.   
+\rm \redt{怎么理解"separable"?} separable对应的是逻辑位运算过程不同位bit是不会相互影响的，也就是两个不同dataflow facts是不会相互依赖的. 例如在reaching-definitions中两个不同变量定义的作用域是不会相互影响的.   
+\end{annotation}
+
+
+\begin{definition}
+\rm 若dataflow facts $D$是一个有限(finite)集合，且每一个transfer function $\func{f}{2^D}{2^D}$都是可分配的(distribute，即满足join or meet semilattice homomorphism)，这样一类过程间(interprocedural)数据流分析问题称为\redt{interprocedural, finite, distribute, subset problems}，或简称为\redt{IFDS problems}.
+\end{definition}
+
+\begin{definition}
+\rm 设程序$P$的每个procedural $p$对应图表示为$G_p=(N_p, E_p)$，其中$N_p$表示$p$上所有(atomic) statements，$E_p$表示$p$的控制流. $G_p$中结点种类分为
+\begin{itemize}
+	\item 唯一的start node $s_p$;
+	\item 唯一的exit node $e_p$;
+	\item 过程调用结点 call node，$G_p$中的所有call nodes构成的集合记为$\text{Call}_p$;
+	\item 过程调用的返回位置结点 return-site node，即紧跟在call node后面，$G_p$中的所有return-site nodes构成的集合记为$\text{Ret}_p$
+	\item 其余的结点与通常flowgraph上结点保持一致. 
+\end{itemize}
+特别地，$G_p$上每一对call node $c$和return-site node $r$直接有一条$c$到$r$的有向边，称为\redt{call-to-return-side edge}. 设$G^*=(N^*,E^*)$，$G^*$由所有procedurals图表示$G_1,G_2,\cdots,
+G_p,\cdots$和两类特殊的边构成
+\begin{itemize}
+	\item \redt{call-to-start edge}: 从$G_{p_1}$中call node到对应$G_{p_2}$的start node $s_p$的有向边.
+	\item \redt{exit-to-return-side edge}: 从$G_{p_2}$的exit node $e_{p_2}$到对应$G_{p_1}$的return-side node. 
+\end{itemize}
+称$G^*$为\redt{supergraph}.
+\end{definition}
+
+
+\begin{annotation}
+\rm 理解supergraph只需要了解几个特殊的点
+\begin{itemize}
+	\item return-site这类结点可能是抽象出来的，在一定程度有利于对call node的细化分析.
+	\item 放置call-to-return-side edge的目的是用于过程内分析，i.e. local variables.
+	\item 一个procedural执行返回会抽象到exit node上统一返回，即exit-to-return-side的作用.
+\end{itemize} 
 \end{annotation}
 
 \begin{definition}
-\rm 
+\rm 设$\func{f}{2^D}{2^D}$某个IFDS problem中一个distribute transfer function，它的一个关系表示$R_f \subset(D \cup \{0\}) \times \subset(D \cup \{0\})$(representation relation)为
+$$
+\begin{aligned}
+R_f = &~~~ \{0,0\} \\
+&\cup \Set{(0,y)}{y \in f(\emptyset)} \\ 
+&\cup  \Set{(x,y)}{y \in f(\{x\})~\text{and}~y \notin f(\emptyset)}.
+\end{aligned}
+$$
+其中$0$表示$\emptyset$. 
 \end{definition}
+
+
+
 
 \end{document}
