@@ -12,6 +12,16 @@
 
 %\usepackage{unicode-math}
 
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
 
 \usepackage[textwidth=18cm]{geometry} % 设置页宽=18
 
@@ -36,6 +46,7 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
 
 \newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
 \newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
@@ -43,10 +54,42 @@
 \newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
 \newcommand\SET[2]{\Set{#1}{\text{#2}}} %
 
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
 
 \begin{document}
 \title{IFDS: Dataflow Analysis via Graph Reachability}
 \author{枫聆}
 \maketitle
 \tableofcontents
+
+\newpage
+\section{Definitions}
+
+
+\begin{annotation}
+\rm 在数据流分析中的“精确”一词，实际上等价于“meet over all vaild path”. 
+\begin{itemize}
+	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedural的CFG上从entry node到特定的点这样一条路径. 
+	\item 在过程间分析(interprocedural)中，一条“vaild path”就是指当从main function开始，且某个procedural结束之后返回调用它的procedural，直到某个特定程序点的这样一条路径.  
+\end{itemize}
+上述东西没有什么新意，但是让各种名词形式化有利于表达. 
+\end{annotation}
+
+\begin{definition}
+\rm 数据流分析中的可能会出现所有不同的数据值组成的集合$D$(underlying set)称为dataflow facts. 对于可能分析得到的结果是dataflow facts的一个子集，通常我们把所用可能得到的结果记为$2^D$. 
+\end{definition}
+
+\begin{definition}
+\rm 数据流的值可以表示成位向量(bit-vectors)，其中每个bit可以表示一个具体的dataflow fact, 且可以每个传递函数可以用相应的位运算来表示，这样的一类数据流分析问题我们称之为\redt{locally separable problems}. i.e. reaching-definitions, available expressions, live variables. 
+\end{definition}
+
+\begin{annotation}
+\rm \redt{怎么理解"separable"?} separable对应的是位运算过程不同位bit是不会相互相互影响的，也就是两个不同dataflow fact是不会相互依赖的. 例如在reaching-definitions中两个不同变量的定义的作用域是不会相互影响的.   
+\end{annotation}
+
+\begin{definition}
+\rm 
+\end{definition}
+
 \end{document}
