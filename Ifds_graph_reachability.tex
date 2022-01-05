@@ -71,10 +71,10 @@
 \begin{annotation}
 \rm 在数据流分析中的“精确”一词，实际上等价于“meet over all vaild path”. 
 \begin{itemize}
-	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedural的CFG上从entry node到特定的点这样一条路径. 
+	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedural的CFG上从entry node到特定的点这样一条路径，同时这样的路径也可以称为same level vaild path.  
 	\item 在过程间分析(interprocedural)中，一条“vaild path”就是指当从main function开始，且某个procedural结束之后返回调用它的procedural，直到某个特定程序点的这样一条路径.  
 \end{itemize}
-上述东西没有什么新意，但是让各种名词形式化有利于表达. 
+上述东西没有什么新意，就是在图上分析时候，需要确定一类程序潜在可能的执行路径，而我们只分析它们.  
 \end{annotation}
 
 \begin{definition}
@@ -91,7 +91,7 @@
 
 
 \begin{definition}
-\rm 若dataflow facts $D$是一个有限(finite)集合，且每一个transfer function $\func{f}{2^D}{2^D}$都是可分配的(distribute，即满足join or meet semilattice homomorphism)，这样一类过程间(interprocedural)数据流分析问题称为\redt{interprocedural, finite, distribute, subset problems}，或简称为\redt{IFDS problems}.
+\rm 若dataflow facts $D$是一个有限(finite)集合，且每一个transfer function $\func{f}{2^D}{2^D}$都是可分配的(distributive，即满足join or meet semilattice homomorphism)，这样一类过程间(interprocedural)数据流分析问题称为\redt{interprocedural, finite, distributive, subset problems}，或简称为\redt{IFDS problems}.
 \end{definition}
 
 \begin{definition}
@@ -116,14 +116,14 @@ G_p,\cdots$和两类特殊的边构成
 \begin{annotation}
 \rm 理解supergraph只需要了解几个特殊的点
 \begin{itemize}
-	\item return-site这类结点可能是抽象出来的，在一定程度有利于对call node的细化分析.
+	\item return-site这类结点可能是抽象出来的，在一定程度上有利于对call node的细化分析.
 	\item 放置call-to-return-side edge的目的是用于过程内分析，i.e. local variables.
 	\item 一个procedural执行返回会抽象到exit node上统一返回，即exit-to-return-side的作用.
 \end{itemize} 
 \end{annotation}
 
 \begin{definition}
-\rm 设$\func{f}{2^D}{2^D}$某个IFDS problem中一个distribute transfer function，它的一个\redt{关系表示}$R_f \subseteq (D \cup \{0\}) \times (D \cup \{0\})$(representation relation)为
+\rm 设$\func{f}{2^D}{2^D}$某个IFDS problem中一个distributive transfer function，它的一个\redt{关系表示}(representation relation) $R_f \subseteq (D \cup \{0\}) \times (D \cup \{0\})$为
 $$
 \begin{aligned}
 R_f = &~~~ \{0,0\} \\
@@ -134,6 +134,44 @@ $$
 其中$0$表示$\emptyset$. 
 \end{definition}
 
+\begin{definition}
+\rm 定义一个IFDS problem的实例为$\text{IP}=(G^*,D,F,M,\sqcap)$，其中$G^*=(N^*,E^*)$为对应程序$P$的supergraph表示，$D$表示dataflow facts，$F$为distributive transfer function set，$M$为$E^* \to F$的映射，$\sqcap$对应的meet operator. 
+\end{definition}
+
+\begin{annotation}
+\rm 注意上述representation是当$f$可分配满足
+$$
+f(X_1 \vee X_2) = f(X_1) \vee f(X_2)
+$$
+其中$\vee$为set上的union操作. 那么当$\vee$为set上intersection如何定义representation呢? 这个问题非常有趣，此时$f$的可分配的operator记为$\wedge$，文章中作者提到这样的问题可以转化为一个与当前问题等价的一个新问题，且这个新问题是union可分配的，i.e. 如果“must-be-X”是一个intersection可分配的问题，那么与它等价“may-not-be-X”问题就是一个union可分配的问题. 但是为什么呢？ 假设“must-be-X”的$f$是一个intersection可分配，那么“may-not-be-X”的$f^c$应为
+$$
+f^c(X) = D - f(X). 
+$$
+那么
+$$
+\begin{aligned}
+f^c(X \wedge Y) &= D-f(X \wedge Y)\\ 
+&= [D-f(X)] \vee [D-f(Y)] \\
+&= f^c(X) \vee f^c(X)
+\end{aligned}
+$$
+真奇怪，显然没有得到想要的结果. 那么就是$f^c(X)$的定义出问题了，我们仔细思考一下原问题和新问题本质没有区别，只是在每个结点的对应值用补的形式表示，两个问题同一状态相同结点的值也是互补的，于是$f^c$的正确定义应当如下:
+$$
+f^c(X)= D - f(D-X)
+$$
+那么
+$$
+\begin{aligned}
+f^c(X \vee Y) &= D-f[D-(X \vee Y)] \\ 
+&= D-f[(D-X) \wedge (D-Y)] \\
+&= D-f(D-X) \wedge f(D-Y) \\
+&= [D-f(D-X)] \vee [D-f(D-Y)] \\
+&= f^c(X) \vee f^c(Y) 
+\end{aligned}
+$$
+这样确实可以得到一个和原问题等价的union可分配的问题. 
+\end{annotation}
+
 
 \begin{definition}
 \rm 给定关系$R \subseteq (D \cup \{0\}) \times (D \cup \{0\})$，则其唯一确定函数$\func{\llbracket R \rrbracket}{2^D}{2^D}$为
@@ -142,19 +180,18 @@ $$
 $$
 \end{definition}
 
-\begin{theorem}
-\rm 给定distribute transfer function $f$ (set union)，设$f$的关系表示为$R_f$，则
+\begin{theorem}\label{representation correctness}
+\rm 给定distributive transfer function $f$ (set union)，设$f$的关系表示为$R_f$，则
 $$
 \llbracket R_f \rrbracket = f
 $$
 \end{theorem}
 
 \begin{proof}
-\rm 上述representation correctness取决于$f$满足
+\rm 上述representation correctness取决于$f$满足对任意的$X = \{x_1,x_2,\cdots,x_n\} \subseteq D$有
 $$
-f(\{x_1\} \vee \{x_2\} \vee \cdots \vee \{x_{|D|}\}) = f(\{x_1\}) \vee f(\{x_2\}) \vee \cdots f(\{x_{|D|}\})
-$$
-其中$\vee$应为set union. 反过来也可以定义set intersection. 
+f(X) = f(\{x_1\} \vee \{x_2\} \vee \cdots \vee \{x_n\}) = f(\{x_1\}) \vee f(\{x_2\}) \vee \cdots f(\{x_n\})
+$$ 
 \end{proof}
 
 
@@ -163,13 +200,77 @@ $$
 \end{proposition}
 
 \begin{proof}
-注意是不存在$(x,0) \in R$，所以不是$(D+1)^2$.
+注意是不存在$(x,0) \in R$，所以不是$(D+1)^2$(但是原文认为是$(D+1)^2$).
 \end{proof}
 
 
 \begin{definition}
-\rm 
+\rm 给定两个关系$R_1,R_2 \subseteq S \times S$，定义它们的\redt{复合关系}(composition)$R_2 \circ R_1$为
+$$
+R_2 \circ R_1 = \Set{(x,y) \in S \times S}{\text{if}~ z \in S, (x,z) \in R_1~\text{and}~(z,y) \in R_2}.
+$$
 \end{definition}
+
+\begin{theorem}
+\rm 给定两个distributive transfer function $f,g$ (set union)，设$f,g$的关系表示分别为$R_f,R_g$，则
+$$
+\llbracket R_g \circ R_f \rrbracket = g \circ f. 
+$$
+\end{theorem}
+
+\begin{proof}
+\rm 对任意的$X \subseteq D$，设$y \in \llbracket R_g \circ R_f \rrbracket(X)$，我们来证明$y \in g \circ f(X)$. 若$(0,y) \in R_g \circ R_f$，那么存在$(0,z) \in R_f$和$(z,y) \in R_g$，显然此时$z = 0$，则$y \in g(\emptyset)$，于是
+$$
+g\circ f(X) = g[\emptyset \vee f(X)] = g(\emptyset) \vee g\circ f(X). 
+$$ 
+因此$y \in g\circ f(X)$; 若$(x,y) \in R_g \circ R_f$，其中$x \in X$，那么存在$(x,z) \in R_f$和$(z,y) \in R_g$，显然$z \neq 0$且$z \in f(x)$和$y \in g(z)$，于是
+$$
+\begin{aligned}
+g \circ f(X) &= g \circ f[\{x\} \vee (X - \{x\})]\\ &
+= g[f(x) \vee f(X - {x})]\\ 
+&= g \{z  \vee [f(x) - \{z\}] \vee  (X - \{x\})\} \\
+&= g(z) \vee g\{[f(x) - \{z\}] \vee  (X - \{x\})\}
+\end{aligned}
+$$
+因此$y \in g \circ f(X)$. 同理可证，设$y \in g \circ f(X)$，则有$y \in \llbracket R_g \circ R_f \rrbracket(X)$. 
+\end{proof}
+
+
+\begin{corollary}
+\rm 给定一组distributive transfer function $f_1,f_2,\cdots,f_n$，设$f_1,f_2,\cdots,f_n$对应的关系表示分别为$R_1,R_2,\cdots,R_n$则
+$$
+f_n \circ f_{n-1} \circ \cdots \circ f_2 \circ f_1 = \llbracket R_n \circ R_{n-1} \circ \cdots \circ R_2 \circ R_1 \rrbracket.
+$$
+\end{corollary}
+
+\begin{definition}
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\sqcap)$. 定义\redt{exploded supergraph} $G^\otimes = (N^\otimes,E^\otimes)$如下
+$$
+\begin{aligned}
+&N^\otimes = N^* \times (D \cup \{0\}) \\
+&E^\otimes = \Set{\left<m,d_1\right> \to \left<n,d_2\right>}{(m,n) \in E^*~\text{and}~ (d_1,d_2) \in R_{(m,n)}}
+\end{aligned} 
+$$
+\end{definition}
+
+\begin{annotation}
+\rm exploded supergraph就是supergraph的基础上，将每个结点扩展成了$D+1$个结点，同时把每条边用其对应的transfer function relations扩展成了$|R_f|$条边. 
+\end{annotation}
+
+\begin{annotation}
+\rm 将vaild path推广至到exploded supergraph上，称其为realized path.
+\end{annotation}
+
+\begin{theorem}
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$的exploded supergraph表示$G^\otimes = (N^\otimes,E^\otimes)$，则对任意的结点$n \in N^*$，有$d \in \text{MVP}_n$(meet-over-all-path-solution)当且仅当存在一条从$\left<s_m, 0\right>$到$(n,d)$的realized path. 
+\end{theorem}
+
+\begin{annotation}
+\rm 上述定理就是我们的最终目标，将类IFDS问题可以转换称graph reachability问题. 注意这个定理的correctness取决于当前IDFS是一个set union IFDS问题，其他细节是比较显然的. 
+\end{annotation}
+
+\newpage
+\section{Algorithm and Complexity}
 
 
 \end{document}
