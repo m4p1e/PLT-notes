@@ -74,7 +74,7 @@
 	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedure的CFG上从entry node到特定的点这样一条路径，同时这样的路径也可以称为same level vaild path.  
 	\item 在过程间分析(interprocedural)中，一条“vaild path”就是指当从main function开始，且某个procedure结束之后返回调用它的procedure，直到某个特定程序点的这样一条路径.  
 \end{itemize}
-上述东西没有什么新意，就是在图上分析时候，需要确定一类程序潜在可能的执行路径，而我们只分析它们.  
+上述东西没有什么新意，就是在图上分析时候，需要确定一类程序潜在可能的执行路径，而我们只分析它们. 这样vaild path如果更形式化一点，我们可以可以用CFL来描述. 
 \end{annotation}
 
 \begin{definition}
@@ -143,7 +143,7 @@ $$
 $$
 f(X_1 \vee X_2) = f(X_1) \vee f(X_2)
 $$
-其中$\vee$为set上的union操作. 那么当$\vee$为set上intersection如何定义representation呢? 这个问题非常有趣，此时$f$的可分配的operator记为$\wedge$，文章中作者提到这样的问题可以转化为一个与当前问题等价的一个新问题，且这个新问题是union可分配的，i.e. 如果“must-be-X”是一个intersection可分配的问题，那么与它等价“may-not-be-X”问题就是一个union可分配的问题. 但是为什么呢？ 假设“must-be-X”的$f$是一个intersection可分配，那么“may-not-be-X”的$f^c$应为
+其中$\vee$为set上的union操作. 那么当$\vee$为set上intersection如何定义representation呢? 这个问题非常有趣，此时$f$的可分配的operator记为$\wedge$，文章中作者提到这样的问题可以转化为一个与当前问题等价的一个新问题，且这个新问题是union可分配的，i.e. 如果“must-be-X”是一个intersection可分配的问题，那么与它等价“may-not-be-X”问题就是一个union可分配的问题. 但是为什么呢？ 文中没有解释，我们来做几步推导. 假设“must-be-X”的$f$是一个intersection可分配，那么“may-not-be-X”的$f^c$应为
 $$
 f^c(X) = D - f(X). 
 $$
