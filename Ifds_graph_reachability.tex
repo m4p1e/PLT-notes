@@ -71,8 +71,8 @@
 \begin{annotation}
 \rm 在数据流分析中的“精确”一词，实际上等价于“meet over all vaild path”. 
 \begin{itemize}
-	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedural的CFG上从entry node到特定的点这样一条路径，同时这样的路径也可以称为same level vaild path.  
-	\item 在过程间分析(interprocedural)中，一条“vaild path”就是指当从main function开始，且某个procedural结束之后返回调用它的procedural，直到某个特定程序点的这样一条路径.  
+	\item 在过程内分析(intraprocedural)中，一条“vaild path”就是指从某个procedure的CFG上从entry node到特定的点这样一条路径，同时这样的路径也可以称为same level vaild path.  
+	\item 在过程间分析(interprocedural)中，一条“vaild path”就是指当从main function开始，且某个procedure结束之后返回调用它的procedure，直到某个特定程序点的这样一条路径.  
 \end{itemize}
 上述东西没有什么新意，就是在图上分析时候，需要确定一类程序潜在可能的执行路径，而我们只分析它们.  
 \end{annotation}
@@ -95,7 +95,7 @@
 \end{definition}
 
 \begin{definition}
-\rm 设程序$P$的每个procedural $p$对应图表示为$G_p=(N_p, E_p)$，其中$N_p$表示$p$上所有(atomic) statements，$E_p$表示$p$的控制流. $G_p$中结点种类分为
+\rm 设程序$P$的每个procedure $p$对应图表示为$G_p=(N_p, E_p)$，其中$N_p$表示$p$上所有(atomic) statements，$E_p$表示$p$的控制流. $G_p$中结点种类分为
 \begin{itemize}
 	\item 唯一的start node $s_p$;
 	\item 唯一的exit node $e_p$;
@@ -103,7 +103,7 @@
 	\item 过程调用的返回位置结点 return-site node，即紧跟在call node后面，$G_p$中的所有return-site nodes构成的集合记为$\text{Ret}_p$
 	\item 其余的结点与通常flowgraph上结点保持一致. 
 \end{itemize}
-特别地，$G_p$上每一对call node $c$和return-site node $r$直接有一条$c$到$r$的有向边，称为\redt{call-to-return-side edge}. 设$G^*=(N^*,E^*)$，$G^*$由所有procedurals图表示$G_1,G_2,\cdots,
+特别地，$G_p$上每一对call node $c$和return-site node $r$直接有一条$c$到$r$的有向边，称为\redt{call-to-return-side edge}. 设$G^*=(N^*,E^*)$，$G^*$由所有procedures图表示$G_1,G_2,\cdots,
 G_p,\cdots$和两类特殊的边构成
 \begin{itemize}
 	\item \redt{call-to-start edge}: 从$G_{p_1}$中call node到对应$G_{p_2}$的start node $s_p$的有向边.
@@ -118,7 +118,7 @@ G_p,\cdots$和两类特殊的边构成
 \begin{itemize}
 	\item return-site这类结点可能是抽象出来的，在一定程度上有利于对call node的细化分析.
 	\item 放置call-to-return-side edge的目的是用于过程内分析，i.e. local variables.
-	\item 一个procedural执行返回会抽象到exit node上统一返回，即exit-to-return-side的作用.
+	\item 一个procedure执行返回会抽象到exit node上统一返回，即exit-to-return-side的作用.
 \end{itemize} 
 \end{annotation}
 
@@ -276,5 +276,95 @@ $$
 \begin{definition}
 \rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$，定义任意起始结点是$(s_p,0)$的same level realized path称为\redt{path edge}. 定义任意$n \in \text{CallNodes}$，以$(n,d_1)$为起点和以$(\text{ReturnSite}(n),d_2)$为终点且其前缀路径包含$(n,d_1) \to (s_{\text{Called}(n)},d_3)$的same level realized path称为\redt{summary path}. 
 \end{definition}
+
+%\IncMargin{1em}
+\begin{algorithm}
+\label{mian_algo}
+\caption{Tabulation Algorithm}
+\SetKwFunction{ForwardTabulateSLRPs}{ForwardTabulateSLRPs}
+\SetKwFunction{Propagate}{Propagate}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\DontPrintSemicolon
+\Input{A exploded supergraph $G^\otimes$ of the instance of IFDS problem } 
+\Output{The dataflow values $X_i$ of every node $i$}
+\Begin{
+		Let $(N^\otimes, E^\otimes)= G^\otimes$\;
+	 	PathEdge = $\{\left<s_{main},0\right> \to \left<s_{main},0\right>\}$\;
+	 	WorkList = $\{\left<s_{main},0\right> \to \left<s_{main},0\right>\}$\;
+	 	SummaryEdge = $\emptyset$  \;
+		\ForwardTabulateSLRPs{} \;
+	 	\For{\rm each $n \in N^*$}{
+	 		$X_n = \Set{d_2 \in D}{\text{if}~d_1 \in D \cup \{0\}~\text{and}~\left<s_{\text{profOf}(n)},d_1\right> \to \left<n,d_2\right> \in \text{PathEdge}}$ \;
+	 	}
+	 }	
+\end{algorithm}
+%\DecMargin{1em}
+
+\begin{procedure}
+\label{pr}
+\caption{Propagate($e$)}
+\Begin{
+	\If{\rm $e \notin \text{PathEdge}$}{
+		Insert $e$ into PathEdge\;
+		Insert $e$ into WorkList\;
+	}
+}
+\end{procedure}
+  
+\begin{procedure}
+\label{ft}
+\caption{ForwardTabulateSLRPs()}
+\Begin{
+	\While{\rm WorkList $\neq \emptyset$}{
+		Select and remove an edge $\left<s_p,d_1\right> \to \left<n,d_2\right>$ \;
+		\If{$n \in \text{Call}_p$}{
+			\For{\rm each $d_3$ such that $\left<n,d_2\right> \to \left<s_{\text{calledProc}(n)},d_3\right>$}{
+				\Propagate{\rm $\left<s_{\text{calledProc}(n)},d_3\right> \to \left<s_{\text{calledProc}(n)},d_3\right>$} \;
+			}
+			\For{\rm each $d_3$ such that $\left<n,d_2\right> \to \left<{\text{returnSide}(n)},d_3\right> \in E^\otimes \cup \text{SummaryEdge} $}{
+				\Propagate{\rm $\left<s_p,d_1\right> \to \left<{\text{returnSide}(n)},d_3\right>$} \;
+			}					
+		}
+		\ElseIf{$n = e_p$}{
+			\For{\rm each $c \in \text{callers}(p)$}{
+				\For{\rm each $d_4,d_5$ such that $\left<c ,d_4\right> \to \left<s_p,d_1\right>$ and $\left<n,d_2\right> \to \left<\text{returnSide},d_5\right>$}{
+					\If{\rm $\left<c ,d_4\right>  \to \left<\text{returnSide},d_5\right> \notin \text{SummaryEdge}$}{
+						Insert $\left<c ,d_4\right>  \to \left<\text{returnSide}(c),d_5\right>$ into SummaryEdge \;
+						\For{\rm each $d_3$ such that $\left<s_{\text{profOf}(c)},d_3\right> \to \left<c ,d_4\right>$}{
+							\Propagate{\rm $\left<s_{\text{profOf}(c)},d_3\right> \to \left<\text{returnSide}(c),d_5\right>$ }
+						} 
+					}
+					
+				}
+			}		
+		}
+		\Else{
+			\For{\rm each $\left<n,d_2\right> \to \left<m,d_3\right>) \in E^\otimes$}{
+				\Propagate{\rm $\left<s_p,d_1\right> \to \left<m,d_3\right>)$}\;			
+			}
+		}
+	}
+}
+\end{procedure}
+
+\newpage
+
+\begin{annotation}
+\rm 整个算法的脉络还是比较清晰的，理解定义path edge和 summary edge就是为该算法的dp性质设计的. 一些可能比较有趣的点
+\begin{itemize}
+	\item FowardTabulateSLRPs第10行这里可能有一些冗余，原文这里calllers函数的设计是找到所有调用该procedure的调用者，如果我们只需要分析特定程序潜在可能的运行的路径，那么可能存在一些callers根本不会被运行，这些calllers理论上也没必要分析，所以这里的callers函数可以设计成一个动态函数，用于记录已经被分析过caller. 
+\end{itemize}
+\end{annotation}
+
+\begin{theorem}
+\rm Tabulation algorithm的时间复杂度为$O(ED^3)$.
+\end{theorem}
+
+\begin{proof}
+\rm Tabulation algorithm \ref{mian_algo} 的运行时间包括ForwardTablutateSLRPs函数的运行时间和第7-8行的运行时间. 其中第7-8行的运行时间很容易计算为$O(ND^2)$，其中还$N < E$因此$O(ED^2)$. 
+
+ForwardTablutateSLRPs函数 \ref{ft} 的运行时间，你要仔细分析是比较麻烦的，巧妙一点就是可以看做从$D+1$结点开始在$G^\otimes$上的$D+1$次广搜，一次广搜的时间复杂度是和图的规模成线性关系的即$O(ND^2+ED^2)$，还是由于$N < E$，即有$O(ED^2)$，因此总的时间复杂度为$O(ED^3)$. 
+\end{proof}
 
 \end{document}
