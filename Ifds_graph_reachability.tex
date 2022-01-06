@@ -258,11 +258,11 @@ $$
 \end{annotation}
 
 \begin{annotation}
-\rm 将vaild path推广至到exploded supergraph上，称其为realized path.
+\rm 将vaild path推广至到exploded supergraph上，称其为realizable path.
 \end{annotation}
 
 \begin{theorem}
-\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$的exploded supergraph表示$G^\otimes = (N^\otimes,E^\otimes)$，则对任意的结点$n \in N^*$，有$d \in \text{MVP}_n$(meet-over-all-path-solution)当且仅当存在一条从$\left<s_m, 0\right>$到$\left<n,d\right>$的realized path. 
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$的exploded supergraph表示$G^\otimes = (N^\otimes,E^\otimes)$，则对任意的结点$n \in N^*$，有$d \in \text{MVP}_n$(meet-over-all-path-solution)当且仅当存在一条从$\left<s_m, 0\right>$到$\left<n,d\right>$的realizable path. 
 \end{theorem}
 
 \begin{annotation}
@@ -274,7 +274,7 @@ $$
 
 
 \begin{definition}
-\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$，定义任意起始结点是$\left<s_p,0\right>$的same level realized path称为\redt{path edge}. 定义任意$n \in \text{CallNodes}$，以$\left<n,d_1\right>$为起点和以$\left<\text{ReturnSite}(n),d_2\right>$为终点且其前缀路径包含$\left<n,d_1\right> \to \left<s_{\text{Called}(n)},d_3\right>$的same level realized path称为\redt{summary path}. 
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$，定义任意起始结点是$\left<s_p,0\right>$的same level realized path称为\redt{path edge}. 定义任意$n \in \text{CallNodes}$，以$\left<n,d_1\right>$为起点和以$\left<\text{ReturnSite}(n),d_2\right>$为终点且其前缀路径包含$\left<n,d_1\right> \to \left<s_{\text{Called}(n)},d_3\right>$的same level realizable path称为\redt{summary path}. 
 \end{definition}
 
 %\IncMargin{1em}
