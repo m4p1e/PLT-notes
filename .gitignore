@@ -3,3 +3,5 @@
 *.toc
 *.gz
 *.out
+*.bbl
+*.blg

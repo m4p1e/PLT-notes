@@ -78,7 +78,7 @@
 \end{annotation}
 
 \begin{definition}
-\rm 数据流分析中的可能会出现所有不同的数据值组成的集合$D$(underlying set)称为dataflow facts. 对于可能分析得到的结果是dataflow facts的一个子集，通常我们把所用可能得到的结果记为$2^D$. 
+\rm 数据流分析中的可能会出现所有不同的数据值组成的集合$D$(underlying set)称为dataflow facts. 对于可能分析得到的结果是dataflow facts的一个子集，通常我们把所有可能得到的结果记为$2^D$. 
 \end{definition}
 
 \begin{definition}
@@ -262,7 +262,7 @@ $$
 \end{annotation}
 
 \begin{theorem}
-\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$的exploded supergraph表示$G^\otimes = (N^\otimes,E^\otimes)$，则对任意的结点$n \in N^*$，有$d \in \text{MVP}_n$(meet-over-all-path-solution)当且仅当存在一条从$\left<s_m, 0\right>$到$(n,d)$的realized path. 
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$的exploded supergraph表示$G^\otimes = (N^\otimes,E^\otimes)$，则对任意的结点$n \in N^*$，有$d \in \text{MVP}_n$(meet-over-all-path-solution)当且仅当存在一条从$\left<s_m, 0\right>$到$\left<n,d\right>$的realized path. 
 \end{theorem}
 
 \begin{annotation}
@@ -274,7 +274,7 @@ $$
 
 
 \begin{definition}
-\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$，定义任意起始结点是$(s_p,0)$的same level realized path称为\redt{path edge}. 定义任意$n \in \text{CallNodes}$，以$(n,d_1)$为起点和以$(\text{ReturnSite}(n),d_2)$为终点且其前缀路径包含$(n,d_1) \to (s_{\text{Called}(n)},d_3)$的same level realized path称为\redt{summary path}. 
+\rm 给定一个IDFS问题实例$\text{IP}=(G^*,D,F,M,\cup)$，定义任意起始结点是$\left<s_p,0\right>$的same level realized path称为\redt{path edge}. 定义任意$n \in \text{CallNodes}$，以$\left<n,d_1\right>$为起点和以$\left<\text{ReturnSite}(n),d_2\right>$为终点且其前缀路径包含$\left<n,d_1\right> \to \left<s_{\text{Called}(n)},d_3\right>$的same level realized path称为\redt{summary path}. 
 \end{definition}
 
 %\IncMargin{1em}
