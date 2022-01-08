@@ -1,0 +1,173 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+\usepackage{proof}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
+
+\begin{document}
+\title{Sparse Analysis and Path Conditions Transform}
+\author{枫聆}
+\maketitle
+\tableofcontents
+
+\newpage
+\section{The Definition of Sparse Analysis}
+
+\begin{definition}
+\rm 定义simple language如下
+$$
+\begin{aligned}
+\text{Program}~P & \coloneqq && F+ \\
+\text{Function}~F  & \coloneqq &&  f(v_1,v_2,\cdots) = \{S;\} \\
+&&& |~f(v_1,v_2,\cdots) = \emptyset \\
+\text{Statement}~S & \coloneqq && v_1 = \abracket{v_1} && ::\textbf{identity} \\
+&&& |~v_1 = v_2  && ::\textbf{assignment} \\
+&&& |~v_1 = v_1 \oplus v_2  && ::\textbf{binary}\\
+&&& |~v_1 = ite(v_2,v_3,v_4) && ::\textbf{if-then-else} \\
+&&& |~v_1 = f(v_2,v_3,\cdots)  && ::\textbf{call}\\
+&&& |~\textbf{return}~ v_1 = v_2  && ::\textbf{return}\\
+&&& |~\textbf{if}~(v_1=v_2)\{S_1;\}  && ::\textbf{branching}\\
+&&& |~S_1;S_2 && ::\textbf{sequencing}
+\end{aligned}
+$$
+其中$ite(v_2,v_3,v_4)$是一个三元表达式. 每个function都只有一个return statement作为它的唯一exit node; function的开头都对应的identity function对每一个function parameter进行初始化. 
+\end{definition}
+
+\begin{definition}
+\rm 给定program $P$上的两个statements $x,y$和一个branch condition $z$. 若$x$中使用到了$y$中定义的变量，则称$x$ \redt{数据依赖}(data-dependent)于$y$; 若$x$在运行时被执行当且仅当只有当$z$可达且值为true，则称$x$ \redt{控制依赖}(control-dependent)于$z$. 特别地，关于数据依赖可进一步推广至位于statement上的variables之间.
+\end{definition}
+
+\begin{annotation}\label{the-def-of-control-dependence}
+\rm 控制依赖更加严格的定义应该是这样: 给定CFG上两个不同的结点$x,y$，若满足下述条件: 
+\begin{itemize}
+	\item 在CFG存在一条从$x$到$y$的nonempty path $p$满足对任意的$v \in p$且$v \neq x$都有$y~\text{!pdom}~v$，其中$\text{pdom}$表示postdominate;  
+	\item $y~\text{!pdom}~x$. 
+\end{itemize}
+则称$y$控制依赖于$x$. 简而言之\bluet{存在某个$x$的后继$x.{\text{succ}_i}$使得$y~\text{pdom}~x.{\text{succ}_i}$，但$y~\text{!pdom}~x$}. 
+
+%这里CFG基于SSA形式(后续提到的CFG亦是如此)，但是关于dominate tree有点不同，往常我们定义dominate tree都是以基本块为单位，这里直接是CFG上的结点，所以你要推广一下:一个基本块上的结点根据顺序线性关系两个相邻的结点构成immediate dominance，再把基本块之间的支配关系放到原来两个基本块的结尾和开始结点.   
+\end{annotation}
+
+%说实话还是有点奇怪，我真的想要吐槽一下，为什么不同的地方总是有不同control flow graph的定义，或者重复定义其实本质含义相同的但表达不同的图表示，直接导致这样一个名词出来之后，你不能直接用，硬是要再解释一下，不然就会有歧义，这就是几乎每篇论文都会自己重新定义相关基本名词，咱们就不能统一下观点吗?
+
+
+\begin{definition}
+\rm 给定simple language上的program $P$，定义它的\redt{program dependence graph} $G = (V,E)$如下
+\begin{itemize}
+	\item 对任意结点$v \in V$，$v$表示$P$上的一个statement或者statement中某个变量. 
+	\item $E$包括两种egdes组成
+		\begin{itemize}
+			\item \redt{data dependence edges}: 对任意两个variables $x,y$，若$y$的定义数据依赖于$x$，则$(x,y) \in E$，所有这样的edges记为$E_d$. 
+			\item \redt{control dependence edges}: 对任意statement $x$和branch condition $z$，若$x$控制依赖于$z$，则$(x,z) \in E$，所有这样的edges记为$E_c$. 		
+		\end{itemize}		 
+\end{itemize}
+\end{definition}
+
+
+\begin{definition}
+\rm 给定simple langugae上的program $P$，构造$E_d$规则如下
+$$
+\begin{aligned}
+&\infer{(v_2,v_1) \in E_d}{&v_1=v_2&} \\[0.5em]
+&\infer{(v_2,v_1),(v_3,v_1) \in  E_d}{v_1 = v_2 \oplus v_3} \\[0.5em] 
+&\infer{(v_2,v_1),(v_3,v_1),(v_4,v_1) \in E_d}{&v_1 = ite(v_2,v_3,v_4)&} \\[0.5em] 
+&\infer{(v_2,u_1),(w_2,w_1),(w_1,v_1) \in E_d}{&v_1 = f(u_1,\cdots) = \{u_1 = \abracket{u_1}; \cdots; \textbf{return}~w_1=w_2\} &} \\[0.5em] 
+&\infer{(v_2,v_1) \in E_d}{&v_1 = f(v_2,\cdots) ~~ f(u_1,\cdots) = \emptyset&} \\[0.5em] 
+&\infer{(v_2,v_1)\in E_d}{&\textbf{if}~(v_1=v_2)\{\cdots\}&}
+\end{aligned}
+$$
+即对$P$上每一个statements都应用上述规则. 根据算法\ref{control-dependence}构造$E_c$.
+\end{definition}
+
+\begin{annotation}
+\rm 算法\ref{control-dependence}用到了一个lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 
+
+%直觉上若直接求每个结点$x$的control-dependence，可以直接在dominator tree上向上遍历$x$的immediate dominator，直到存在某个dominator $y$有两个及以上的child结点，那么$x$就控制依赖于$y$. 这个直觉算法可能有冗余，但是我们可以做一点优化若在向上遍历的过程中若遇到某个dominator只有一个child结点且有控制依赖了，那么这个控制依赖就是当且要求的某个结点的控制依赖，这个优化使用了一个dp性质的属性; 并且我们在dominator tree上做深搜来遍历每个结点. 
+\end{annotation}
+
+\begin{algorithm}
+\label{control-dependence}
+\caption{Control Depenence}
+%\SetKwFunction{ForwardTabulateSLRPs}{ForwardTabulateSLRPs}
+%\SetKwFunction{Propagate}{Propagate}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\DontPrintSemicolon
+\Input{The reverse control flow graph $\text{RCFG}$ and the dominance frontier $\text{RDF}$ of every every node in $\text{RCFG}$} 
+\Output{The set $\text{CD}(X)$ of every node $X$ that are control dependent on $X$}
+
+\Begin{
+	\For{\rm each node $X \in \text{RCFG}$}{
+		$\text{CD}(X) = \emptyset$	
+	}
+
+	\For{\rm each node $X \in \text{RCFG}$ }{
+		\For{\rm each node $Y \in \text{RCFG}$}{
+			Insert $Y$ into $\text{CD}(X)$ \;
+		}
+	}
+}
+
+\end{algorithm}
+
+
+
+
+\end{document}
