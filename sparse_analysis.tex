@@ -90,8 +90,12 @@ $$
 其中$ite(v_2,v_3,v_4)$是一个三元表达式. 每个function都只有一个return statement作为它的唯一exit node; function的开头都对应的identity function对每一个function parameter进行初始化. 
 \end{definition}
 
+\begin{annotation}
+\rm 为了方便说明，规定后面提到的所有CFG都是以statement为结点，除了branch statement $\textbf{if}~(c)\{S\}$，我们通常将其条件判断作为一个test node $\textbf{test}(c)$，而其body $S$正常展开.    
+\end{annotation}
+
 \begin{definition}
-\rm 给定program $P$上的两个statements $x,y$和一个branch condition $z$. 若$x$中使用到了$y$中定义的变量，则称$x$ \redt{数据依赖}(data-dependent)于$y$; 若$x$在运行时被执行当且仅当只有当$z$可达且值为true，则称$x$ \redt{控制依赖}(control-dependent)于$z$. 特别地，关于数据依赖可进一步推广至位于statement上的variables之间.
+\rm 给定program $P$上的两个statements $x,y$和一个branch condition $z$. 若$x$中使用到了$y$中定义的变量，则称$x$ \redt{数据依赖}(data-dependent)于$y$; 若当$z$可达且值为true时$x$会被执行，则称$x$ \redt{控制依赖}(control-dependent)于$z$. 特别地，关于数据依赖可进一步推广至位于statement上的variables之间.
 \end{definition}
 
 \begin{annotation}\label{the-def-of-control-dependence}
@@ -102,7 +106,7 @@ $$
 \end{itemize}
 则称$y$控制依赖于$x$. 简而言之\bluet{存在某个$x$的后继$x.{\text{succ}_i}$使得$y~\text{pdom}~x.{\text{succ}_i}$，但$y~\text{!pdom}~x$}. 
 
-%这里CFG基于SSA形式(后续提到的CFG亦是如此)，但是关于dominate tree有点不同，往常我们定义dominate tree都是以基本块为单位，这里直接是CFG上的结点，所以你要推广一下:一个基本块上的结点根据顺序线性关系两个相邻的结点构成immediate dominance，再把基本块之间的支配关系放到原来两个基本块的结尾和开始结点.   
+注意往常我们定义dominate tree都是以基本块为单位，这里直接是CFG上的结点，所以你要推广一下:一个基本块上的结点根据顺序线性关系两个相邻的结点构成immediate dominance，再把基本块之间的支配关系放到原来两个基本块的结尾和开始结点.   
 \end{annotation}
 
 %说实话还是有点奇怪，我真的想要吐槽一下，为什么不同的地方总是有不同control flow graph的定义，或者重复定义其实本质含义相同的但表达不同的图表示，直接导致这样一个名词出来之后，你不能直接用，硬是要再解释一下，不然就会有歧义，这就是几乎每篇论文都会自己重新定义相关基本名词，咱们就不能统一下观点吗?
@@ -138,8 +142,6 @@ $$
 
 \begin{annotation}
 \rm 算法\ref{control-dependence}用到了一个lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 
-
-%直觉上若直接求每个结点$x$的control-dependence，可以直接在dominator tree上向上遍历$x$的immediate dominator，直到存在某个dominator $y$有两个及以上的child结点，那么$x$就控制依赖于$y$. 这个直觉算法可能有冗余，但是我们可以做一点优化若在向上遍历的过程中若遇到某个dominator只有一个child结点且有控制依赖了，那么这个控制依赖就是当且要求的某个结点的控制依赖，这个优化使用了一个dp性质的属性; 并且我们在dominator tree上做深搜来遍历每个结点. 
 \end{annotation}
 
 \begin{algorithm}
@@ -167,7 +169,16 @@ $$
 
 \end{algorithm}
 
-
+\begin{definition}
+\rm 给定program $P$的CFG上一条control flow path  $p = \{s_0, s_1,\cdots, s_n\}$，设$P$的program dependence graph为$G = (V,E)$. 设关注的data facts 为$D$，$s_i$上data values along $p$为$\text{in}_{s_i},\text{out}_{s_i} \subseteq D$，其中除了$\text{in}_{s_0} = I \subseteq D$其它data values都为$\emptyset$，$s_i$的transfer function为$\text{tr}_{s_i}$. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
+$$
+\begin{aligned}
+&\text{out}_{s_i} = \text{tr}_{s_i}(\text{in}_{s_i}) \\
+&\text{and}~\forall (s_i,s_j) \in E_d,  \text{in}_{s_j} = \text{in}_{s_j} \cup \text{out}_{s_i}. 
+\end{aligned}
+$$
+上述分析手法称为\redt{sparse analysis}. 同时设任意$s_i \to s_j$之间的path condition为$\phi(s_i,s_j)$，$\text{in}_{s_i},\text{out}_{s_i} \subseteq D \times \phi(\pi)$，$\text{in}_{s_0} = (I,\phi(s_0,s_0))$. 那么
+\end{definition}
 
 
 \end{document}
