@@ -133,7 +133,7 @@ $$
 &\infer{(v_2,v_1),(v_3,v_1) \in  E_d}{v_1 = v_2 \oplus v_3} \\[0.5em] 
 &\infer{(v_2,v_1),(v_3,v_1),(v_4,v_1) \in E_d}{&v_1 = ite(v_2,v_3,v_4)&} \\[0.5em] 
 &\infer{(v_2,u_1),(w_2,w_1),(w_1,v_1) \in E_d}{&v_1 = f(u_1,\cdots) = \{u_1 = \abracket{u_1}; \cdots; \textbf{return}~w_1=w_2\} &} \\[0.5em] 
-&\infer{(v_2,v_1) \in E_d}{&v_1 = f(v_2,\cdots) ~~ f(u_1,\cdots) = \emptyset&} \\[0.5em] 
+&\infer{(v_2,v_1) \in E_d}{&v_1 = f(v_2,\cdots) ~~ f(u_1,\cdots) = \emptyset&} & \text{\bluet{不是很理解}}\\[0.5em] 
 &\infer{(v_2,v_1)\in E_d}{&\textbf{if}~(v_1=v_2)\{\cdots\}&}
 \end{aligned}
 $$
@@ -152,8 +152,8 @@ $$
 \SetKwInOut{Input}{input}
 \SetKwInOut{Output}{output}
 \DontPrintSemicolon
-\Input{The reverse control flow graph $\text{RCFG}$ and the dominance frontier $\text{RDF}$ of every every node in $\text{RCFG}$} 
-\Output{The set $\text{CD}(X)$ of every node $X$ that are control dependent on $X$}
+\Input{The reverse control flow graph $\text{RCFG}$ and the dominance frontier $\text{RDF}$ of every every node in $\text{RCFG}$.} 
+\Output{The set $\text{CD}(X)$ of every node $X$ that are control dependent on $X$.}
 
 \Begin{
 	\For{\rm each node $X \in \text{RCFG}$}{
@@ -169,15 +169,36 @@ $$
 
 \end{algorithm}
 
+\newpage
 \begin{definition}
-\rm 给定program $P$的CFG上一条control flow path  $p = \{s_0, s_1,\cdots, s_n\}$，设$P$的program dependence graph为$G = (V,E)$. 设关注的data facts 为$D$，$s_i$上data values along $p$为$\text{in}_{s_i},\text{out}_{s_i} \subseteq D$，其中除了$\text{in}_{s_0} = I \subseteq D$其它data values都为$\emptyset$，$s_i$的transfer function为$\text{tr}_{s_i}$. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
+\rm 给定program $P$的某个procedure对应CFG上的一条control flow path  $p = (s_0, s_1,\cdots, s_n)$，设$P$的program dependence graph为$G = (V,E)$. 设关注的data facts 为$D$，$s_i$上data values along $p$为$\text{in}_{s_i},\text{out}_{s_i} \subseteq D$，其中除了$\text{in}_{s_0} = I \subseteq D$其它data values都为$\emptyset$，$s_i$的transfer function为$\text{tr}_{s_i}$. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
 $$
 \begin{aligned}
 &\text{out}_{s_i} = \text{tr}_{s_i}(\text{in}_{s_i}) \\
 &\text{and}~\forall (s_i,s_j) \in E_d,  \text{in}_{s_j} = \text{in}_{s_j} \cup \text{out}_{s_i}. 
 \end{aligned}
 $$
-上述分析手法称为\redt{sparse analysis}. 同时设任意$s_i \to s_j$之间的path condition为$\phi(s_i,s_j)$，$\text{in}_{s_i},\text{out}_{s_i} \subseteq D \times \phi(\pi)$，$\text{in}_{s_0} = (I,\phi(s_0,s_0))$. 那么
+上述分析手法称为\redt{sparse analysis}. 同时设对任意$(s_i,s_j)\in E_d$的data dependence edge condition为$\phi(s_i,s_j)$，$\text{in}_{s_i},\text{out}_{s_i} \subseteq D \times \mathcal{P}$，其中$\mathcal{P}$为data dependence paths. 初始化$\text{in}_{s_0} = (I,\prod_{s_0} = \{\abracket{(s_0),\phi_{(s_0)}}\})$和$\text{in}_{s_i} = (\emptyset,\prod_{s_i}=\{\}),i=1,2,\cdots,n$，其中$\phi(s_i,s_i)$表示对应statement或者变量本身的约束条件. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
+$$
+\begin{aligned}
+&\text{out}_{s_i} = \left(\text{tr}_{s_i}(X_{s_i}),\bigcup\limits_{p_{i} = (\pi_i,\phi_{\pi_i}) \in \prod_{s_i}}\left\{\abracket{\pi_i,\phi_{\pi_i} \wedge \phi_{(i,i)}}\right\}\right) \\
+&\text{and}~\forall (s_i,s_j) \in E_d,  \text{in}_{s_j} = \text{in}_{s_j} \cup_p \text{out}_{s_i}.
+\end{aligned}
+$$
+其中$\cup_p$定义为
+$$
+\text{in}_{s_j} \cup_p \text{out}_{s_i} = \left(X_{\text{in}_{s_j}} \cup X_{\text{out}_{s_i}},  \prod_{s_j} \cup \bigcup\limits_{p_i = \abracket{\pi_i=(\cdots,s_i),\phi_{\pi_i}} \in \prod_{i}} \left\{\abracket{\pi_i'=(\cdots,s_i,s_j)}, \phi_{\pi_{i}'}\right\}\right). 
+$$
+则称上述手法为\redt{path-sensitive sparse analysis}. 
+\end{definition}
+
+%LOL
+\begin{annotation}
+\rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition. 这里我引入了特殊的约束条件$\phi(s_i,s_j)$是有必要的，因为statement能否正确的执行也需要一定的约束条件, i.e. $z = x/y \Rightarrow y \neq 0$. 我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path.  
+\end{annotation}
+
+\begin{definition}
+\rm  
 \end{definition}
 
 
