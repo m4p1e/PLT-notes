@@ -187,19 +187,35 @@ $$
 $$
 其中$\cup_p$定义为
 $$
-\text{in}_{s_j} \cup_p \text{out}_{s_i} = \left(X_{\text{in}_{s_j}} \cup X_{\text{out}_{s_i}},  \prod_{s_j} \cup \bigcup\limits_{p_i = \abracket{\pi_i=(\cdots,s_i),\phi_{\pi_i}} \in \prod_{i}} \left\{\abracket{\pi_i'=(\cdots,s_i,s_j)}, \phi_{\pi_{i}'}\right\}\right). 
+\text{in}_{s_j} \cup_p \text{out}_{s_i} =   
+\left(\begin{aligned}
+&X_{\text{in}_{s_j}} \cup X_{\text{out}_{s_i}}, && \prod_{s_j} \\
+&&&\cup \bigcup_{p_i = \abracket{\pi_i=(\cdots,s_i),\phi_{\pi_i}} \in \prod_{s_i}} \left\{\abracket{\pi_i'=(\cdots,s_i,s_j), \phi_{\pi_{i}'}}\right\}
+\end{aligned}\right).
 $$
-则称上述手法为\redt{path-sensitive sparse analysis}. 
+则称上述手法为\redt{path-sensitive sparse analysis}. 若将control flow path $p=(s_0,s_1,\cdots,s_n)$推广至interprocedural control flow path，则称其为\redt{interprocedural sparse analysis}. 
 \end{definition}
 
 %LOL
 \begin{annotation}
-\rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition. 这里我引入了特殊的约束条件$\phi(s_i,s_j)$是有必要的，因为statement能否正确的执行也需要一定的约束条件, i.e. $z = x/y \Rightarrow y \neq 0$. 我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path.  
+\rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition. 这里我引入了特殊的约束条件$\phi(s_i,s_j)$是有必要的，因为statement能否正确的执行也需要一定的约束条件, i.e. $z = x/y \Rightarrow y \neq 0$. 我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，对此我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path和对应的path condition. 
+
+
+更一步思考我们用sparse analysis思考问题思路应该是这样的: 首先忽略路径条件按照data dependence某个特定的程序点是否有我们感兴趣的值，在这过程中踏出了一些data dependence paths，然后我们考虑这些路径上的路径条件是否satisfiable. 更形式化一点就是我们有一些初始化data values $X$，然后我们经过data dependence的分析它可以到达我们期望的程序，然后其传播路径对应的path condition为$\bigwedge \phi_\pi$，因此我们需要求解
+\begin{equation}\label{big-equation}
+X \wedge \bigwedge \phi_\pi
+\end{equation}
+是否是satisfiable?
 \end{annotation}
 
 \begin{definition}
-\rm  
+\rm 定义function summary为$(\pi, \text{tr}_\pi,\phi_\pi)$，其中$\pi=(s_0,s_1,\cdots,s_n)$是function上一条data dependence path，$\text{tr}_\pi = \text{tr}_{s_n} \circ \text{tr}_{s_{n-1}} \circ \cdots \circ \text{tr}_{s_1} \circ \text{tr}_{s_0}$，$\phi_\pi$表示$\pi$对应的path condition. 若$s_n$是\textbf{return} statement则此时function summary可以直接记为$\phi_{\text{ret}}$. 
 \end{definition}
 
+\begin{annotation}
+\rm 我们通过cache得到的function summary来对interprocedural sensitive sparse analysis做出优化，即在call已经被分析过的function的时候我们可以直接用对应的function summary，按照对应的$\pi$来寻找已经构造的path condition，而不需要重新构造path condition(可能已经简化过path condition).
+
+我一直在想什么时候可以复用path condition的求解结果，似乎只有equation \ref{big-equation}中$X$相同时可以复用，这样来看相同的函数参数配合相同function summary就可以做到复用. 
+\end{annotation}
 
 \end{document}
