@@ -202,6 +202,7 @@ $$
 则称上述手法为\redt{path-sensitive sparse analysis}. 若将control flow path $p=(s_0,s_1,\cdots,s_n)$推广至interprocedural control flow path，则称其为\redt{interprocedural sparse analysis}. 
 \end{definition}
 
+
 %LOL
 \begin{annotation}
 \rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition.  我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，对此我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path和对应的path condition. 
@@ -231,7 +232,7 @@ X \wedge \bigwedge \phi_\pi
 \rm 给定program $P$的program graph dependence graph $G=(V,E)$和一个包含data dependence paths的集合$\prod$. 定义$\prod$对应的slice为$G^{\prod} = (V^{\prod},E^{\prod})$，构造$G^{\prod}$的规则依次如下:
 $$
 \begin{array}{cl}
-\infer{(u,v_1) \in X_d~\text{where}~u \in \{v_3,v_4\}-\{v_i\}}{\pi \in \prod & (v_i,v_1=\text{ite}(v_2,v_3,v_4)) \sqsubset \pi & v_i \in \{v_3,v_4\}} & (1) \\[0.5em]
+\infer{(u,v_1) \in X_d~\text{where}~u \in \{v_3,v_4\}-\{v_i\}}{\pi \in \prod & (v_i,v_1=ite(v_2,v_3,v_4)) \sqsubset \pi & v_i \in \{v_3,v_4\}} & (1) \\[0.5em]
 \infer{v_1,v_2,\cdots,v_n \in V^{\prod}, {\color{red}(\_,v_i)},(v_1,v_2),\cdots,(v_{n-1},v_n) \in E_c^{\prod}}{\pi \in \prod & v \in \pi & (v,v_1),(v_1,v_2),\cdots,(v_{n-1},v_n) \in E_c} & (2) \\[0.5em]
 \infer{u \in V^{\prod}, (u,v) \in E_d^{\prod}}{v \in V^{\prod} & (u,v) \in E_d^{\prod}-X_d} & (3)
 \end{array}
@@ -264,7 +265,7 @@ $$
 \begin{array}{rl}
 \llbracket v_1 = v_2 \rrbracket_d &= v_1 \equiv v_2 \\
 \llbracket v_1 = v_2 \oplus v_3 \rrbracket_d &= v_1 \equiv v_2 \oplus v_3\\
-\llbracket v_1 = \text{ite}(v_2,v_3,v_4) \rrbracket_d & = \left\{\begin{aligned}
+\llbracket v_1 = ite(v_2,v_3,v_4) \rrbracket_d & = \left\{\begin{aligned}
 &v_2 \equiv true \wedge v_1 \equiv v_3 && \text{if}~(v_3,v_1) \in E_d^{\prod} \wedge (v_4,v_1) \notin E_d^{\prod} \\
 &v_1 \equiv false \wedge v_1 \equiv v_4 && \text{if}~(v_3,v_1) \notin E_d^{\prod} \wedge (v_4,v_1) \in E_d^{\prod} \\
 &v_1 \equiv \text{ite}(v_2,v_3,v_4) && \text{otherwise} \\
@@ -272,7 +273,6 @@ $$
 \llbracket \textbf{return}~v_1 = v_2 \rrbracket_d &= v_1 \equiv v_2 \\
 \llbracket \textbf{if}~(v_1 = v_2)\{S_1;\} \rrbracket_d &= v_1 \equiv v_2 \\
 \llbracket \text{other} \rrbracket_d &= true
-
 \end{array}
 $$
 \end{definition}
@@ -299,7 +299,7 @@ $$
 	\item 在前述path-sensitive sparse analysis里面我们不需要再计算$\phi_\pi$，同时function summary里面也不需要在存储path condition(data dependence path依然存在).  
 	\item 由于slice依然是一张dependence graph，我们可以通过一些分析来这张图来做优化，间接地优化了其对应的path condition.  
 \end{itemize}
-同时文中也提到了一些关于sat-slover的优化，但是细节不可见，这里也就到此为止了. 应用上述技术构造analyser Fusion对比Pinpoint从evaluation里面来看效果还是比较明显的.
+同时文中也提到了一些关于sat-solver的优化，但是细节不可见，这里也就到此为止了. 应用上述技术构造analyser Fusion对比Pinpoint从evaluation里面来看效果还是比较明显的.
 \end{annotation}
 
 
