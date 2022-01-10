@@ -62,7 +62,7 @@
 \newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
 
 \begin{document}
-\title{Sparse Analysis and Path Conditions Transform}
+\title{Sparse Analysis and Path Conditions Transformation}
 \author{枫聆}
 \maketitle
 \tableofcontents
@@ -99,7 +99,7 @@ $$
 \end{definition}
 
 \begin{annotation}\label{the-def-of-control-dependence}
-\rm 控制依赖更加严格的定义应该是这样: 给定CFG上两个不同的结点$x,y$，若满足下述条件: 
+\rm 控制依赖更加严格的定义应该是这样: 给定CFG上两个不同的结点$x,y$，若满足下述条件\cite{cdg}: 
 \begin{itemize}
 	\item 在CFG存在一条从$x$到$y$的nonempty path $p$满足对任意的$v \in p$且$v \neq x$都有$y~\text{!pdom}~v$，其中$\text{pdom}$表示postdominate;  
 	\item $y~\text{!pdom}~x$. 
@@ -128,14 +128,14 @@ $$
 \begin{definition}
 \rm 给定simple langugae上的program $P$，构造$E_d$规则如下
 $$
-\begin{aligned}
-&\infer{(v_2,v_1) \in E_d}{&v_1=v_2&} \\[0.5em]
-&\infer{(v_2,v_1),(v_3,v_1) \in  E_d}{v_1 = v_2 \oplus v_3} \\[0.5em] 
-&\infer{(v_2,v_1),(v_3,v_1),(v_4,v_1) \in E_d}{&v_1 = ite(v_2,v_3,v_4)&} \\[0.5em] 
-&\infer{(v_2,u_1),(w_2,w_1),(w_1,v_1) \in E_d}{&v_1 = f(u_1,\cdots) = \{u_1 = \abracket{u_1}; \cdots; \textbf{return}~w_1=w_2\} &} \\[0.5em] 
-&\infer{(v_2,v_1) \in E_d}{&v_1 = f(v_2,\cdots) ~~ f(u_1,\cdots) = \emptyset&} & \text{\bluet{不是很理解}}\\[0.5em] 
-&\infer{(v_2,v_1)\in E_d}{&\textbf{if}~(v_1=v_2)\{\cdots\}&}
-\end{aligned}
+\begin{array}{cl}
+\infer{(v_2,v_1) \in E_d}{&v_1=v_2&} \\[0.5em]
+\infer{(v_2,v_1),(v_3,v_1) \in  E_d}{v_1 = v_2 \oplus v_3} \\[0.5em] 
+\infer{(v_2,v_1),(v_3,v_1),(v_4,v_1) \in E_d}{&v_1 = ite(v_2,v_3,v_4)&} \\[0.5em] 
+\infer{(v_2,u_1),(w_2,w_1),(w_1,v_1) \in E_d}{&v_1 = f(u_1,\cdots) = \{u_1 = \abracket{u_1}; \cdots; \textbf{return}~w_1=w_2\} &} \\[0.5em] 
+\infer{(v_2,v_1) \in E_d}{&v_1 = f(v_2,\cdots) ~~ f(u_1,\cdots) = \emptyset&} & \text{\bluet{不是很理解}}\\[0.5em] 
+\infer{(v_2,v_1)\in E_d}{&\textbf{if}~(v_1=v_2)\{\cdots\}&}
+\end{array}
 $$
 即对$P$上每一个statements都应用上述规则. 根据算法\ref{control-dependence}构造$E_c$.
 \end{definition}
@@ -178,30 +178,36 @@ $$
 &\text{and}~\forall (s_i,s_j) \in E_d,  \text{in}_{s_j} = \text{in}_{s_j} \cup \text{out}_{s_i}. 
 \end{aligned}
 $$
-上述分析手法称为\redt{sparse analysis}. 同时设对任意$(s_i,s_j)\in E_d$的data dependence edge condition为$\phi(s_i,s_j)$，$\text{in}_{s_i},\text{out}_{s_i} \subseteq D \times \mathcal{P}$，其中$\mathcal{P}$为data dependence paths. 初始化$\text{in}_{s_0} = (I,\prod_{s_0} = \{\abracket{(s_0),\phi_{(s_0)}}\})$和$\text{in}_{s_i} = (\emptyset,\prod_{s_i}=\{\}),i=1,2,\cdots,n$，其中$\phi(s_i,s_i)$表示对应statement或者变量本身的约束条件. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
+上述分析手法称为\redt{sparse analysis}. 同时设对任意$(s_i,s_j)\in E_d$的data dependence edge condition为$\phi(s_i,s_j)$，两个data values表示$\text{in}_{s_i},\text{out}_{s_i} \subseteq D \times \mathcal{P}$，其中$\mathcal{P}$为data dependence paths. 初始化$\text{in}_{s_0} = (I,\prod_{s_0} = \{\})$和$\text{in}_{s_i} = (\emptyset,\prod_{s_i}=\{\}),i=1,2,\cdots,n$，其中$\phi(s_i,s_i)$表示对应statement或者变量本身的约束条件. 那么$\forall s_i \in p, i=0,1,\cdots,n,$
 $$
+%\bigcup\limits_{p_{i} = (\pi_i,\phi_{\pi_i}) \in \prod_{s_i}}\left\{\abracket{\pi_i,\phi_{\pi_i} \wedge \phi_{(i,i)}}\right\}
 \begin{aligned}
-&\text{out}_{s_i} = \left(\text{tr}_{s_i}(X_{s_i}),\bigcup\limits_{p_{i} = (\pi_i,\phi_{\pi_i}) \in \prod_{s_i}}\left\{\abracket{\pi_i,\phi_{\pi_i} \wedge \phi_{(i,i)}}\right\}\right) \\
+&\text{out}_{s_i} = \left(\text{tr}_{s_i}\left(X_{\text{in}_{s_i}}\right),{\prod}_{s_i}\right) \\
 &\text{and}~\forall (s_i,s_j) \in E_d,  \text{in}_{s_j} = \text{in}_{s_j} \cup_p \text{out}_{s_i}.
 \end{aligned}
 $$
 其中$\cup_p$定义为
 $$
-\text{in}_{s_j} \cup_p \text{out}_{s_i} =   
-\left(\begin{aligned}
-&X_{\text{in}_{s_j}} \cup X_{\text{out}_{s_i}}, && \prod_{s_j} \\
-&&&\cup \bigcup_{p_i = \abracket{\pi_i=(\cdots,s_i),\phi_{\pi_i}} \in \prod_{s_i}} \left\{\abracket{\pi_i'=(\cdots,s_i,s_j), \phi_{\pi_{i}'}}\right\}
-\end{aligned}\right).
+\text{in}_{s_j} \cup_p \text{out}_{s_i} =  \left( X_{\text{in}_{s_j}} \cup X_{\text{out}_{s_i}},  {\prod}_{s_j} \cup {\prod}_{s_i \to s_j}\right), 
+$$
+其中${\prod}_{s_i \to s_j}$为
+$$
+\left\{
+\begin{aligned}
+& \bigcup_{p_i = \abracket{\pi_i=(\cdots,s_i),\phi_{\pi_i}} \in \prod_{s_i}} \left\{\abracket{\pi_i'=(\cdots,s_i,s_j), \phi_{\pi_{i}} \wedge \phi_{(s_i,s_j)}}\right\} & \text{if}~{\prod}_{s_j} \neq \emptyset \\
+&\{(s_i,s_j), \phi_{(s_i,s_j)}\} &  \text{if}~{\prod}_{s_j} = \emptyset
+\end{aligned}
+\right.
 $$
 则称上述手法为\redt{path-sensitive sparse analysis}. 若将control flow path $p=(s_0,s_1,\cdots,s_n)$推广至interprocedural control flow path，则称其为\redt{interprocedural sparse analysis}. 
 \end{definition}
 
 %LOL
 \begin{annotation}
-\rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition. 这里我引入了特殊的约束条件$\phi(s_i,s_j)$是有必要的，因为statement能否正确的执行也需要一定的约束条件, i.e. $z = x/y \Rightarrow y \neq 0$. 我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，对此我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path和对应的path condition. 
+\rm sparse analysis相比于"dense" analysis或者conventional analysis，它并不是沿着原本的control flow来传递data facts，而是沿着data dependence来传递的. 自然地就形成了data dependence path，我们若要考虑path-sensitive就直接考虑data dependence path condition.  我这里关于path-sensitive sparse analysis的定义和原文有一点区别，原文一个$\prod$保存了所有data dependence paths，似乎最后把它们聚合到一起来作为整体data dependence path conditions，对此我有点不理解. 因此我把关系每个结点的data dependence paths分开放置，这样后面对某一点进一步分析的时候，我们可以只关注相关的data dependece path和对应的path condition. 
 
 
-更一步思考我们用sparse analysis思考问题思路应该是这样的: 首先忽略路径条件按照data dependence某个特定的程序点是否有我们感兴趣的值，在这过程中踏出了一些data dependence paths，然后我们考虑这些路径上的路径条件是否satisfiable. 更形式化一点就是我们有一些初始化data values $X$，然后我们经过data dependence的分析它可以到达我们期望的程序，然后其传播路径对应的path condition为$\bigwedge \phi_\pi$，因此我们需要求解
+更一步思考我们用sparse analysis想问题思路应该是这样的: 首先忽略路径条件按照data dependence某个特定的程序点是否有我们感兴趣的值，在这过程中踏出了一些data dependence paths，然后我们考虑这些路径上的路径条件是否satisfiable. 更形式化一点就是我们有一些初始化data values $X$，然后我们经过data dependence的分析它可以到达我们期望的程序，然后其传播路径对应的path condition为$\bigwedge \phi_\pi$，因此我们需要求解
 \begin{equation}\label{big-equation}
 X \wedge \bigwedge \phi_\pi
 \end{equation}
@@ -215,7 +221,95 @@ X \wedge \bigwedge \phi_\pi
 \begin{annotation}
 \rm 我们通过cache得到的function summary来对interprocedural sensitive sparse analysis做出优化，即在call已经被分析过的function的时候我们可以直接用对应的function summary，按照对应的$\pi$来寻找已经构造的path condition，而不需要重新构造path condition(可能已经简化过path condition).
 
-我一直在想什么时候可以复用path condition的求解结果，似乎只有equation \ref{big-equation}中$X$相同时可以复用，这样来看相同的函数参数配合相同function summary就可以做到复用. 
+我一直在想什么时候可以直接复用path condition的求解结果，似乎只有equation \ref{big-equation}中$X$相同时可以复用，对应相同的函数参数配合相同function summary就可以做到复用. 
 \end{annotation}
+
+\newpage
+\section{Path Conditions Transformation}
+
+\begin{definition}
+\rm 给定program $P$的program graph dependence graph $G=(V,E)$和一个包含data dependence paths的集合$\prod$. 定义$\prod$对应的slice为$G^{\prod} = (V^{\prod},E^{\prod})$，构造$G^{\prod}$的规则依次如下:
+$$
+\begin{array}{cl}
+\infer{(u,v_1) \in X_d~\text{where}~u \in \{v_3,v_4\}-\{v_i\}}{\pi \in \prod & (v_i,v_1=\text{ite}(v_2,v_3,v_4)) \sqsubset \pi & v_i \in \{v_3,v_4\}} & (1) \\[0.5em]
+\infer{v_1,v_2,\cdots,v_n \in V^{\prod}, {\color{red}(\_,v_i)},(v_1,v_2),\cdots,(v_{n-1},v_n) \in E_c^{\prod}}{\pi \in \prod & v \in \pi & (v,v_1),(v_1,v_2),\cdots,(v_{n-1},v_n) \in E_c} & (2) \\[0.5em]
+\infer{u \in V^{\prod}, (u,v) \in E_d^{\prod}}{v \in V^{\prod} & (u,v) \in E_d^{\prod}-X_d} & (3)
+\end{array}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm slice构造的说明
+\begin{itemize}
+	\item 整体思路是先构造$\pi$的control dependence graph，在根据control dependence graph上结点把对应的data dependence放进去. 
+	\item 规则(1) 用于prune掉$\pi$上$\text{ite}$中未选择的branch  dependence，避免后续在构造control dependence graph上结点的data dependence时出现逻辑错误.
+	\item 规则(2) 标红的control dependence表示将其扔掉$E_c$里面的时候，不包括$v$. 整个slice只专注$\pi$上path condition，而$v_1$到$v$依然存在$\phi(v_1,v)$，因此我们可以用一个仅表位置结点$\_$来特殊表示$v$.  
+\end{itemize}
+\end{annotation}
+
+
+\begin{definition}
+\rm 给定program $P$的program graph dependence graph $G=(V,E)$和一个包含data dependence paths的集合$\prod$及$\prod$对应的slice $G^{\prod} = (V^{\prod},E^{\prod})$. 定义$G^{\prod}$表示的path condition为$\phi_{\prod}$，其构造规则如下
+$$
+\begin{array}{cl}
+\infer{\phi_{\prod}=true}{&&&&} & (4)\\[0.5em]
+\infer{\phi_{\prod}=\phi_{\prod}\wedge \llbracket v \rrbracket_c \equiv true}{(u,v) \in E_c^{\prod}} & (5) \\[0.5em] 
+\infer{\phi_{\prod}=\phi_{\prod}\wedge \llbracket v \rrbracket_d}{v \in V^{\prod}} & (6) \\[0.5em]
+\infer{\phi_{\prod}=\phi_{\prod}\wedge v_1 \equiv v_2}{(v_1,v_2) \in E_d^{\prod} & f(v_1,\cdots) = \{v_2 = \abracket{v_2}; \cdots;\}} & (7) \\[0.5em]
+\infer{\phi_{\prod}=\phi_{\prod}\wedge v_1 \equiv v_2}{(v_1,v_2) \in E_d^{\prod} & v_2 = f(\cdots) & f(\cdots) = \{\cdots;\textbf{return}~v_1\}}  & (8) \\[0.5em]
+\end{array}
+$$
+其中$\llbracket v \rrbracket_c$表示$v$对应的$\textbf{if}$ statements中condition，$\llbracket v \rrbracket_d$定义如下
+$$
+\begin{array}{rl}
+\llbracket v_1 = v_2 \rrbracket_d &= v_1 \equiv v_2 \\
+\llbracket v_1 = v_2 \oplus v_3 \rrbracket_d &= v_1 \equiv v_2 \oplus v_3\\
+\llbracket v_1 = \text{ite}(v_2,v_3,v_4) \rrbracket_d & = \left\{\begin{aligned}
+&v_2 \equiv true \wedge v_1 \equiv v_3 && \text{if}~(v_3,v_1) \in E_d^{\prod} \wedge (v_4,v_1) \notin E_d^{\prod} \\
+&v_1 \equiv false \wedge v_1 \equiv v_4 && \text{if}~(v_3,v_1) \notin E_d^{\prod} \wedge (v_4,v_1) \in E_d^{\prod} \\
+&v_1 \equiv \text{ite}(v_2,v_3,v_4) && \text{otherwise} \\
+\end{aligned}\right. \\
+\llbracket \textbf{return}~v_1 = v_2 \rrbracket_d &= v_1 \equiv v_2 \\
+\llbracket \textbf{if}~(v_1 = v_2)\{S_1;\} \rrbracket_d &= v_1 \equiv v_2 \\
+\llbracket \text{other} \rrbracket_d &= true
+
+\end{array}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm 
+$$
+\bigwedge_{\pi \in {\prod}} \phi_\pi= \phi_{\prod}.
+$$
+\end{theorem}
+
+\begin{annotation}
+\rm 显然这里的slice上是没有$\pi$上的结点的，如果$\pi$上有一个statement是$z = x/y$，那么$y$要求不能等于$0$. 因此statement能否正确的执行也需要一定的约束条件，这个不算在path condition里面吗？ 感觉也可以在dataflow分析的transfer function可以处理这个问题，但是$y$的取值确实影响到了运行路径. 
+\end{annotation}
+
+\begin{annotation}
+\rm 本文其实在着重解决两个问题:
+\begin{itemize}
+	\item 海量path conditions的cache问题;
+	\item context-sensitive interprocedural anlysis下函数调用造成的path conditions clone问题;
+\end{itemize}
+有了前面基于program dependence graph到path condition的转换规则，可以实现path conditions动态生成，但这有什么用呢？ 我的理解是
+\begin{itemize}
+	\item 在前述path-sensitive sparse analysis里面我们不需要再计算$\phi_\pi$，同时function summary里面也不需要在存储path condition(data dependence path依然存在).  
+	\item 由于slice依然是一张dependence graph，我们可以通过一些分析来这张图来做优化，间接地优化了其对应的path condition.  
+\end{itemize}
+同时文中也提到了一些关于sat-slover的优化，但是细节不可见，这里也就到此为止了. 应用上述技术构造analyser Fusion对比Pinpoint从evaluation里面来看效果还是比较明显的.
+\end{annotation}
+
+
+\begin{thebibliography}{9}
+\bibitem{fusion}
+Qingkai Shi, Peisen Yao, Rongxin Wu, Charles Zhang. Path-Sensitive Sparse Analysis without Path Conditions.
+
+\bibitem{cdg}
+Ron Cytron, Jeanne Ferrante, Barry K. Rosen, Mark N. Wegman, and F. Kenneth Zadeck. Efficiently Computing Static Single Assignment Form and the Control Dependence Graph
+\end{thebibliography}
+
 
 \end{document}
