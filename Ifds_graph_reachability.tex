@@ -86,7 +86,7 @@
 \end{definition}
 
 \begin{annotation}
-\rm \redt{怎么理解"separable"?} separable对应的是逻辑位运算过程不同位bit是不会相互影响的，也就是两个不同dataflow facts是不会相互依赖的. 例如在reaching-definitions中两个不同变量定义的作用域是不会相互影响的.   
+\rm \redt{怎么理解"separable"?} separable对应的是逻辑位运算过程不同位bit是不会相互影响的，可以将dataflow facts划分成独立的space，每个space里面的dataflow facts在propogate的过程是封闭的. 例如在reaching-definitions中两个不同变量定义的作用域是不会相互影响的.   
 \end{annotation}
 
 
