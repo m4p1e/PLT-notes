@@ -1,0 +1,100 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+
+\begin{document}
+\title{Program Expression Graph}
+\author{枫聆}
+\maketitle
+\tableofcontents
+
+
+\begin{annotation}
+给定两个左值表达式$e_1$和$e_2$，那么$M(e_1,e_2)$和$V(e_1,e_2)$之间有什么差别? 我真的弄不懂，我甚至不懂它定义language是什么意思....
+\end{annotation}
+
+\subsection{Definition}
+
+\begin{example}
+\rm 给定代码片段
+$$
+\begin{aligned}
+&e_1 = \&x \\
+&e_2 = \&x \\
+&e_3 = e_2 \\
+\end{aligned}
+$$
+推出$V(e_3,e_1)$.
+
+我们直接得到的$A$边和$D$边有
+$$
+\begin{aligned}
+&A(\&x,e_1) \\
+&A(\&x,e_2) \\
+&A(e_2,e_2) \\
+&D(\&x, x) \\
+&D(e_1, *e_2) \\
+&D(e_2, *e_2) \\
+&D(e_3, *e_3) \\
+\end{aligned}
+$$
+
+\end{example}
+
+\end{document}

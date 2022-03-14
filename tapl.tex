@@ -72,6 +72,9 @@
 \newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
 \newcommand{\term}[1]{\ensuremath\mathsf{#1}}
 
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+
 \begin{document}
 \title{Types and Programming Language}
 \author{枫聆}
@@ -343,6 +346,19 @@ f^{\circ n} = \underbrace{f \circ f \circ \cdots \circ f}_{n~\text{times}}.
 $$
 \end{definition}
 
+
+\begin{annotation}
+\rm Define $\circ$ itself as a function:
+$$
+\circ = \lam{f}{\lam{g}{\lam{x}{f(g(x))}}}. 
+$$
+So function composition can be denoted by
+$$
+\circ~f~g  = \lam{x}{f(g(x))}.
+$$
+\bluet{非常漂亮}. 
+\end{annotation}
+
 \begin{annotation}
 \rm {\color{red} 多参数柯里化} Motivation is that the lambda-calculus provides no built-in support for multi-argument functions. The solution here is higher-order functions. 
 
@@ -408,7 +424,7 @@ $$
 \end{aligned}
 $$
 
-{\color{blue} pair变成了一个函数，它可以接收一个tru或者fal来返回第一个值或者第二个值，fst和snd就是pair的一个applying过程，比较有趣}.
+{\color{blue} pair变成了一个函数，它可以接收一个tru或者fls来返回第一个值或者第二个值，fst和snd就是pair的一个applying过程，比较有趣}.
 \end{annotation}
 
 \begin{annotation}
@@ -436,7 +452,7 @@ $$
 \end{tabular}
 \end{center}
 
-{\color{blue} 参考皮亚诺公理，对应这里我们构建自然数需要有一个$0$和一个后继函数$f$. 你会注意到$c_0$和\textbf{fls}是同一个term，常规编程语言里面很多情况下$0$和false是一个东西}.
+{\color{blue} 参考皮亚诺公理，对应这里我们构建自然数需要有一个$0$和一个后继函数$f$. 你会注意到$c_0$和\textbf{fls}是同一个term，常规编程语言里面很多情况下$0$和false确实也是一个东西}.
 \end{annotation}
 
 
