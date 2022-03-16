@@ -55,6 +55,7 @@
 \newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
 \newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
 
+\newcommand{\termtype}[2]{\ensuremath{#1:#2}}
 \newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
 \newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
 \newcommand{\mat}[0]{\matgen{\alpha}{\tau}} %ua.t
@@ -71,6 +72,13 @@
 
 \newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
 \newcommand{\term}[1]{\ensuremath\mathsf{#1}}
+\newcommand{\true}{\term{true}}
+\newcommand{\false}{\term{false}}
+\newcommand{\ifelse}[3]{\ensuremath{\textbf{if}~#1~\textbf{then}~#2~\textbf{else}~#3}}
+\newcommand{\succt}[1]{\term{succ}~#1}
+\newcommand{\pred}[1]{\term{pred}~#1}
+\newcommand{\iszero}[1]{\term{iszero}~#1}
+
 
 \newcommand{\redt}[1]{\textcolor{red}{#1}}
 \newcommand{\bluet}[1]{\textcolor{blue}{#1}}
@@ -517,5 +525,29 @@ $$
 \end{aligned}
 $$
 \end{annotation}
+
+\newpage
+\section{Simple Types}
+
+\begin{definition}
+\rm The typing relation for arithmetic expressions, written
+$$
+\termtype{\term{t}}{\text{T}}
+$$
+is defined by a set of inference rules assigning types to terms.
+$$
+\begin{array}{c}
+\termtype{\true}{\text{bool}} \\
+\termtype{\false}{\text{bool}} \\[0.5em]
+\infer{\termtype{\ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3}}{\text{T}}}{\termtype{\term{t}_1}{\text{bool}} & \termtype{\term{t}_2}{\text{T}} & \termtype{\term{t}_3}{\text{T}}} \\
+\termtype{\term{0}}{\text{nat}} \\[0.5em]
+\infer{\termtype{\succt{\term{t}_1}}{\text{nat}}} {\termtype{\term{t}_1}{\text{nat}}}\\[0.5em]
+\infer{\termtype{\pred{\term{t}_1}}{\text{nat}}} {\termtype{\term{t}_1}{\text{nat}}}\\[0.5em]
+\infer{\termtype{\iszero{\term{t}_1}}{\text{bool}}} {\termtype{\term{t}_1}{\text{nat}}}\\
+\end{array} 
+$$
+\end{definition}
+
+
 
 \end{document}
