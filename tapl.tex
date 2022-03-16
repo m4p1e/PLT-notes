@@ -167,6 +167,24 @@ proof (1). $\{\text{true},\text{false},0\} \in S$这是显然的. 若$t_1 \in S$
 proof (2). 考虑任意follow Definition2.1的集合$S'$，我们需要证明$S \subseteq S'$.  我们考虑任意的$S_i \subseteq S$，若都有$S_i \subseteq S'$，那么则有$S \subseteq S'$. 这里我们使用induction来证明，首先有$S_0(T) \subseteq S'$，假设$S_n(T) \subseteq S'$. 那么考虑$S_{n+1}(T) = S(S_n(T))$，任意的$t_1，t_2, t_3 \in S_n(T)$，那么Definition2.1(1)(2)(3)得到的结果都是属于$S'$，因此$S_{n+1}(T) \subseteq S'$.  
 \end{proof}
 
+\begin{definition}
+\rm The \redt{depth} of a term $t$ is the smallest $i$ such that $t \in S_i(X)$. 
+\end{definition}
+
+\begin{definition}
+\rm If a term $\term{t} \in S_i(X)$, then all of its \redt{immediate subterms} must be in $S_{i-1}(X)$. 
+\end{definition}
+
+
+\begin{theorem}
+\rm \redt{Structural induction} Suppose $P$ is a predicate on terms. If for each term $\term{s}$, given $P(\term{r})$ for all immediate subterms $\term{r}$ of $\term{s}$, we can show $P(\term{s})$, then $P(\term{s})$ holds for all $\term{s}$. 
+\end{theorem}
+
+
+
+\subsection{Induction}
+
+
 \newpage
 \subsection{Semantic Styles}
 
@@ -547,6 +565,15 @@ $$
 \end{array} 
 $$
 \end{definition}
+
+\begin{definition}
+\rm A term $\term{t}$ is \redt{typbale or well typed} if there is some $\text{T}$ such that $\termtype{\term{t}}{\text{T}}$. If $\term{t}$ is typable, then its type is unique(\redt{uniquness of types}). 
+\end{definition}
+
+%why
+\begin{annotation}
+\rm 这里很重要是理解如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}. 
+\end{annotation}
 
 
 
