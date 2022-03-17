@@ -11,6 +11,16 @@
 
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
 
 \usepackage[textwidth=18cm]{geometry} % 设置页宽=18
 
@@ -77,6 +87,7 @@
 \newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
 \newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
 
+\newcommand{\singletype}[1]{\text{#1}}
 \newcommand{\termtype}[2]{\ensuremath{#1:#2}}
 \newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
 \newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
@@ -590,13 +601,18 @@ $$
 $$
 \end{definition}
 
+
+\begin{annotation}
+\rm 注意分支terms中的$\text{T}$表示任意的types即可能包括$\text{bool}$和$\text{nat}$. 理论上两个分支的表达式的type可以不一样，但是这一样以来似乎就不是well-typed, 处理这样的情况需要等到我们学习更多的类型的type之后才能来重新构造. 
+\end{annotation}
+
 \begin{definition}
 \rm A term $\term{t}$ is \redt{typbale or well typed} if there is some $\text{T}$ such that $\termtype{\term{t}}{\text{T}}$. If $\term{t}$ is typable, then its type is unique(\redt{uniquness of types}). 
 \end{definition}
 
 %why
 \begin{annotation}
-\rm 这里很重要是理解如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}. 
+\rm 这里很重要是理解如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}，其中反向寻找合适的inference rule的方法是利用了所谓inversion lemma. 
 \end{annotation}
 
 \begin{theorem}
@@ -640,15 +656,114 @@ $\term{t} = \iszero{\term{t}_1}~~~ \term{t}_1 = \text{nat}.$
 \rm \redt{preservation} If a well-typed term takes a step of  evaluation, then the resulting term is also well typed. 
 \end{theorem}
 
+\begin{definition}
+\rm
+$$
+\text{safty} = \text{progress} + \text{preservation}.
+$$
+\end{definition}
+
+
+\newpage
+\subsection{Simply Typed Lambda-Calculus}
+
+\begin{definition}
+\rm Define the type of $\lambda$-abstraction(function) as follow
+$$
+\termtype{\lam{\term{x}}{\term{t}}}{\singletype{T}_1 \to \singletype{T}_2}
+$$
+it classifies function that expect agrument of type $\singletype{T}_1$ and return result of type $\singletype{T}_2$. The type constructor $\to$ is right-associative. 
+\end{definition}
+
+
+\begin{annotation}
+\rm 试想我们应该怎样给一个function赋予一个type呢？ 首先要解决是这个function需要的argument的type是怎样的？ 这里自然地会想到两种方法，一是直接给argument打上annotation，而是从function body推出argument的type. 第一种type annotation通常称为explicitly typed, 第二种则称其为implicitly typed. 我们如果采用第一种方法，假设给定$\termtype{\term{x}}{\singletype{T}_1}$，同时将$\term{t}_2$中的所有出现的$\term{x}$的type都表示为$\singletype{T}_1$得到$\termtype{\term{x}}{\singletype{T}_2}$，那么显然此时就可以构造出一个abstraction和它对应type为$\termtype{\lam{\term{x}}{\term{t}_2}}{\singletype{T}_1 \to \singletype{T}_2}$，形式化的描述这个type rule即为
+$$
+\infer{\termtype{\lam{\term{x}}{\term{t}_2}}{\singletype{T}_1 \to \singletype{T}_2}}{\termtype{\term{x}}{\singletype{T}_1} \vdash \termtype{\term{t}_2}{\singletype{T}_2}}
+$$
+其中$\vdash$可以解释为under，即obtain some type relations under some assumptions. 特别地$\vdash \termtype{\term{x}}{\singletype{T}}$表示assumptions是空的. 
+\end{annotation}
+
+\begin{definition}
+\rm A typing context $\Gamma$ is a sequence of distinct variables and thier types as follow
+$$
+\Gamma = \termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\termtype{\term{x}_3}{\singletype{T}_3},\cdots
+$$
+\end{definition}
+
+\begin{annotation}
+\rm \redt{rule of typing abstractions} 如果考虑上nested abstraction的情况，我们扩展一下前面提到的type inference
+$$
+\infer{\Gamma \vdash \termtype{\lam{\term{x}}{\term{t}_2}}{\singletype{T}_1 \to \singletype{T}_2}}{\termtype{\Gamma,\term{x}}{\singletype{T}_1} \vdash \termtype{\term{t}_2}{\singletype{T}_2}}.
+$$
+这里我们规定$\term{t}_2$中除$\term{x}$外的free variables均在$\Gamma$中.
+\end{annotation}
+
+\begin{annotation}
+\rm \redt{rule of variables} A variable has whatever type we are currently assuming it to have,
+$$
+\infer{\Gamma \vdash \termtype{\term{x}}{\singletype{T}}}{\termtype{\term{x}}{\singletype{T}} \in \Gamma}
+$$
+\end{annotation}
+
+
+\begin{annotation}
+\rm \redt{rule of applications}
+$$
+\infer{\Gamma \vdash \termtype{\term{t}_1 \term{t}_2}{\singletype{T}_2}}{\Gamma	\vdash \termtype{\term{t}_1}{\singletype{T}_1 \to \singletype{T}_2 } & \Gamma \vdash \termtype{\term{t}_2}{\singletype{T}_2} }
+$$
+\end{annotation}
+
+\begin{annotation}
+\rm \redt{rule of conditionals}  
+$$
+\infer{\Gamma \vdash \termtype{\ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3}}{\singletype{T}}}{\Gamma \vdash \termtype{\term{t}_1}{\singletype{bool}} & \Gamma \vdash \termtype{\term{t}_2}{\singletype{T}} & \Gamma \vdash \termtype{\term{t}_3}{\singletype{T}}}
+$$
+\end{annotation}
+
+
+\begin{annotation}
+\rm We often use $\lambda_{\to}$ to refer to the simply typed lambda-calculus. 
+\end{annotation}
+
+\begin{theorem}
+\rm \redt{uniquness of types} In a given typing context $\Gamma$, a term $\term{t}$ has at most one type. That is, if a term is typable, then it's type is unique. 
+\end{theorem}
+
+\begin{lemma}
+\rm \redt{weakening} If $\Gamma \vdash \termtype{\term{t}}{\singletype{T}}$ and $x \notin \text{dom}(\Gamma)$, then $\Gamma, \termtype{\term{x}}{\singletype{S}} \vdash \termtype{\term{t}}{\singletype{T}}$.
+\end{lemma}
+
+\begin{theorem}
+\rm \redt{progress} Suppose $\term{t}$ is a closed, well-typed term(that is $\vdash \termtype{\term{t}}{\singletype{T}}$). Then either $\term{t}$ is a value or else there is some $\term{t}'$ with $\term{t} \to \term{t}'$. 
+\end{theorem}
+
 \begin{proof}
+proved by structural induction.
+\end{proof}
+
+\begin{theorem}
+\rm \redt{preservation under substitution} If $\Gamma,  \termtype{\term{x}}{\singletype{S}} \vdash \termtype{\term{t}}{\singletype{T}}$ and $\Gamma \to \termtype{\term{s}}{\singletype{S}}$, then $\Gamma \vdash \termtype{[\term{x} \to \term{s}]\term{t}}{\singletype{T}}$.
+\end{theorem}
+
+\begin{proof}
+\rm 写几步structural induction找找感觉，因为substitution是第一次出现. 这里我们依然对$\term{t}$来进行归纳.  
+
 \begin{case}
-sssss
+若$\term{t} = \term{v}$，其中$\term{v}$为一个variable. 
+
+分两种情况: (1 若$\term{v} = \term{x}$，则$[\term{x} \to \term{s}]\term{t} = [\term{x} \to \term{s}]\term{v} = \term{s}$，而根据命题条件$\Gamma \to \termtype{\term{s}}{\singletype{S}}$，显然成立. (2 其他情况下，则有$[\term{x} \to \term{s}]\term{v} = \term{v}$，即这个substitution没起作用，显然还是成立. 
 \end{case}
 \end{proof}
 
-
-
-
+\begin{annotation}
+\rm 对于一个language有两种特别的刻画形式：
+\begin{itemize}
+	\item \redt{Curry-style} 首先我们定义terms，再定义关于它们的求值规则(evaluation rules)，来确定terms的语义. 然后我们在定义一个类型系统来拒绝一些不符合我们预期的terms. 因此语义刻画是在类型之前.
+	\item \redt{Church-style} 首先我们定义terms，再确定一些well-typed的terms. 然后只给well-typed terms制定求值规则，来确定其语义. 因此类型先于语义. 
+\end{itemize}
+它们两个最大的不同就是我们在谈论一个term的语义的时候到底是否关系它此时是well-typed. Curry-style通常适用于刻画implicitly typed system，而Curry-style通常用于刻画explicitly typed system. 
+\end{annotation}
 
 
 \end{document}
