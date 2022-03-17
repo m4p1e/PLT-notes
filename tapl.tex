@@ -4,12 +4,13 @@
 \usepackage{tikz}
 \usetikzlibrary{cd}
 
-\usepackage{amsthm}
+%冲突nthm
+%\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amssymb}
 
 %\usepackage{unicode-math}
-
+%\usepackage{chngcntr}
 
 \usepackage[textwidth=18cm]{geometry} % 设置页宽=18
 
@@ -30,7 +31,12 @@
 \titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
 %\setcounter{secnumdepth}{1} %section 序号
 
-\newtheorem{theorem}{Theorem}[section]
+
+\usepackage[thmmarks, thref, amsmath]{ntheorem}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{proposition}[theorem]{Proposition}
@@ -39,6 +45,22 @@
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{exercise}{Exercise}[section]
 \newtheorem{annotation}[theorem]{Annotation}
+
+\theoremheaderfont{\itshape}
+\theorembodyfont{\upshape}
+\newtheorem{case}{Case}
+
+\theoremstyle{nonumberplain}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\upshape}
+\theoremsymbol{\scshape Q. E. D.}
+\theorempostwork{\setcounter{case}{0}}
+\newtheorem{proof}{Proof}
+
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{case}{Case}
+%\newtheorem{subcase}{Case}
+%\numberwithin{subcase}{case}
 
 \newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
 \newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
@@ -547,6 +569,8 @@ $$
 \newpage
 \section{Simple Types}
 
+\subsection{Typed Arithmetic Expressions}
+
 \begin{definition}
 \rm The typing relation for arithmetic expressions, written
 $$
@@ -574,6 +598,56 @@ $$
 \begin{annotation}
 \rm 这里很重要是理解如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}. 
 \end{annotation}
+
+\begin{theorem}
+\rm \redt{progress} A well-typed term is not stuck.
+\end{theorem}
+
+\begin{proof}
+\rm 我们利用structural induction来证一下progress. 首先基本的terms $\false, \true, 0, \succt{\term{nv}}$都是明显的values, 其中$\term{nv}$表示一个numeric value. 
+
+\begin{case}
+$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}.$
+
+由归纳假设当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$\term{t}_2$或者$\term{t}_3$.  另外当$\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t} \to \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$. 
+\end{case} 
+
+\begin{case}
+$\term{t} = \succt{\term{t}_1} ~~~ \term{t}_1 = \text{nat}.$
+
+由归纳假设当$\term{t}_1 = \text{nv}$时，那么$\succt{\term{t}_1}$还是一个numeric value. 另外当$\term{t}_1 \to \term{t}_1'$，我们也可以得到$\term{t} \to \succt{\term{t}_1'}$
+\end{case} 
+
+\begin{case}
+$\term{t} = \pred{\term{t}_1}~~~ \term{t}_1 = \text{nat}.$
+
+同上.
+\end{case} 
+
+\begin{case}
+$\term{t} = \iszero{\term{t}_1}~~~ \term{t}_1 = \text{nat}.$
+
+同上.
+\end{case}
+\end{proof}
+
+\begin{annotation}
+\rm 换言之progress保证是任意一个well-typed term，它可能是一个value或者可以进一步根据evaluation rules推导. 
+\end{annotation}
+
+
+\begin{theorem}
+\rm \redt{preservation} If a well-typed term takes a step of  evaluation, then the resulting term is also well typed. 
+\end{theorem}
+
+\begin{proof}
+\begin{case}
+sssss
+\end{case}
+\end{proof}
+
+
+
 
 
 
