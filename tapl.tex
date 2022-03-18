@@ -111,6 +111,7 @@
 \newcommand{\succt}[1]{\term{succ}~#1}
 \newcommand{\pred}[1]{\term{pred}~#1}
 \newcommand{\iszero}[1]{\term{iszero}~#1}
+\newcommand{\seq}[2]{#1;#2}
 
 
 \newcommand{\redt}[1]{\textcolor{red}{#1}}
@@ -774,7 +775,38 @@ proved by structural induction.
 \end{definition}
 
 \begin{definition}
-\rm \redt{unit type} a constant with unique type, the type can be only from this constant.  
+\rm \redt{unit type} a constant $\term{unit}$ with unique type $\singletype{Unit}$, the type can be only from this constant.  
 \end{definition}
+
+\begin{definition}
+\rm The \redt{sequencing} notation $\seq{\term{t}_1}{\term{t}_2}$ has the effect of evaluating $\term{t}_1$，throwing away its trivial result($\term{unit}$), and going on to evaluate $\term{t}_2$. 
+\end{definition}
+
+\begin{annotation}
+\rm \redt{ first way to formalize sequencing} Add $\seq{\term{t}_1}{\term{t}_2}$ as a new alternative in the syntax of terms, and then add two evaluation rules
+$$
+\begin{array}{cc}
+\infer{\seq{\term{t}_1}{\term{t}_2}}{\term{t}_1 \to \term{t}_1'} \\
+\seq{\term{unit}}{\term{t}_2} \to \term{t}_2 
+\end{array}
+$$
+and a typing rule
+$$
+\infer{\Gamma \vdash \termtype{\seq{\term{t}_1}{\term{t}_2}}{\singletype{T}_2}}{\Gamma \vdash \termtype{\term{t}_1}{\singletype{Unit}} & \Gamma \vdash \termtype{\term{t}_2}{\singletype{T}_2}}
+$$
+\end{annotation}
+
+\begin{annotation}
+\rm \redt{ second way to formalize sequencing} Regard $\seq{\term{t}_1}{\term{t}_2}$ as an abbreviation for the term $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$.
+\end{annotation}
+
+\begin{theorem}
+\rm Suppose $\lambda^E$ for the simply typed lambda-calcuclus with the first way of sequencing formalization and $\lambda^I$ for the simply typed lambda-calculus with $\singletype{Unit}$. Let $\func{e}{\lambda^E}{\lambda^I}$ be the elaboration function that translates from the $\lambda^E$ to $\lambda^I$ by replacing every occurrence of $\seq{\term{t}_1}{\term{t}_2}$ with $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$. 
+\end{theorem}
+
+\begin{annotation}
+\rm 这个sequencing
+\end{annotation}
+
 
 \end{document}
