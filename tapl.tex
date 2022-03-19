@@ -78,6 +78,10 @@
 \newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
 \newcommand\SET[2]{\Set{#1}{\text{#2}}} %
 
+\newcommand{\inl}[1]{\ensuremath{\text{inl}~#1}}
+\newcommand{\inr}[1]{\ensuremath{\text{inr}~#1}}
+\newcommand{\fold}[1]{\ensuremath{{fold}_{#1}}}
+\newcommand{\unfold}[1]{\ensuremath{{unfold}_{#1}}}
 \newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp #2}} %lamx.y
 \newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
 \newcommand{\projone}[1]{\ensuremath{#1.1}}
@@ -812,6 +816,71 @@ $$
 \rm 这个sequencing目前来说和我们现代下的语言里面对应的概念还是有差别的. 根据第一个formalization，也就是我们定义里面提到的它是依赖$\term{t}_1$的evaluation result, 我们对一个sequencing能做的就是首先对$\term{t}_1$进行evaluating，只有它的result是一个$\singletype{Uint}$的时候，我们可以尝试丢掉它转而去处理$\term{t}_2$.  显然当$\term{t}_1$不是trivial的时候，$\term{t_2}$永远得不到的evaluating，就停在了某个$\seq{\term{t}_1'}{\term{t}_2}$. 这是就目前而言的我们可以做的事情. 
 
 再关于第二个formalization而言，它是一个很特别的带注解的application，会有一个自然地疑问，如果此时$\term{t}_1$的evaluation result不是$\singletype{Unit}$，怎么让这个application make sense? 是卡在这里，还是怎样？ 显然在前述的corresponding theorem下我更倾向于是卡在这里.
+\end{annotation}
+
+\newpage
+\subsection{Known Features}
+
+\begin{definition}
+\rm \redt{Ascription} is simple feature for ascribe a particular type to a given term. We write "$\term{t}~\text{as}~\singletype{T}$" for the "the term $\term{t}$, to which we ascribe the type $\singletype{T}$".  
+\end{definition}
+
+\begin{definition}
+\rm \redt{Let Bindings} $\term{let}~ \term{x}=\term{t}_1~\term{in}~\text{t}_2$, 它们的evaluation rule和type rule根lambda abstraction是差不多的，即
+$$
+\term{let}~ \term{x}=\term{t}_1~\term{in}~\text{t}_2 = (\lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2})~\term{t}_1. 
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm \redt{Pair} Pairing, written $\term{t}=\left<\term{t}_1,\term{t}_2\right>$ and projection, written $\projone{\term{t}}$ for the $\term{t}_1$ and $\projtwo{\term{t}}$ for the $\term{t}_2$. One new type constructor, $\singletype{T}_1 \times \singletype{T}_2$, called the product of $\singletype{T}_1$ and $\singletype{T}_2$.
+\end{definition}
+
+\begin{definition}
+\rm \redt{Tuple} is general formalization of Pair.
+\end{definition}
+
+\begin{definition}
+\rm \redt{Record} Recording, written $\{\term{l}_1 =\term{t}_1, \cdots, \term{l}_n =\term{t}_n\}$ and thier type $\{\termtype{\term{l}_1}{\singletype{T}_1}, \cdots, \termtype{\term{l}_1}{\singletype{T}_1}\}$. 
+\end{definition}
+
+\begin{definition}
+\rm \redt{pattern matching} Given two kinds of patterns, varible pattern $\term{x}$ and record pattern $\{\term{l}_1 =\term{p}_1, \cdots, \term{l}_n =\term{p}_n\}$(so it can be nested). Plus a match function $\func{match}{P \times V}{\text{Subs} \cup \text{Fail}}$, where $P$ are patterns, $V$ is values, $\text{Subs}$ are substitutions and $\text{Fail}$ means matching fails. The matching rules as follow
+$$
+\begin{array}{cc}
+match(\term{x}, \term{v}) = [\term{x} \to \term{v}] & M-Var \\
+\infer{match(\{\term{l}_1 =\term{p}_1, \cdots, \term{p}_n =\term{p}_n\}, \{\term{l}_1 =\term{v}_1, \cdots, \term{l}_n =\term{v}_n\}) = \sigma_1 \circ \cdots \circ \sigma_n}{\text{for each}~i~match(\term{p}_i,\term{v}_i)= \sigma_i}& M-Rcd
+\end{array}
+$$
+The computation rule for pattern matching generalizes the let-binding as follow
+$$
+\term{let}~ \term{p}=\term{v}~\term{in}~\text{t} = match(\term{p},\term{v})~\term{t}_1. 
+$$
+\end{definition}
+
+\begin{definition}
+\rm A \redt{sum type} is written as $\singletype{T}_1 + \singletype{T}_2$, there are two terms can be desribed this type: 
+\begin{enumerate}
+	\item Assume $\termtype{\term{t}_1}{\singletype{T}_1}$, then $\termtype{\redt{\inl{\term{t}_1}}}{\singletype{T}_1 + \singletype{T}_2}$;
+	\item Assume $\termtype{\term{t}_2}{\singletype{T}_2}$, then $\termtype{\redt{\inr{\term{t}_2}}}{\singletype{T}_1 + \singletype{T}_2}$.
+\end{enumerate}
+There is a $\term{case}$ construct that allows us to distinguish whether a given value comes from the left or right branch of a sum,
+$$
+\caseof{a}{\projone{x_1}}{\projone{x_2}}
+$$
+\end{definition}
+
+
+\begin{annotation}
+\rm 这里存在一个类型唯一性的问题，如果$\termtype{\term{t}_1}{\singletype{T}_1}$，那么对于任意$\singletype{T}_2$，都有$\termtype{\inl{\term{t}_1}}{\singletype{T}_1 + \singletype{T}_2}$, 显然$\inl{\term{t}_1}$的类型就不唯一了. 
+
+这里有三种解决办法
+\begin{enumerate}
+	\item 留着$\singletype{T}_2$符号化，typechecker继续往后推，如果遇到某个地方$\singletype{T}_2$可能在当前context需要成为某个特定的值;
+	\item 给所有可能的$\singletype{T}_2$一个unified representation;
+	\item 要求显式地给$\singletype{T}_2$一个type annotation;
+\end{enumerate}
 \end{annotation}
 
 
