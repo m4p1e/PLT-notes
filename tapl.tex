@@ -878,10 +878,14 @@ $$
 这里有三种解决办法
 \begin{enumerate}
 	\item 留着$\singletype{T}_2$符号化，typechecker继续往后推，如果遇到某个地方$\singletype{T}_2$可能在当前context需要成为某个特定的值;
-	\item 给所有可能的$\singletype{T}_2$一个unified representation;
-	\item 要求显式地给$\singletype{T}_2$一个type annotation;
+	\item 给所有可能的$\singletype{T}_2$一个unified representation(ocaml);
+	\item 在语法上要求显式地给$\singletype{T}_2$一个type annotation. 
 \end{enumerate}
 \end{annotation}
+
+\begin{definition}
+\rm variant is generalization of sum. 
+\end{definition}
 
 
 \end{document}
