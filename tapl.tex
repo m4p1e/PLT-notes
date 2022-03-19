@@ -786,7 +786,7 @@ proved by structural induction.
 \rm \redt{ first way to formalize sequencing} Add $\seq{\term{t}_1}{\term{t}_2}$ as a new alternative in the syntax of terms, and then add two evaluation rules
 $$
 \begin{array}{cc}
-\infer{\seq{\term{t}_1}{\term{t}_2}}{\term{t}_1 \to \term{t}_1'} \\
+\infer{\seq{\term{t}_1}{\term{t}_2} \to \seq{\term{t}_1'}{\term{t}_2}}{\term{t}_1 \to \term{t}_1'} \\
 \seq{\term{unit}}{\term{t}_2} \to \term{t}_2 
 \end{array}
 $$
@@ -797,15 +797,21 @@ $$
 \end{annotation}
 
 \begin{annotation}
-\rm \redt{ second way to formalize sequencing} Regard $\seq{\term{t}_1}{\term{t}_2}$ as an abbreviation for the term $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$.
+\rm \redt{ second way to formalize sequencing} Regard $\seq{\term{t}_1}{\term{t}_2}$ as an abbreviation for the term $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$, where $\term{x} \in \text{FV}(\term{t_2})$. 
 \end{annotation}
 
 \begin{theorem}
-\rm Suppose $\lambda^E$ for the simply typed lambda-calcuclus with the first way of sequencing formalization and $\lambda^I$ for the simply typed lambda-calculus with $\singletype{Unit}$. Let $\func{e}{\lambda^E}{\lambda^I}$ be the elaboration function that translates from the $\lambda^E$ to $\lambda^I$ by replacing every occurrence of $\seq{\term{t}_1}{\term{t}_2}$ with $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$. 
+\rm Suppose $\lambda^E$ for the simply typed lambda-calcuclus with the first way of sequencing formalization and $\lambda^I$ for the simply typed lambda-calculus with $\singletype{Unit}$. Let $\func{e}{\lambda^E}{\lambda^I}$ be the elaboration function that translates from the $\lambda^E$ to $\lambda^I$ by replacing every occurrence of $\seq{\term{t}_1}{\term{t}_2}$ with $(\lam{\termtype{\term{x}}{\singletype{Unit}}}{\term{t}_2})~\term{t}_1$, where $\term{x} \in \text{FV}(\term{t_2})$. Then for each $\term{t}$ of $\lambda^E$, we have 
+\begin{enumerate}
+	\item $\term{t} \to_E \term{t}'$ iff $e(\term{t}) \to _I e(\term{t}')$;
+	\item $\Gamma \vdash_E \termtype{\term{t}}{\singletype{T}}$ iff $\Gamma \vdash_I \termtype{e(\term{t})}{\singletype{T}}$. 
+\end{enumerate} 
 \end{theorem}
 
 \begin{annotation}
-\rm 这个sequencing
+\rm 这个sequencing目前来说和我们现代下的语言里面对应的概念还是有差别的. 根据第一个formalization，也就是我们定义里面提到的它是依赖$\term{t}_1$的evaluation result, 我们对一个sequencing能做的就是首先对$\term{t}_1$进行evaluating，只有它的result是一个$\singletype{Uint}$的时候，我们可以尝试丢掉它转而去处理$\term{t}_2$.  显然当$\term{t}_1$不是trivial的时候，$\term{t_2}$永远得不到的evaluating，就停在了某个$\seq{\term{t}_1'}{\term{t}_2}$. 这是就目前而言的我们可以做的事情. 
+
+再关于第二个formalization而言，它是一个很特别的带注解的application，会有一个自然地疑问，如果此时$\term{t}_1$的evaluation result不是$\singletype{Unit}$，怎么让这个application make sense? 是卡在这里，还是怎样？ 显然在前述的corresponding theorem下我更倾向于是卡在这里.
 \end{annotation}
 
 
