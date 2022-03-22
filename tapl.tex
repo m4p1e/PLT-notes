@@ -884,8 +884,23 @@ $$
 \end{annotation}
 
 \begin{definition}
-\rm variant is generalization of sum. 
+\rm \redt{variant} is generalization of sum $\left<\term{l}_1:\term{T}_1, \term{l}_2:\term{T}_2\right>$. 
 \end{definition}
 
+\begin{definition}
+\rm \redt{option} $\left<\term{none}:\term{Unit}, \term{some}:\term{Nat} \right>$. 
+\end{definition}
+
+\begin{definition}
+\rm \redt{enumeration} An enumerated type (or enumeration) is a variant type in which the field type associated with each label is $\term{Unit}$.
+\end{definition}
+
+\begin{definition}
+\rm \redt{single-field variant} $\left<\term{l}:\term{T} \right>$.
+\end{definition}
+
+\begin{annotation}
+\rm single-field variant的主要作用由一个type构造出多个不一样的types但是仅仅是用附加的labels来刻画的，这就可以描述具有相同type但是不同实体的对象. 
+\end{annotation}
 
 \end{document}
