@@ -736,6 +736,14 @@ $$
 \end{theorem}
 
 \begin{lemma}
+\rm \redt{canonical forms}
+\begin{enumerate}
+	\item If $\term{v}$ is a value of type $\singletype{bool}$, then $\term{v}$ is either $\term{true}$ or $\term{false}$;
+	\item If $\term{v}$ is a value of type $\singletype{T}_1\to\singletype{T}_2$, then $\term{v} = \lam{\termtype{\term{x}}{\singletype{T}_1}}{\term{t}_2}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}
 \rm \redt{weakening} If $\Gamma \vdash \termtype{\term{t}}{\singletype{T}}$ and $x \notin \text{dom}(\Gamma)$, then $\Gamma, \termtype{\term{x}}{\singletype{S}} \vdash \termtype{\term{t}}{\singletype{T}}$.
 \end{lemma}
 
@@ -900,7 +908,78 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm single-field variant的主要作用由一个type构造出多个不一样的types但是仅仅是用附加的labels来刻画的，这就可以描述具有相同type但是不同实体的对象. 
+\rm single-field variant的主要作用由一个type构造出多个不一样的types但是仅仅是用附加的labels来刻画的，这就可以描述具有相同type但是不同对象.
 \end{annotation}
 
+\newpage
+\subsection{Normalization}
+
+\begin{theorem}
+\rm If $\vdash \term{t}:\singletype{T}$, then $\term{t} \to^* \term{v}$, where $\term{v}$ is a value, or abbreviate $\term{t}\Downarrow$. 
+\end{theorem}
+
+\begin{remark}
+\rm 上述normalization theorem使用是simply typed lambda calculus. 
+\end{remark}
+
+\begin{annotation}
+\rm Normalization又名termination，它在描述一个well-typed的term通过evaluation最终可以变成一个value. 这里values包括false，true和lambda abstraction. 自然地，这里考虑使用induction hypothesis来证明，但是处理不了application。对于application我们需要使用reduction rule
+$$
+\infer{\Gamma \vdash \termtype{\term{t}_1 \term{t}_2}{\singletype{T}_2}}{\Gamma	\vdash \termtype{\term{t}_1}{\singletype{T}_1 \to \singletype{T}_2 } & \Gamma \vdash \termtype{\term{t}_2}{\singletype{T}_2} }
+$$
+根据假设$\term{t}_1, \term{t}_2$都是normalizable，那么设$\term{t}_1 \to^* \term{t}_1' = \lam{\termtype{x}{\singletype{T}_1}}{\term{t}_3}$(这里用了一下value of function type的canonical form)和$\term{t}_2 \to^* \term{t}_2'$，其中$\term{t}_2'$是normalized. 再来一个$\beta$ reduction，则有
+$$
+\term{t}_1' \term{t}_2' = [x \to \term{t}_2']\term{t}_3'
+$$
+这里有两个问题: (1)$\term{t}_3$是一个怎样的形式？(2) substitution干了什么？  
+\end{annotation}
+
+
+\begin{definition}
+\rm Suppose the logical predicate for strong normalization as follow
+$$
+\begin{array}{ll}
+\text{SN}_{\singletype{A}}(\term{t}) \iff \vdash \termtype{\term{t}}{\singletype{A}} ~\wedge~ \term{t}\Downarrow,\\
+\text{SN}_{\singletype{T}_1 \to \singletype{T}_2}(\term{t}) \iff \vdash \termtype{\term{t}}{\singletype{T}_1 \to \singletype{T}_2} ~\wedge~ \term{t}\Downarrow \wedge ~\forall \term{t_1}.~\text{SN}_{\singletype{T}_1}(\term{t}_1) \Rightarrow \text{SN}_{\singletype{T}_2}(\term{t}~\term{t}_1)
+\end{array} 
+$$
+where $\singletype{A}$ is base type. 
+\end{definition}
+
+\begin{annotation}
+\rm 观察上述definition是加强了application的conclude(?)，可以通过这两个logical predicate来继续我们的证明，接下来的证明分两步走:
+\begin{enumerate}
+	\item 首先证明$\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$，即所有closed well-typed的term都复合上述定义的logical predicate,
+	\item 然后$\text{SN}_\singletype{T}(\term{t}) \Rightarrow \term{t}\Downarrow$.
+\end{enumerate}
+这种手法就是所谓\redt{logical relation}证明方法. 
+\end{annotation}
+
+\begin{lemma}
+\rm $\text{SN}_\singletype{T}(\term{t}) \Rightarrow \term{t}\Downarrow$
+\end{lemma}
+
+\begin{proof}
+根据定义这是显然的. 
+\end{proof}
+
+\begin{annotation}
+\rm 证明过程的第一步又会拆成两步:
+\begin{enumerate}
+	\item $\text{SN}_\singletype{T}(\term{t})$将会在$\term{t}$的evalution过程中保持,
+	\item 再做根据type derivations的induction，但是这个过程存在一个难点存在于abstraction $ \lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}$上，其中$\term{t}_2$不一定是closed的，因为$\term{x}$可能是在$\term{t}_2$作为free variable出现的，而你此时无法说明$\text{SN}_{\singletype{T}_2}(\term{t}_2)$. 
+\end{enumerate}
+\end{annotation}
+
+\begin{lemma}
+\rm If $\termtype{\term{t}}{\singletype{T}}$ and $\term{t} \to \term{t}'$, then $\text{SN}_{\singletype{T}}(\term{t}) \iff \text{SN}_{\singletype{T}}(\term{t}')$ 
+\end{lemma}
+
+\begin{proof}
+首先由$\term{t} \to \term{t}'$，那么有$\term{t}\Downarrow \iff \term{t}'\Downarrow$. 再分情况，若$\singletype{T} = \singletype{A}$，证明就结束了; 若$\singletype{T} = \singletype{T}_1 \to \singletype{T}_2$，由$\term{t}~\term{t}_1 \to \term{t'}~\term{t}_1 $，则$\term{t}~\term{t}_1\Downarrow \iff \term{t}'~\term{t}_1\Downarrow$，又回到第一种情况，证明了function type额外需要的条件. 
+\end{proof}
+
+\begin{lemma}
+
+\end{lemma}
 \end{document}
