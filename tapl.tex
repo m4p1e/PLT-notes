@@ -967,7 +967,7 @@ where $\singletype{A}$ is base type.
 \rm 证明过程的第一步又会拆成两步:
 \begin{enumerate}
 	\item $\text{SN}_\singletype{T}(\term{t})$将会在$\term{t}$的evalution过程中保持,
-	\item 再做根据type derivations的induction，但是这个过程存在一个难点在于证明abstraction $\term{t}=\lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}$满足$\text{SN}_{\singletype{T}_1 \to \singletype{T}_2}(\term{t})$，那么就要满足Definition\ref{logical predicate of SN}里面的applying，即满足$\text{SN}_{\singletype{T}_2}(\term{t}~\term{t_1})$，但是其中$\term{t}_2$不一定是closed的，因为$\term{x}$可能是在$\term{t}_2$作为free variable出现的，我们需要考虑这里所有可能的substitutions $[\term{x} \to \term{t}_1]$. 因此需要证明一个substitution保持的normalization属性. 
+	\item 再做根据type derivations的induction，但是这个过程存在一个难点在于证明abstraction $\term{t}=\lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}$满足$\text{SN}_{\singletype{T}_1 \to \singletype{T}_2}(\term{t})$，那么就要满足Definition\ref{logical predicate of SN}里面的applying，即满足$\text{SN}_{\singletype{T}_2}(\term{t}~\term{t_1})$，但是其中$\term{t}_2$不一定是closed的，因为$\term{x}$可能是在$\term{t}_2$作为free variable出现的，我们需要考虑这里所有可能的substitutions $[\term{x} \to \term{t}_1]\term{t_2}$，可以看做abstraction inference rule的所有实例化. 因此需要证明一个substitution保持的normalization属性. 
 \end{enumerate}
 \end{annotation}
 
@@ -980,6 +980,10 @@ where $\singletype{A}$ is base type.
 \end{proof}
 
 \begin{lemma}
-
+\rm If $\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n} \vdash \termtype{\term{t}}{\singletype{T}}$ and $\term{v}_1,\term{v}_1,\cdots,\term{v}_1$ are closed values of $\singletype{T}_1,\singletype{T}_2,\cdots,\singletype{T}_n$ with $\text{SN}_{\singletype{T}_i}(\term{v}_i)$, then $\text{SN}_{\singletype{T}}([\term{x}_2 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t})$
 \end{lemma}
+
+\begin{proof}
+\rm 
+\end{proof}
 \end{document}
