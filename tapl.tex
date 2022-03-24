@@ -955,7 +955,7 @@ where $\singletype{A}$ is base type.
 这种手法就是所谓\redt{logical relation}证明方法. 
 \end{annotation}
 
-\begin{lemma}
+\begin{lemma}\label{logical predicate well-defined}
 \rm $\text{SN}_\singletype{T}(\term{t}) \Rightarrow \term{t}\Downarrow$
 \end{lemma}
 
@@ -971,7 +971,7 @@ where $\singletype{A}$ is base type.
 \end{enumerate}
 \end{annotation}
 
-\begin{lemma}
+\begin{lemma}\label{logical predicate preserved under evalutaion}
 \rm If $\termtype{\term{t}}{\singletype{T}}$ and $\term{t} \to \term{t}'$, then $\text{SN}_{\singletype{T}}(\term{t}) \iff \text{SN}_{\singletype{T}}(\term{t}')$ 
 \end{lemma}
 
@@ -979,11 +979,70 @@ where $\singletype{A}$ is base type.
 首先由$\term{t} \to \term{t}'$，那么有$\term{t}\Downarrow \iff \term{t}'\Downarrow$. 再分情况，若$\singletype{T} = \singletype{A}$，证明就结束了; 若$\singletype{T} = \singletype{T}_1 \to \singletype{T}_2$，由$\term{t}~\term{t}_1 \to \term{t'}~\term{t}_1 $，则$\term{t}~\term{t}_1\Downarrow \iff \term{t}'~\term{t}_1\Downarrow$，又回到第一种情况，证明了function type额外需要的条件. 
 \end{proof}
 
-\begin{lemma}
-\rm If $\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n} \vdash \termtype{\term{t}}{\singletype{T}}$ and $\term{v}_1,\term{v}_1,\cdots,\term{v}_1$ are closed values of $\singletype{T}_1,\singletype{T}_2,\cdots,\singletype{T}_n$ with $\text{SN}_{\singletype{T}_i}(\term{v}_i)$, then $\text{SN}_{\singletype{T}}([\term{x}_2 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t})$
+\begin{lemma}\label{logical predicate under substitution}
+\rm If $\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n} \vdash \termtype{\term{t}}{\singletype{T}}$ and $\term{v}_1,\term{v}_1,\cdots,\term{v}_1$ are closed values of $\singletype{T}_1,\singletype{T}_2,\cdots,\singletype{T}_n$ with $\text{SN}_{\singletype{T}_i}(\term{v}_i)$, then $\text{SN}_{\singletype{T}}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t})$
 \end{lemma}
 
 \begin{proof}
-\rm 
+\rm structural induction as follow
+\begin{case}
+$$
+\begin{array}{ll}
+\term{t} = \term{x}_i \\
+\singletype{T} = \singletype{T}_i
+\end{array}
+$$ 
+
+显然成立.
+\end{case}
+
+\begin{case}
+$$
+\begin{array}{ll}
+\term{t} = \lam{\termtype{\term{x}}{\singletype{S}_1}}{\term{s}_2} \\
+\singletype{T}=\singletype{S}_1 \to \singletype{S}_2 \\
+\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n},\termtype{\term{x}}{\singletype{S}_1} \vdash \termtype{\term{s}_2}{\singletype{S}_2}
+\end{array}
+$$
+
+显然此时$[\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}$已经一个value了，因为$\term{t}$本来就是一个abstraction.	此时需要额外证明applying过程，即给定任意的$\text{SN}_{\singletype{S}_1}(\term{s})$，有$\text{SN}_{\singletype{S}_2}(([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t})~\term{s})$. 根据Lemma\ref{logical predicate well-defined}，我们有$\term{s} \to^* \term{v}$，根据归纳假设即有
+$$
+\text{SN}_{\singletype{S}_2}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n,\term{x} \to \term{v} ]\term{t})
+$$
+而
+$$
+([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t})~\term{s} \to^* [\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n,\term{x} \to \term{v} ]\term{t},
+$$
+再用一下Lemma\ref{logical predicate preserved under evalutaion}, 即可得到我们想要的. 
+\end{case}
+
+\begin{case}
+$$
+\begin{array}{ll}
+\term{t} = \term{t}_1\term{t}_2 \\
+\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n} \vdash \termtype{\term{t}_1}{\singletype{T}_{11} \to \singletype{T}_{12}} \\
+\termtype{\term{x}_1}{\singletype{T}_1},\termtype{\term{x}_2}{\singletype{T}_2},\cdots,\termtype{\term{x}_n}{\singletype{T}_n} \vdash \termtype{\term{t}_2}{\singletype{T}_{11}} \\
+\singletype{T} = \singletype{T}_{12}
+\end{array}
+$$
+
+根据归纳假设有$\text{SN}_{\singletype{T}_{11} \to \singletype{T}_{12}}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}_1)$和$\text{SN}_{\singletype{T}_{11}}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}_2)$. 再根据$\text{SN}_{\singletype{T}_{11} \to \singletype{T}_{12}}$的definition，有
+$$
+\begin{array}{ll}
+\text{SN}_{\singletype{T}_{12}}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}_1 [\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}_2) \\
+= \text{SN}_{\singletype{T}_{12}}([\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]\term{t}_1~\term{t}_2) 
+\end{array}
+$$
+得证.
+\end{case}
 \end{proof}
+
+\begin{corollary}
+\rm $\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$.
+\end{corollary}
+
+\begin{proof}
+\rm 直接从Lemma\ref{logical predicate under substitution}可得.
+\end{proof}
+
 \end{document}
