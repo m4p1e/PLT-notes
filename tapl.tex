@@ -971,7 +971,7 @@ where $\singletype{A}$ is base type.
 	$$
 	\infer{\vdash \lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}}{\termtype{\term{x}}{\singletype{T}_1} \vdash \termtype{\term{t}_2}{\singletype{T}_2}}
 	$$
-	问题来了这个inference rule的premise不是empty，因此我们没法继续用induction hypothesis来继续我们的证明，这里需要做一个推广(generalization)，即$\Gamma	\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$. 
+	问题来了这个inference rule的premise不是empty，因此我们没法继续用induction hypothesis来继续我们的证明，这里需要做一个推广(generalization)，即$\Gamma	\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$.  这里又会出现一个问题是的$\term{t}$可能不是closed了，因此我们考虑将这个open term $\term{t}$实例化，即从$\Gamma$出发构造substitution给$\term{t}$，让它重新变成closed.
 \end{enumerate}
 \end{annotation}
 
