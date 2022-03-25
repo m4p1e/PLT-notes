@@ -8,6 +8,7 @@
 %\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{mathtools} %for :=
 
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
@@ -90,7 +91,7 @@
 \newcommand{\Lam}[2]{\ensuremath{\Lambda #1\ldotp #2}}
 \newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
 \newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
-
+\newcommand{\assign}[2]{\ensuremath{#1~\coloneqq~#2}}
 \newcommand{\singletype}[1]{\text{#1}}
 \newcommand{\termtype}[2]{\ensuremath{#1:#2}}
 \newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
@@ -971,7 +972,7 @@ where $\singletype{A}$ is base type.
 	$$
 	\infer{\vdash \lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}}{\termtype{\term{x}}{\singletype{T}_1} \vdash \termtype{\term{t}_2}{\singletype{T}_2}}
 	$$
-	问题来了这个inference rule的premise不是empty，因此我们没法继续用induction hypothesis来继续我们的证明，这里需要做一个推广(generalization)，即$\Gamma	\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$.  这里又会出现一个问题是的$\term{t}$可能不是closed了，因此我们考虑将这个open term $\term{t}$实例化，即从$\Gamma$出发构造substitution给$\term{t}$，让它重新变成closed.
+	问题来了这个inference rule的premise不是empty，因此我们没法继续用induction hypothesis来继续我们的证明，这里需要做一个推广(generalization)，即$\Gamma	\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$.  这里又会出现一个问题是的$\term{t}$可能不是closed了，因此我们考虑将这个open term $\term{t}$实例化，即从$\Gamma$出发构造substitution给$\term{t}$，让它重新变成closed. 最终我们所需要的结论只是generalization的一个推论.
 \end{enumerate}
 \end{annotation}
 
@@ -1053,4 +1054,41 @@ $$
 \rm 直接从Lemma\ref{logical predicate under substitution}可得.
 \end{proof}
 
+\newpage
+\subsection{References}
+
+\begin{definition}
+\rm  A \redt{reference value} represents mutable cell. The basic operations on reference are allocation, dereferencing and assignment. 
+
+To allocate a reference, we use the $\term{ref}$ operator, providing an initial value for the new cell
+$$
+\term{r} = \text{ref}~5 \Rightarrow \termtype{\term{r}}{\singletype{Ref}~\singletype{Nat}}. 
+$$
+
+To read a current value of this cell, we use the derefencing operator $!$
+$$
+!\term{r} \Rightarrow \termtype{5}{\singletype{Nat}}. 
+$$ 
+
+
+To change the value stored in the cell, we use the assignment operator
+$$
+\assign{\term{r}}{7} \Rightarrow \termtype{\term{unit}}{\singletype{Unit}}. 
+$$
+The result of the assignment is the trivial $\term{unit}$ value. 
+\end{definition}
+
+\begin{definition}
+\rm The  references $\term{r}$ and $\term{s}$ are said to be aliases for the same cell. 
+\end{definition}
+
+\begin{annotation}
+\rm 在这里就正式的引入了sequencing带来的side effort，关于references的evaluation rule非常冗余，这里简单记关键几点
+\begin{enumerate}
+	\item references会被抽象成location indexs $l \in \mathcal{L}$. states会被抽象成store function $\mathcal{L} \to \text{values}$;
+	\item 之前的所有evaluation都会附近上额外store function;
+	\item dereference一个不存在的location，会给出一个错误. dereference operator要等到它右边的term被evaluated成一个value才能起作用，同理allocation也一样;
+	\item 对于assignment，需要先evaluate左边term. 
+\end{enumerate}
+\end{annotation}
 \end{document}
