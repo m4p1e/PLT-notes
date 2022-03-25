@@ -967,7 +967,11 @@ where $\singletype{A}$ is base type.
 \rm 证明过程的第一步又会拆成两步:
 \begin{enumerate}
 	\item $\text{SN}_\singletype{T}(\term{t})$将会在$\term{t}$的evalution过程中保持,
-	\item 再做根据type derivations的induction，但是这个过程存在一个难点在于证明abstraction $\term{t}=\lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}$满足$\text{SN}_{\singletype{T}_1 \to \singletype{T}_2}(\term{t})$，那么就要满足Definition\ref{logical predicate of SN}里面的applying，即满足$\text{SN}_{\singletype{T}_2}(\term{t}~\term{t_1})$，但是其中$\term{t}_2$不一定是closed的，因为$\term{x}$可能是在$\term{t}_2$作为free variable出现的，我们需要考虑这里所有可能的substitutions $[\term{x} \to \term{t}_1]\term{t_2}$，可以看做abstraction inference rule的所有实例化. 因此需要证明一个substitution保持的normalization属性. 
+	\item 再做根据type derivations的induction，但是于证明abstraction $\term{t}=\lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}$满足$\text{SN}_{\singletype{T}_1 \to \singletype{T}_2}(\term{t})$的时候，注意这里我们$\text{SN}$对closed term而言的，因此我们这里根据derivation是
+	$$
+	\infer{\vdash \lam{\termtype{x}{\singletype{T}_1}}{\term{t}_2}}{\termtype{\term{x}}{\singletype{T}_1} \vdash \termtype{\term{t}_2}{\singletype{T}_2}}
+	$$
+	问题来了这个inference rule的premise不是empty，因此我们没法继续用induction hypothesis来继续我们的证明，这里需要做一个推广(generalization)，即$\Gamma	\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$. 
 \end{enumerate}
 \end{annotation}
 
@@ -1036,6 +1040,10 @@ $$
 得证.
 \end{case}
 \end{proof}
+
+\begin{annotation}
+\rm Lemma\ref{logical predicate under substitution}中substitution可以记为$\gamma = [\term{x}_1 \to \term{v}_1,\term{x}_2 \to \term{v}_2,\cdots,\term{x}_n \to \term{v}_n]$，也可以直接记为$\gamma \models \Gamma$，理解为"the substitution $\gamma$ statisfies the type environment, $\Gamma$". 
+\end{annotation}
 
 \begin{corollary}
 \rm $\vdash \termtype{\term{t}}{\singletype{T}} \Rightarrow \text{SN}_\singletype{T}(\term{t})$.
