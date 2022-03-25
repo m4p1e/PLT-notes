@@ -1091,4 +1091,25 @@ The result of the assignment is the trivial $\term{unit}$ value.
 	\item 对于assignment，需要先evaluate左边term. 
 \end{enumerate}
 \end{annotation}
+
+\begin{definition}
+\rm A \redt{store typing} is a finite function mapping locations to types, we use the metavariable $\Sigma$ to range over such functions. the typing rule for locations can be formalized as follow
+$$
+\infer{\Gamma | \Sigma \vdash \termtype{l}{\singletype{Ref}~\singletype{T}}}{\Sigma({l})=\singletype{T}_1}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm 这里为什么要构造一个这样的function呢？ 因为自然地考虑$l$应该依赖于store function $\mu$，这里对应的typing rule为
+$$
+\infer{\Gamma | \mu \vdash \termtype{l}{\singletype{Ref}~\singletype{T}}}{\Gamma | \mu \vdash \termtype{\mu({l})}{\singletype{T}_1}}
+$$
+如果$\mu$的结构是这样
+$$
+(l_1 \to \lam{\termtype{x}{\singletype{Nat}}}{!l_2~\term{x}},
+~l_2 \to \lam{\termtype{x}{\singletype{Nat}}}{!l_1~\term{x}})
+$$
+这里cyclic reduction的过程,$l_1$的type依赖$l_2$的type依赖，反过来$l_2$的type依赖$l_1$的type. 那么如何构造这样一个$\mathcal{L} \to T$的map呢？ 它是可以在evaluation过程动态构造的，因为只要一个location第一次被allocated，那么在它对应的位置上一定有一个具体的type，同样无论后面经历assignment多少次都只有唯一的type对应，这样我们可以一开始就将$\Sigma$置为一个empty map，再根据对应的操作是维护它就可以了. 
+\end{annotation}
+
 \end{document}
