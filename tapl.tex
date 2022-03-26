@@ -588,18 +588,25 @@ $$
 \subsection{Normal Forms}
 
 \begin{annotation}
-\rm 前面提到的neural term-"neutral terms contain a free variable at a 'head' position"，它的意思就是指形如$\term{x}~\term{y}$，其中$\term{x}$是一个free variable，而$\term{y}$是一个lambda abstraction. 
+\rm 前面提到的neural term-"neutral terms contain a free variable at a 'head' position"，它是对normal form更细致的一种刻画，形如$\term{x}~\term{y}$，其中$\term{x}$是一个free variable，而$\term{y}$是一个lambda abstraction. 
 \end{annotation}
 
 \begin{definition}
 \rm In untyped lambda calculus, the neutral terms and the normal form are generated in the following rules.
 $$
-\begin{array}{cc}
-\infer{\lam{\term{x}}{\term{t}}~\textsl{nf}}{&\term{t}~\textsl{nf}&} \\
-\infer{}{}
+\begin{array}{ccccccc}
+\infer{\lam{\term{x}}{\term{t}}~\textsl{nf}}{&\term{t}~\textsl{nf}&} &&
+\infer{\term{t}~\textsl{nf}}{&\term{t}~\textsl{ne}&} &&
+\infer{\term{t}_1~\term{t}_2~\textsf{ne}}{&\term{t}_1~\textsl{ne}& \term{t}_2~\textsl{nf}&} && \infer{\term{x}~\textsf{ne}}{& &}
 \end{array}
 $$
 \end{definition}
+
+
+\begin{annotation}
+\rm 定义上述normal form的generator本想是根据它们来证明一些依赖normal form的命题，例如false和true的刻画"if $\vdash e:\alpha \to (\alpha \to \alpha)$ and $e$ is normal form, then $e = true$ or $e = false$"，对$e$使用normal form structure induction，仅仅使用上面第一个inference rule，实际上就可以了. 注意normal form的定义并不依赖type system，显然neutral term这种东西在STLC根本不可能出现... 
+\end{annotation}
+
 
 \newpage
 \section{Simple Types}
@@ -1131,7 +1138,38 @@ $$
 (l_1 \to \lam{\termtype{x}{\singletype{Nat}}}{!l_2~\term{x}},
 ~l_2 \to \lam{\termtype{x}{\singletype{Nat}}}{!l_1~\term{x}})
 $$
-这里cyclic reduction的过程,$l_1$的type依赖$l_2$的type依赖，反过来$l_2$的type依赖$l_1$的type. 那么如何构造这样一个$\mathcal{L} \to T$的map呢？ 它是可以在evaluation过程动态构造的，因为只要一个location第一次被allocated，那么在它对应的位置上一定有一个具体的type，同样无论后面经历assignment多少次都只有唯一的type对应，这样我们可以一开始就将$\Sigma$置为一个empty map，再根据对应的操作是维护它就可以了. 
+这里cyclic reduction的过程,$l_1$的type依赖$l_2$的type依赖，反过来$l_2$的type依赖$l_1$的type. 那么如何构造这样一个$\Sigma\colon\mathcal{L} \to T$的map呢？ 它是可以在evaluation过程动态构造的，因为只要一个location第一次被allocated，那么在它对应的位置上一定有一个具体的type，同样无论后面经历assignment多少次都只有唯一的type对应，这样我们可以一开始就将$\Sigma$置为一个empty map，再根据对应的操作是维护它就可以了. 
 \end{annotation}
+
+\begin{definition}
+\rm \redt{(Connection between $\mu$ and $\Sigma$)} A store $\mu$ is said to be well typed with respest to a typing context $\Gamma$ and a store typing $\Sigma$, written $\Gamma \mid \Sigma \vdash \mu$, if $\text{dom}(\mu) = \text{dom}(\mu)$ and $\Gamma \mid \Sigma \vdash \termtype{\mu({l})}{\Sigma(l)}$ for every $l \in \text{dom}(\mu)$. 
+\end{definition}
+
+\begin{theorem}
+\rm \redt{Preservation} If 
+$$
+\begin{array}{lll}
+\Gamma \mid \Sigma \vdash \termtype{\term{t}}{\singletype{T}} \\
+\Gamma \mid \Sigma \vdash \mu  \\
+\term{t} \mid \mu \to \term{t}' \mid \mu' 
+\end{array}
+$$
+then, for some $\Sigma' \supseteq \Sigma$,
+$$
+\begin{array}{ll}
+\Gamma \mid \Sigma' \vdash \termtype{\term{t}'}{\singletype{T}} \\
+\Gamma \mid \Sigma' \vdash \mu'
+\end{array}
+$$
+\end{theorem}
+
+\begin{annotation}
+\rm 其中$\Sigma' \supseteq \Sigma$产生的原因是allocation operator会带来新的location，同时不用考虑assignment operator，因为sequencing没有在当且的语法中，它的side effort也无法起作用，所以一个包含关系就够了. 
+\end{annotation}
+
+
+\begin{theorem}
+\rm \redt{Progress} Suppose $\term{t}$ is closed, well-typed term, that is $\cdot \mid \Sigma \vdash \termtype{\term{t}}{\singletype{T}}$ for some $\singletype{T}$ and $\Sigma$. Then either $\term{t}$ is a value or else, for any store $\mu$ such that $\cdot \mid \Sigma \vdash \mu$, there is some term $\term{t}'$ and store $\mu'$ with $\term{t} \mid \mu \to \term{t}' \mid \mu'$.
+\end{theorem}
 
 \end{document}
