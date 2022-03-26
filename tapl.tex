@@ -117,6 +117,7 @@
 \newcommand{\pred}[1]{\term{pred}~#1}
 \newcommand{\iszero}[1]{\term{iszero}~#1}
 \newcommand{\seq}[2]{#1;#2}
+\newcommand{\subtyp}[2]{#1<:#2}
 
 
 \newcommand{\redt}[1]{\textcolor{red}{#1}}
@@ -1164,7 +1165,7 @@ $$
 \end{theorem}
 
 \begin{annotation}
-\rm 其中$\Sigma' \supseteq \Sigma$产生的原因是allocation operator会带来新的location，同时不用考虑assignment operator，因为sequencing没有在当且的语法中，它的side effort也无法起作用，所以一个包含关系就够了. 
+\rm 其中$\Sigma' \supseteq \Sigma$产生的原因是allocation operator会带来新的location，同时不用考虑assignment operator，因为sequencing没有在当前的语法中，它的side effort也无法起作用，所以一个包含关系就够了. 
 \end{annotation}
 
 
@@ -1172,4 +1173,36 @@ $$
 \rm \redt{Progress} Suppose $\term{t}$ is closed, well-typed term, that is $\cdot \mid \Sigma \vdash \termtype{\term{t}}{\singletype{T}}$ for some $\singletype{T}$ and $\Sigma$. Then either $\term{t}$ is a value or else, for any store $\mu$ such that $\cdot \mid \Sigma \vdash \mu$, there is some term $\term{t}'$ and store $\mu'$ with $\term{t} \mid \mu \to \term{t}' \mid \mu'$.
 \end{theorem}
 
+
+\newpage
+\subsection{Subtyping}
+
+\begin{definition}
+\rm Let $S,T$ be any terms, $S$ is a \redt{subtype} of $T$ if any term of type $S$ can safely be used in a context where a term of type $T$ is expected, simply written $\subtyp{S}{T}$. 
+\end{definition}
+
+\begin{annotation}
+\rm 首先举个例子$\subtyp{\{x:\tau_1, y:\tau_2\} }{\{x:\tau_1\}}$，这就相当于$S$的类型蕴含着$T$的类型，直觉上"the element of $S$ are a subset of the elements of $T$"，这个理解在逻辑上其实比较好理解，$S$里面的limits实际上要比$T$. 
+\end{annotation}
+
+\begin{definition}
+\rm Subsumpting rule
+$$
+\infer{\Gamma \vdash \termtype{t}{T}}{\Gamma \vdash \termtype{t}{S} & \subtyp{S}{T}}.
+$$
+\end{definition}
+
+\begin{lemma}
+\rm Subtype relation satifies reflexivity and transitivity. 
+\end{lemma}
+
+\begin{definition}
+\rm Subtyping rule for records.
+$$
+\begin{array}{ll}
+\subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}{\{l_1:T_1,l_2:T_2,\cdots,l_{n+k}:T_{n+k}\}} & \text{width subtyping} \\[0.5em]
+\infer{\subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}{\{l_1:S_1,l_2:S_2,\cdots,l_{n}:S_{n}\}}}{\forall i.~\subtyp{S_i}{T_i}} & \text{depth subtyping}
+\end{array}
+$$
+\end{definition}
 \end{document}
