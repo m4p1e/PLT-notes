@@ -83,7 +83,7 @@
 \newcommand{\inr}[1]{\ensuremath{\text{inr}~#1}}
 \newcommand{\fold}[1]{\ensuremath{{fold}_{#1}}}
 \newcommand{\unfold}[1]{\ensuremath{{unfold}_{#1}}}
-\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp #2}} %lamx.y
+\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp~ #2}} %lamx.y
 \newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
 \newcommand{\projone}[1]{\ensuremath{#1.1}}
 \newcommand{\projtwo}[1]{\ensuremath{#1.2}}
@@ -1177,12 +1177,21 @@ $$
 \newpage
 \subsection{Subtyping}
 
+\begin{annotation}
+\rm \redt{Motivation} 考虑下面application
+$$
+(\lam{\termtype{r}{\{x:Nat\}}}{r.x})~\{x=0,y=1\},
+$$
+它在前面的STLC里面不是typable的，显然argument不满足abstraction里面的explicit annotation，我们希望兼容这种问题. 
+\end{annotation}
+
 \begin{definition}
 \rm Let $S,T$ be any terms, $S$ is a \redt{subtype} of $T$ if any term of type $S$ can safely be used in a context where a term of type $T$ is expected, simply written $\subtyp{S}{T}$. 
 \end{definition}
 
 \begin{annotation}
-\rm 首先举个例子$\subtyp{\{x:\tau_1, y:\tau_2\} }{\{x:\tau_1\}}$，这就相当于$S$的类型蕴含着$T$的类型，直觉上"the element of $S$ are a subset of the elements of $T$"，这个理解在逻辑上其实比较好理解，$S$里面的limits实际上要比$T$. 
+\rm 首先举个例子$\subtyp{\{x:\tau_1, y:\tau_2\} }{\{x:\tau_1\}}$，
+你如果直接思考两个record的势来比较显然是不符合直接的，但是这个你得用cast的想法来理解，这就相当于$S$的类型蕴含着$T$的类型，这个理解在逻辑上其实比较好理解，$S$里面的limits实际上要比$T$多，因此"the element of $S$ are a subset of the elements of $T$". 
 \end{annotation}
 
 \begin{definition}
@@ -1205,4 +1214,24 @@ $$
 \end{array}
 $$
 \end{definition}
+
+\begin{definition}
+\rm Subtyping rule for functions.
+$$
+\infer{\subtyp{S_1 \to S_2}{T_1 \to T_2}}{\subtyp{T_1}{S_1} & \subtyp{T_2}{S_2}}.
+$$
+\end{definition}
+
+
+\begin{annotation}
+\rm 关于functuon的subtyping，通常描述为"the function arguments are contravariant and the function results are covariant"，其中covariant的意思就是说如果原本我们有$\subtyp{T_2}{S_2}$做为premise，那么由上述inference rule的conclude里面同样保持这个relation， 即$T_2$在$<:$左边，而$S_2$在右边; 类似地contravariant得到的结果是相反的. 
+
+上述的inference rule可以解释为:
+\begin{enumerate}
+	\item 一个函数我可以accept相比于original argument type所含elements更多的new argument type，这是safe的. 因为假设function的input不变，我现在可以接受更多的元素，其中原来可以元素也可以cover到，显然是安全的. 
+	\item 一个函数我们可以return相比于original result type所含elements更少一点的new argument，这是safe的. 因为假设function的requirements of result不变，我现在$\text{dom}(Res_{new})$是原来$\text{dom}(Res_{old})$的一个子集，原来可以满足前述的requirement，那么现在当然可以满足，显然是安全的. 
+\end{enumerate}
+
+\end{annotation}
+
 \end{document}
