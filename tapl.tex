@@ -9,6 +9,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{mathtools} %for :=
+\usepackage{stmaryrd} %for double square bracket
 
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
@@ -122,6 +123,8 @@
 
 \newcommand{\redt}[1]{\textcolor{red}{#1}}
 \newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
+\newcommand{\dbracket}[1]{\ensuremath{\left\llbracket{#1} \right\rrbracket}}
 
 \begin{document}
 \title{Types and Programming Language}
@@ -1266,6 +1269,51 @@ $$
 \rm 前面提到的subtyping只不一种针对类型的extension，并没有影响到我们的evaluation过程，但是在实际操作可能会出问题. 假设我们给定$\subtyp{T}{S}$，在实际中$T$和$S$可能有不一样的internal structure，例如常见的bool和int类型，那么在实际evaluation的过程我们应当实现类型转换过程的结构转换. 其中有一种想法就是将带有subtyping语法的language翻译成不带subtyping language，还是使用原来的evaluation过程. 通常来说编译器里面的这种翻译是从high-level language到low-level language的过程. 
 
 这里的翻译过程需要配合subtyping derivation和normal typing derivation. 例如给定一个source language(带subtyping)里面的term $e$和对应的type $T$，我们要将他翻译成target language里面的term $e'$. 那么我们需要将$e$按照derivation把$e$里面的所有subterm也都要翻译到target language里面. 其中涉及到subtyping derivation的翻译，每一个subtyping rule对应一个一个abstraction，例如$\lam{\termtype{x}{T}}{s}\colon T \to S$，我们再将需要做type转换的term作为argument传入就行. 还有一个比较特殊点就是两个language之间的type可能不一致，例如前面提到了$Top$这一类型，对应目标语言里面它就是$Unit$，因此我们还需要构造一下两个语言里面类型的映射. 
+
+下述translation的source language为pure STLC带上record和subtyping，target language为pure STLC只有record和type $Unit$. 
 \end{annotation}
 
+\begin{definition}
+\rm Function $\dbracket{-}$ of type translation
+$$
+\begin{array}{ll}
+\dbracket{Top} = Unit \\
+\dbracket{T_1 \to T_2} = \dbracket{T_1} \to \dbracket{T_2} \\
+\dbracket{\{(l_i:T_i)_{i \in 1 \ldots n}\}} = \{(l_i:\dbracket{T_i})_{i \in 1 \ldots n}\} 
+\end{array}
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm If $C$ is a subtying derivation tree whose conclusion is $\subtyp{S}{T}$, then we have $\mathcal{C}::\subtyp{S}{T}$. Similarly, $\mathcal{D}::\subtyp{S}{T}$ for typing derivation. 
+\end{definition}
+
+\begin{definition}
+\rm Coercion for subtyping.
+$$
+\begin{aligned}
+&\dbracket{\infer{\subtyp{T}{T}}{}} =  \lam{\termtype{x}{\dbracket{T}}}{x} \\
+&\dbracket{\infer{\subtyp{S}{Top}}{}} =  \lam{\termtype{x}{\dbracket{S}}}{unit} \\
+&\dbracket{\infer{\subtyp{S}{T}}{C_1:: \subtyp{S}{U} & C_2:: \subtyp{U}{T}}} =  \lam{\termtype{x}{\dbracket{S}}}{\dbracket{C_2}(\dbracket{C_1}x)} \\
+\cdots
+\end{aligned}
+$$
+\end{definition}
+
+\begin{definition}
+\rm Function $\dbracket{-}$ of typing derivation
+$$
+\begin{aligned}
+& \dbracket{\infer{\Gamma \vdash \termtype{x}{T}}{\termtype{x}{T} \in \Gamma}} = x \\
+&\dbracket{\infer{\Gamma \vdash \termtype{t}{T}}{\mathcal{D}:: \Gamma \vdash \termtype{t}{S} & \mathcal{C}::\subtyp{S}{T}}} = \dbracket{\mathcal{C}}\dbracket{\mathcal{D}}\\
+\cdots
+\end{aligned}
+$$
+\end{definition}
+
+
+\begin{theorem}
+\rm If $\mathcal{D}::\Gamma \vdash \termtype{t}{T}$, then $\dbracket{\Gamma} \vdash \termtype{\dbracket{t}}{\dbracket{T}}$, where $\dbracket{\Gamma}$ is the pointwise extension of the type translation to contexts $\dbracket{\emptyset} = \emptyset$ and $\dbracket{\Gamma,\termtype{x}{T}} = \dbracket{\emptyset},\termtype{x}{\dbracket{T}}$. 
+\end{theorem}
 \end{document}
