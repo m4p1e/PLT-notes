@@ -1175,8 +1175,9 @@ $$
 
 
 \newpage
-\subsection{Subtyping}
+\section{Subtyping}
 
+\subsection{STLC}
 \begin{annotation}
 \rm \redt{Motivation} 考虑下面application
 $$
@@ -1206,11 +1207,15 @@ $$
 \end{lemma}
 
 \begin{definition}
+\rm Let type $Top$ satifies $\subtyp{S}{Top}$ for any type $S$. 
+\end{definition}
+
+\begin{definition}
 \rm Subtyping rule for records.
 $$
 \begin{array}{ll}
 \subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}{\{l_1:T_1,l_2:T_2,\cdots,l_{n+k}:T_{n+k}\}} & \text{width subtyping} \\[0.5em]
-\infer{\subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}{\{l_1:S_1,l_2:S_2,\cdots,l_{n}:S_{n}\}}}{\forall i.~\subtyp{S_i}{T_i}} & \text{depth subtyping}
+\infer{\subtyp{\{l_1:S_1,l_2:S_2,\cdots,l_{n}:S_{n}\}}{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}}{\forall i.~\subtyp{S_i}{T_i}} & \text{depth subtyping}
 \end{array}
 $$
 \end{definition}
@@ -1231,7 +1236,36 @@ $$
 	\item 一个函数我可以accept相比于original argument type所含elements更多的new argument type，这是safe的. 因为假设function的input不变，我现在可以接受更多的元素，其中原来可以元素也可以cover到，显然是安全的. 
 	\item 一个函数我们可以return相比于original result type所含elements更少一点的new argument，这是safe的. 因为假设function的requirements of result不变，我现在$\text{dom}(Res_{new})$是原来$\text{dom}(Res_{old})$的一个子集，原来可以满足前述的requirement，那么现在当然可以满足，显然是安全的. 
 \end{enumerate}
+\end{annotation}
 
+\begin{lemma}
+\rm If $\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}$, then $\subtyp{T_1}{S_1}$ and $\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}$. 
+\end{lemma}
+
+\begin{proof}
+直接根据typing derivations
+$$
+\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}}{\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{S_1 \to T_2}}{\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}} & \infer{\subtyp{S_1}{T_2} \to \subtyp{T_1}{T_2}}{\subtyp{T_1}{S_1} & \subtyp{T_2}{T_2}}}
+$$
+关键是将$\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}$看做一个abstraction，它的argument annotation显然和它的type里面的不一样，不能直接拆，因此首先整体要用一下function subtyping.
+\end{proof}
+
+\begin{lemma}
+\rm If $\Gamma \vdash \termtype{\{{(k_j = s_j)}_{j \in 1\ldots m}\}}{\{{(l_i = T_i)}_{i \in 1\ldots n}\}}$, then $\{{(l_i)}_{i \in 1\ldots n}\}\subseteq\{{(k_j)}_{j \in 1\ldots m}\}$ and $\forall l_i = k_j.~ \Gamma \vdash \termtype{s_j}{T_i}$.
+\end{lemma}
+
+\begin{annotation}
+\rm 上面两个lemma更进一步告诉你了一个term的type不唯一了, polymorphism要来了，之前STLC里面保持的properties可能需要重新证明了...
+\end{annotation}
+
+\newpage
+\subsection{Coercion Semantics}
+
+
+\begin{annotation}
+\rm 前面提到的subtyping只不一种针对类型的extension，并没有影响到我们的evaluation过程，但是在实际操作可能会出问题. 假设我们给定$\subtyp{T}{S}$，在实际中$T$和$S$可能有不一样的internal structure，例如常见的bool和int类型，那么在实际evaluation的过程我们应当实现类型转换过程的结构转换. 其中有一种想法就是将带有subtyping语法的language翻译成不带subtyping language，还是使用原来的evaluation过程. 通常来说编译器里面的这种翻译是从high-level language到low-level language的过程. 
+
+这里的翻译过程需要配合subtyping derivation和normal typing derivation. 例如给定一个source language(带subtyping)里面的term $e$和对应的type $T$，我们要将他翻译成target language里面的term $e'$. 那么我们需要将$e$按照derivation把$e$里面的所有subterm也都要翻译到target language里面. 其中涉及到subtyping derivation的翻译，每一个subtyping rule对应一个一个abstraction，例如$\lam{\termtype{x}{T}}{s}\colon T \to S$，我们再将需要做type转换的term作为argument传入就行. 还有一个比较特殊点就是两个language之间的type可能不一致，例如前面提到了$Top$这一类型，对应目标语言里面它就是$Unit$，因此我们还需要构造一下两个语言里面类型的映射. 
 \end{annotation}
 
 \end{document}
