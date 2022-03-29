@@ -1279,7 +1279,7 @@ $$
 \begin{array}{ll}
 \dbracket{Top} = Unit \\
 \dbracket{T_1 \to T_2} = \dbracket{T_1} \to \dbracket{T_2} \\
-\dbracket{\{(l_i:T_i)_{i \in 1 \ldots n}\}} = \{(l_i:\dbracket{T_i})_{i \in 1 \ldots n}\} 
+\dbracket{\{(l_i:T_i)_{i \in 1 \ldots n}\}} = \left\{(l_i:\dbracket{T_i})_{i \in 1 \ldots n}\right\} 
 \end{array}
 $$
 \end{definition}
@@ -1295,8 +1295,10 @@ $$
 \begin{aligned}
 &\dbracket{\infer{\subtyp{T}{T}}{}} =  \lam{\termtype{x}{\dbracket{T}}}{x} \\
 &\dbracket{\infer{\subtyp{S}{Top}}{}} =  \lam{\termtype{x}{\dbracket{S}}}{unit} \\
-&\dbracket{\infer{\subtyp{S}{T}}{C_1:: \subtyp{S}{U} & C_2:: \subtyp{U}{T}}} =  \lam{\termtype{x}{\dbracket{S}}}{\dbracket{C_2}(\dbracket{C_1}x)} \\
-\cdots
+&\dbracket{\infer{\subtyp{S}{T}}{C_1:: \subtyp{S}{U} & C_2:: \subtyp{U}{T}}} =  \lam{\termtype{x}{\dbracket{S}}}{\dbracket{C_2}\left(\dbracket{C_1}x\right)} \\
+&\dbracket{\infer{\subtyp{S_1 \to S_2}{T_1 \to T_2}}{\mathcal{C}_1:: \subtyp{T_1}{S_2} & \mathcal{C}_2:: \subtyp{S_2}{T_2}}} = \lam{\termtype{f}{\dbracket{S_1 \to S_2}}}{\lam{\termtype{x}{\dbracket{T_1}}}{\dbracket{\mathcal{C}}\left(f\left(\dbracket{C}_1\right)\right)}}\\
+&\dbracket{\infer{\subtyp{\{(l_i:T_i)_{i \in 1 \ldots n+k}\}}{\{(l_i:T_i)_{i \in 1 \ldots n}\}}}{}} = \lam{\termtype{r}{\left\{\left(l_i:\dbracket{T_i}\right)_{i \in 1 \ldots n+k}\right\}}}{\{(l_i=r.i)_{i \in 1 \ldots n}\}} \\
+&\cdots
 \end{aligned}
 $$
 \end{definition}
@@ -1306,8 +1308,9 @@ $$
 $$
 \begin{aligned}
 & \dbracket{\infer{\Gamma \vdash \termtype{x}{T}}{\termtype{x}{T} \in \Gamma}} = x \\
+& \dbracket{\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{T_1}}{t_2}}{T_1 \to T_2}}{\mathcal{D}:: \Gamma,\termtype{x}{T_1} \vdash \termtype{t_2}{T_2}}} = \lam{\termtype{x}{\dbracket{T_1}}}{\mathcal{D}}\\
 &\dbracket{\infer{\Gamma \vdash \termtype{t}{T}}{\mathcal{D}:: \Gamma \vdash \termtype{t}{S} & \mathcal{C}::\subtyp{S}{T}}} = \dbracket{\mathcal{C}}\dbracket{\mathcal{D}}\\
-\cdots
+&\cdots
 \end{aligned}
 $$
 \end{definition}
@@ -1316,4 +1319,15 @@ $$
 \begin{theorem}
 \rm If $\mathcal{D}::\Gamma \vdash \termtype{t}{T}$, then $\dbracket{\Gamma} \vdash \termtype{\dbracket{t}}{\dbracket{T}}$, where $\dbracket{\Gamma}$ is the pointwise extension of the type translation to contexts $\dbracket{\emptyset} = \emptyset$ and $\dbracket{\Gamma,\termtype{x}{T}} = \dbracket{\emptyset},\termtype{x}{\dbracket{T}}$. 
 \end{theorem}
+
+\begin{annotation}
+\rm 如果我们有关于$\tau_1<:\tau_2$，$\tau_1 <: \tau_3$，$\tau_2<:\tau_4$ and $\tau_3<:\tau_4$的primitive coercions，那么显然关于$\tau_1 <: \tau_4$的subtyping derivation就有两种，有一个疑问是它们翻译到target language经过evaluation之后是不是有一样的结果呢？
+\end{annotation}
+
+
+\begin{definition}
+\rm A translation $\dbracket{-}$ from typing derivations in one language to term in another is \redt{coherent} if, for every pair of derivations $\mathcal{D}_1$ and $\mathcal{D}_2$ with same conclusion $\Gamma \vdash \termtype{t}{T}$, the translations $\dbracket{\mathcal{D}_1}$ and $\dbracket{\mathcal{D}_2}$ are behaviorally equivalent terms of the target language.
+\end{definition}
+
+
 \end{document}
