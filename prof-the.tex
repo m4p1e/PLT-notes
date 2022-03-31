@@ -1,0 +1,223 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+%冲突nthm
+%\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools} %for :=
+\usepackage{stmaryrd} %for double square bracket
+
+%\usepackage{unicode-math}
+%\usepackage{chngcntr}
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+\usepackage{listings}
+%\usepackage{minted}% hightlighting
+
+\usepackage{proof} % infer
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+
+\usepackage[thmmarks, thref, amsmath]{ntheorem}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\theoremheaderfont{\itshape}
+\theorembodyfont{\upshape}
+\newtheorem{case}{Case}
+
+\theoremstyle{nonumberplain}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\upshape}
+\theoremsymbol{\scshape Q. E. D.}
+\theorempostwork{\setcounter{case}{0}}
+\newtheorem{proof}{Proof}
+
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{case}{Case}
+%\newtheorem{subcase}{Case}
+%\numberwithin{subcase}{case}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\inl}[1]{\ensuremath{\text{inl}~#1}}
+\newcommand{\inr}[1]{\ensuremath{\text{inr}~#1}}
+\newcommand{\fold}[1]{\ensuremath{{fold}_{#1}}}
+\newcommand{\unfold}[1]{\ensuremath{{unfold}_{#1}}}
+\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp~ #2}} %lamx.y
+\newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
+\newcommand{\projone}[1]{\ensuremath{#1.1}}
+\newcommand{\projtwo}[1]{\ensuremath{#1.2}}
+\newcommand{\caseof}[3]{\ensuremath{{\textbf{case}}~#1~{\textbf{of}}~\inl{x_1}\mapsto #2\mid\inr{x_2}\mapsto #3}}
+\newcommand{\Lam}[2]{\ensuremath{\Lambda #1\ldotp #2}}
+\newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
+\newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
+\newcommand{\assign}[2]{\ensuremath{#1~\coloneqq~#2}}
+\newcommand{\singletype}[1]{\text{#1}}
+\newcommand{\termtype}[2]{\ensuremath{#1:#2}}
+\newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
+\newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
+\newcommand{\mat}[0]{\matgen{\alpha}{\tau}} %ua.t
+\newcommand{\fatgen}[2]{\ensuremath{\forall #1\ldotp#2}}
+\newcommand{\fat}[0]{\fatgen{\alpha}{\tau}}
+\newcommand{\eatgen}[2]{\ensuremath{\exists #1\ldotp#2}}
+\newcommand{\eat}[0]{\eatgen{\alpha}{\tau}}
+\newcommand{\fatgent}[2]{\ensuremath{\trgb{\forall} #1\ldotp#2}}
+\newcommand{\fatt}[0]{\fatgent{\alpt}{\tat}}
+\newcommand{\eatgent}[2]{\ensuremath{\trgb{\exists} #1\ldotp#2}}
+\newcommand{\eatt}[0]{\eatgent{\alpt}{\tat}}
+
+\newcommand{\fail}[0]{\mi{fail}}
+
+\newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
+\newcommand{\term}[1]{\ensuremath\mathsf{#1}}
+\newcommand{\true}{\term{true}}
+\newcommand{\false}{\term{false}}
+\newcommand{\ifelse}[3]{\ensuremath{\textbf{if}~#1~\textbf{then}~#2~\textbf{else}~#3}}
+\newcommand{\succt}[1]{\term{succ}~#1}
+\newcommand{\pred}[1]{\term{pred}~#1}
+\newcommand{\iszero}[1]{\term{iszero}~#1}
+\newcommand{\seq}[2]{#1;#2}
+\newcommand{\subtyp}[2]{#1<:#2}
+
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
+\newcommand{\dbracket}[1]{\ensuremath{\left\llbracket\,\vcenter{\hbox{$#1$}}\,\right\rrbracket}}
+
+\begin{document}
+\title{Proof Theory}
+\author{枫聆}
+\maketitle
+\tableofcontents
+
+
+\newpage
+\section{Natural Deduction}
+
+\begin{remark}
+\rm \redt{Natural deduction is a kind of proof calculus in which logical reasoning is expressed by inference rules closely related to the "natural" way of reasoning}. 
+\end{remark}
+
+\subsection{Judgments and Propositions}
+
+\begin{definition}
+\rm A \emph{judgment} is somthing we may know, this is, an object of knowledge. A judgment is \emph{evident} if we in fact know it.
+\end{definition}
+
+\begin{annotation}
+\rm "A is false" (see classical logic), "A is true at time t" (see temporal logic), "A is necessarily true" or "A is possibly true" (see modal logic), "the program M has type τ" (see programming languages and type theory), "A is achievable from the available resources" (see linear logic). 
+\end{annotation}
+
+%inference rule 写一遍没意思
+
+\subsection{Introduction and Elimination}
+
+\begin{definition}
+\rm Inference rules that introduce a logical connective is the conclusion are known as \emph{introduction rules}. i.e., to conclude "$A~\text{and}~B~true$" for propositions $A$ and $B$, one requires evidence for "$A~true$" and $B~true$. As an inference rule:
+$$
+\infer[\wedge I]{A \wedge B ~true}{A~true & B~true}
+$$
+Here $\wedge I$ stands for "conjunction introduction".
+\end{definition}
+
+\begin{definition}
+\rm Inference rules that describe how to deconstruct information about a compound proposition into information about its consitiuents are elimination rules. i.e., from $A \wedge B~true$, we can conclude $A~true$ and $B~true$:
+$$
+\infer[\wedge E_L]{A~true}{A \wedge B ~true}~~~~~~\infer[\wedge E_R]{B~true}{A \wedge B ~true} 
+$$
+\end{definition}
+
+\subsection{Hypothetical Derivations}
+
+\begin{definition}
+\rm A \emph{hypothetical judgment} is $J_1, \cdots, J_n \vdash J$, where judgments $J_1,\cdots,J_n$ are unproved assumptions, and the judgment $J$ is the conclusion. A \emph{hypothetical deduction}(derivation) for $J_1, \cdots, J_n \vdash J$ has the form 
+$$
+\deduce[\vdots]{\raisebox{-1.0em}{$J$}}{J_1 & \cdots & J_n}
+$$
+which means $J$ is derivable from $J_1, \cdots, J_n$. 
+\end{definition}
+
+\begin{annotation}
+\rm 上面的$J_1,\cdots,J_2$都可以替换成关于$J_i$的一个hypothetical derivation. 
+\end{annotation}
+
+
+\begin{definition}
+\rm In the natural deduction calculus, an assumption is discharged when the conclusion of an inference does not depend on it, although one of the premises of the inference does\cite{tln}.
+\end{definition}
+
+\begin{annotation}
+\rm Once the appropriate rules have been completed, these are known as discharged assumptions, and are not included in the pool of assumptions on which the conclusion of the rule depends\cite{discharged-proofwiki}.
+\end{annotation}
+
+\begin{annotation}
+\rm hypothetical derivation要求最后的conclusion依赖的poof of assumptions不是空的. 
+\end{annotation}
+
+\begin{theorem}
+\rm \redt{Deduction theorem} \[T, P \vdash Q \iff T \vdash P \to Q\].
+\end{theorem}
+
+\begin{annotation}
+\rm 在deduction theorem中我们注意到第一个hypothetical judgment里面的antecedent $Q$被去掉了，在第二个hypothetical judgment的succedent里面作为一个implication的antecedent出现了，这里我们就可以说assumption $Q$ is discharged，即现在的conclusion已经不依赖它了. 那么我们是如何构造deduction theorem里面的implication的呢？ 下面接着看
+\end{annotation}
+
+\begin{definition}
+\rm If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction rule as follow \[\infer[\supset I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}\]
+\end{definition}
+
+\begin{annotation}
+\rm \redt{Why indexed $u$} In the introduction rule, the antecedent named $u$ is discharged in the conclusion. This is a mechanism for delimiting the scope of the hypothesis: its sole reason for existence is to establish "$B~true$"; it cannot be used for any other purpose, and in particular, it cannot be used below the introduction.
+
+上面这段话出自natural deduction的wiki，这个$u$实际上就是代指了从$A$到$B$这中间可能的derivation，现在我们通过introduction rule将它总结成了$A \supset B$， 因此premise实际上"已经没有用了"，对照discharge. 美妙！ 
+\end{annotation}
+
+\newpage
+\begin{thebibliography}{00}
+\bibitem{tln} John Slaney. The Logic Notes. \url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
+\bibitem{discharged-stack} The relation between deduction theorem and discharged. \url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
+\bibitem{discharged-proofwiki} Definition:Discharged Assumption. \url{https://proofwiki.org/wiki/Definition:Discharged_Assumption}
+\end{thebibliography}
+\end{document}
