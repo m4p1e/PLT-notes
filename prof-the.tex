@@ -205,7 +205,7 @@ which means $J$ is derivable from $J_1, \cdots, J_n$.
 \end{annotation}
 
 \begin{definition}
-\rm If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction rule as follow \[\infer[\supset I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}\]
+\rm If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction and elimination rule as follow \[\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}~~~~~ \infer[\supset\!\!E]{B~true}{A\supset B & A~true}\]
 \end{definition}
 
 \begin{annotation}
@@ -213,6 +213,16 @@ which means $J$ is derivable from $J_1, \cdots, J_n$.
 
 上面这段话出自natural deduction的wiki，这个$u$实际上就是代指了从$A$到$B$这中间可能的derivation，现在我们通过introduction rule将它总结成了$A \supset B$， 因此premise实际上"已经没有用了"，对照discharge. 美妙！ 
 \end{annotation}
+
+\begin{example}
+\rm Considering the following proof of $A \supset (B \supset (A \wedge B))$
+$$
+\infer[I^u]{A \supset (B \supset (A \wedge B))~true}{\infer[I^w]{B \supset (A \wedge B)~true}{\infer[\wedge I]{A \wedge B~true}{\infer[u]{A~true}{} & \infer[w]{B~true}{}}}}.
+$$
+
+这整个derivation不是hypothetical的，因为两个assumptions $A~true$和$B~true$都已经被discharged，因此它实际上一个complete proof! 
+\end{example}
+
 
 \newpage
 \begin{thebibliography}{00}
