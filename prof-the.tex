@@ -169,6 +169,10 @@ $$
 $$
 \end{definition}
 
+\begin{annotation}
+\rm The meaning of conjunction is determinded by its \emph{verifications}.  
+\end{annotation}
+
 \subsection{Hypothetical Derivations}
 
 \begin{definition}
@@ -205,13 +209,16 @@ which means $J$ is derivable from $J_1, \cdots, J_n$.
 \end{annotation}
 
 \begin{definition}
-\rm If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction and elimination rule as follow \[\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}~~~~~ \infer[\supset\!\!E]{B~true}{A\supset B & A~true}\]
+\rm (\redt{implication}) If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction and elimination rule as follow \[\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}~~~~~ \infer[\supset\!\!E]{B~true}{A\supset B & A~true}\]
 \end{definition}
 
 \begin{annotation}
 \rm \redt{Why indexed $u$} In the introduction rule, the antecedent named $u$ is discharged in the conclusion. This is a mechanism for delimiting the scope of the hypothesis: its sole reason for existence is to establish "$B~true$"; it cannot be used for any other purpose, and in particular, it cannot be used below the introduction.
 
-上面这段话出自natural deduction的wiki，这个$u$实际上就是代指了从$A$到$B$这中间可能的derivation，现在我们通过introduction rule将它总结成了$A \supset B$， 因此premise实际上"已经没有用了"，对照discharge. 美妙！ 
+上面这段话出自natural deduction的wiki，这个$u$实际上就是代指了从$A$推出$B$这中间可能的derivation，现在我们通过introduction rule将它总结成了$A \supset B$， 因此premise实际上"已经没有用了"，对照discharge. 即
+$$
+A \vdash B \Rightarrow \cdot\vdash A \to B. 
+$$
 \end{annotation}
 
 \begin{example}
@@ -223,6 +230,82 @@ $$
 这整个derivation不是hypothetical的，因为两个assumptions $A~true$和$B~true$都已经被discharged，因此它实际上一个complete proof! 
 \end{example}
 
+\begin{definition}
+\rm (\redt{disjunction}) The elimination rule for disjunction:
+$$
+\infer[\vee E^{u,w}]{C~true}{A \vee B ~true & \deduce[\vdots]{C~true}{\infer[u]{A~true}{}} & \deduce[\vdots]{C~true}{\infer[w]{B~true}{}}}
+$$
+both assumption $u,w$ are discharged at the disjunction elimination rule. 
+\end{definition}
+
+
+\begin{definition}
+\rm The falsehood elimination rule:
+$$
+\infer[\perp\!\!E]{C~true}{\perp~true}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm falsehood可以看做一个zero-ary disjunction, 啥都不用考虑直接可以得到任意的conclusion？？？ There is no proof for $\perp~true$, so its sound to conclude arbitrary propositions. 
+\end{annotation}
+
+\newpage
+\subsection{Harmony}
+
+\begin{definition}
+\rm \redt{Local soundness} shows that the elimination rules are not strong: no matter how we apply eliminations rules to the result of an introduction we cannot gain any new information.
+\end{definition}
+
+\begin{definition}
+\rm \redt{Local completeness} shows that the elimination rules are not weak: there is alwayws a way to apply elimination rules so that we can reconstitute a proof of the original proposition from the the results by apply intruduction ruls. 
+\end{definition}
+
+\begin{definition}
+\rm (\redt{substitution Principle}) If 
+$$
+\deduce[\mathcal{E}]{C~true}{\infer[u]{A~true}{}}
+$$
+is a hypothetical proof of $\mathcal{C}~true$ under the undischarged hypothesis $A~true$ labelled $u$, and 
+$$
+\deduce{A~true}{\mathcal{D}}
+$$
+is a proof of $A~true$ then
+$$
+\deduce[\mathcal{E}]{C~true}{\infer[u]{A~true}{\mathcal{D}}}
+$$
+is our notation for substituting $\mathcal{D}$ for all uses of the hypothesis labelled $u$ in $\mathcal{E}$. This deduction, also sometime written as $[\mathcal{D}/u]\mathcal{E}$ no longer depends on $u$.  
+\end{definition}
+
+
+\begin{example}
+\rm If given a elimination rule of disjunction as follow
+$$
+\infer[\vee\!E_L]{A~true}{A \vee B~true}
+$$
+The rule a little bit stronger, since we would not be able to reduce
+$$
+\infer[\vee\!E_L]{A~true}{\infer[\vee\!I_R]{A \vee B~true}{B~true}}
+$$
+As u can see it's not local soundness. 
+\end{example}
+
+
+\newpage
+\subsection{Verifications and Uses}
+
+\begin{definition}
+\rm a verification should be a proof that only analyzes the consitituents of a proposition.
+\end{definition}
+
+\begin{annotation}
+\rm natural deduction实际上像constructive logic或者intuitive logic,  不像classic logic, 例如Proposition $A \vee (A \supset B)$在classic logic就是正确的，因为我们$A$和$B$都需要给定是true/false tag, 但是在natural deduction里面我们好像没有办法来处理. 更甚，如果我们要证明一个$B$是accpeted in natural deduction, 你可能首先需要证明$A \supset B$和$B$都是accepted，就是根据结构来做derivation. 
+\end{annotation}
+
+
+\begin{definition}
+\rm Writing $A\uparrow$ for the judgment "A has a verification". 
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
