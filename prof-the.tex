@@ -261,6 +261,10 @@ $$
 \rm \redt{Local completeness} shows that the elimination rules are not weak: there is alwayws a way to apply elimination rules so that we can reconstitute a proof of the original proposition from the the results by apply intruduction ruls. 
 \end{definition}
 
+\begin{annotation}
+local soundness告诉你通过elimination压缩得到的东西不会比你已经知道的东西强(not strong)，而local completeness告诉你合并通过elimination压缩得到的东西会得到全部你知道的信息. 
+\end{annotation}
+
 \begin{definition}
 \rm (\redt{substitution Principle}) If 
 $$
@@ -304,7 +308,7 @@ As u can see it's not local soundness.
 
 
 \begin{definition}
-\rm Writing $A\uparrow$ for the judgment "A has a verification". 
+\rm Writing $A\uparrow$ for the judgment "A has a verification". Naturally, this should mean that $A$ is true,  and that the evidence for that has a special form.
 \end{definition}
 
 \begin{definition}
@@ -319,7 +323,6 @@ $$
 \end{aligned}
 $$
 \end{definition}
-
 
 
 \begin{definition}
@@ -338,6 +341,42 @@ $$
 \infer[\supset I^u]{(A \wedge B) \supset A~true}{\infer[\wedge E_L]{A~true}{\infer[u]{A\wedge B~true}{}}}
 $$
 \end{example}
+
+
+\begin{definition}
+\rm For disjunction
+$$
+\begin{aligned}
+&\infer[\vee I_L]{A \vee B \uparrow}{A \uparrow} &&& \infer[\vee I_R]{A \vee B \uparrow}{B \uparrow} &&&  \infer[\vee E^{u,w}]{C \uparrow}{A \vee B \downarrow & \deduce[\vdots]{C\uparrow}{\infer[u]{A\uparrow}{}} & \deduce[\vdots]{C\uparrow}{\infer[w]{B\downarrow}{}}}
+\end{aligned}
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm For truth and falsehood.
+$$
+\begin{aligned}
+& \infer[\top I]{\top \uparrow}{} &&& \infer[\perp E]{C\uparrow}{\perp \downarrow}
+\end{aligned}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm $\perp \downarrow$ signifies a contradiction from our hypotheses.
+\end{annotation}
+
+\begin{definition}
+\rm For atomic propositions.
+$$
+\infer[\downarrow\uparrow]{P \uparrow}{P \downarrow}.
+$$
+\end{definition}
+
+\begin{annotation}
+\rm 对于atomic props，我们只能对它赋予一个property，没有关于它的verification. 因此上述的规则是在进行一个转换，只要我们assumption了关于它的一个property，就默认它已经被verified. 
+\end{annotation}
+
 
 \newpage
 \begin{thebibliography}{00}
