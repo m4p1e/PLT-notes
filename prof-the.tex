@@ -307,6 +307,38 @@ As u can see it's not local soundness.
 \rm Writing $A\uparrow$ for the judgment "A has a verification". 
 \end{definition}
 
+\begin{definition}
+\rm Writing $A\downarrow$ for the judgment "A may be used". $A\downarrow$ should be the case when either $A~true$ is a hypothesis, or $A$ is deduced from a hypothesis via elimination rules. 
+\end{definition}
+
+\begin{definition}
+\rm For conjunction. 
+$$
+\begin{aligned}
+&\infer[\wedge I]{A \wedge B\uparrow}{A \uparrow & B \uparrow} &&& \infer[\wedge E_L]{A \downarrow}{A \wedge B \downarrow} &&&& \infer[\wedge E_R]{B \downarrow}{A \wedge B \downarrow}
+\end{aligned}
+$$
+\end{definition}
+
+
+
+\begin{definition}
+\rm For implication
+$$
+\begin{aligned}
+&\infer[\supset^u]{A \supset B \uparrow}{\deduce[\vdots]{B\uparrow}{\infer[u]{A\downarrow}{}}} &&& \infer[\supset E]{B \downarrow}{A \supset B \downarrow & A \uparrow}
+\end{aligned}
+$$
+implication introduction rule里面的$B \uparrow$表示没看懂，因为这里的$B$显然是来自elimination的结果. 为什么implication elimination里面需要$A \uparrow$呢?
+\end{definition}
+
+\begin{example}
+\rm 
+$$
+\infer[\supset I^u]{(A \wedge B) \supset A~true}{\infer[\wedge E_L]{A~true}{\infer[u]{A\wedge B~true}{}}}
+$$
+\end{example}
+
 \newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
