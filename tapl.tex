@@ -821,7 +821,10 @@ proved by structural induction.
 \end{definition}
 
 \begin{definition}
-\rm \redt{unit type} a constant $\term{unit}$ with unique type $\singletype{Unit}$, the type can be only from this constant.  
+\rm \redt{unit type} a constant $\term{unit}$ with unique type $\singletype{Unit}$, the type can be only from this constant. we often use $*$ for the unique unit term and $1$ for the unit type
+$$
+\infer[]{\Gamma \vdash *:1}{}
+$$
 \end{definition}
 
 \begin{definition}
@@ -892,7 +895,7 @@ $$
 $$
 \begin{array}{cc}
 match(\term{x}, \term{v}) = [\term{x} \to \term{v}] & M-Var \\
-\infer{match(\{\term{l}_1 =\term{p}_1, \cdots, \term{p}_n =\term{p}_n\}, \{\term{l}_1 =\term{v}_1, \cdots, \term{l}_n =\term{v}_n\}) = \sigma_1 \circ \cdots \circ \sigma_n}{\text{for each}~i~match(\term{p}_i,\term{v}_i)= \sigma_i}& M-Rcd
+\infer{match(\{\term{l}_1 =\term{p}_1, \cdots, \term{l}_n =\term{p}_n\}, \{\term{l}_1 =\term{v}_1, \cdots, \term{l}_n =\term{v}_n\}) = \sigma_1 \circ \cdots \circ \sigma_n}{\text{for each}~i~match(\term{p}_i,\term{v}_i)= \sigma_i}& M-Rcd
 \end{array}
 $$
 The computation rule for pattern matching generalizes the let-binding as follow
@@ -909,8 +912,9 @@ $$
 \end{enumerate}
 There is a $\term{case}$ construct that allows us to distinguish whether a given value comes from the left or right branch of a sum,
 $$
-\caseof{a}{\projone{x_1}}{\projone{x_2}}
+\infer{\caseof{\term{t}_0}{\term{t}_1:\singletype{T}}{\term{t}_2:\singletype{T}}}{\Gamma \vdash \term{t}_0:\singletype{T}_1 + \singletype{T}_2 & \Gamma,x_1:\singletype{T}_1 \vdash \term{t}_1:\singletype{T} & \Gamma,x_2:\singletype{T}_2 \vdash \term{t}_2:\singletype{T}}
 $$
+where $x_1 \to \term{x}_1:\singletype{T}$ means $[x_1 \to \singletype{T}_1]\term{t}_1$, another one is similar. 
 \end{definition}
 
 
@@ -943,6 +947,17 @@ $$
 
 \begin{annotation}
 \rm single-field variant的主要作用由一个type构造出多个不一样的types但是仅仅是用附加的labels来刻画的，这就可以描述具有相同type但是不同对象.
+\end{annotation}
+
+\begin{definition}
+\rm \redt{void type} An emptyset of term with unique type void\footnote{There is no term for void type}, we often use $0$ for the unique void type. When we reach a void type, we have reached an error, and thus we can throw any typed exception. 
+$$
+\infer[]{\vdash \text{abort}_A~t_1:A}{t_1:0}
+$$  
+\end{definition}
+
+\begin{annotation}
+\rm The abort rule extracts a term of any type from the void type. 
 \end{annotation}
 
 \newpage
