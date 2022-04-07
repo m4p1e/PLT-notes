@@ -166,6 +166,12 @@ When $\Sigma^t = T$, we say that $t$ \redt{satisfies} $\Sigma$. A set $\Sigma$ i
 if and only if for all truth valuations $t$, if $\Sigma^t = T$ then also $\alpha^t = T$. We write $\Sigma \nvDash \alpha$ for there exists a truth valuation $t$ such that $\Sigma^t = T$ and $\alpha^t = F$. 
 \end{definition}
 
+\begin{annotation}
+\rm For example, $\Sigma = \{p_1,p_2,\cdots,p_n\}$ could be a set of premises and let $\alpha$ could be the conclusion that we want to derive. 
+\end{annotation}
+
+
+
 
 \newpage
 \section{Natural Deduction}
@@ -438,6 +444,23 @@ $$
 \end{annotation}
 
 
+\subsection{Soundness and Completeness of Natural Deduction}
+
+\begin{definition}
+\rm \cite{cs245-nd}\redt{Soundness} of natural deduction means that the conclusion of proof is always a logical consequence of the premises. That is
+$$
+\text{If}~\Sigma \vdash \alpha, \text{then}~\sigma \vDash \alpha. 
+$$ 
+\end{definition}
+
+
+\begin{definition}
+\rm \redt{Completeness} of natural deduction means that all logical consequences in propositional logic are provable in natural deduction. That is,
+$$
+\text{If}~\Sigma \vDash \alpha, \text{then}~\sigma \vdash \alpha.
+$$ 
+\end{definition}
+
 
 \newpage
 \subsection{Curry-Howard Conrrespondence}
@@ -449,5 +472,7 @@ $$
 \bibitem{discharged-stack} The relation between deduction theorem and discharged. \url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
 \bibitem{discharged-proofwiki} Definition:Discharged Assumption. \url{https://proofwiki.org/wiki/Definition:Discharged_Assumption}
 \bibitem{cs245-sat} Propositional Logic: Semantics. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/05_Propositional_Logic_Semantics_Continued_post.pdf}
+\bibitem{cs245-nd} Propositional Logic: Soundness and
+Completeness for Natural Deduction. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
 \end{thebibliography}
 \end{document}
