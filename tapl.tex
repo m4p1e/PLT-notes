@@ -611,6 +611,74 @@ $$
 \rm 定义上述normal form的generator本想是根据它们来证明一些依赖normal form的命题，例如false和true的刻画"if $\vdash e:\alpha \to (\alpha \to \alpha)$ and $e$ is normal form, then $e = true$ or $e = false$"，对$e$使用normal form structure induction，仅仅使用上面第一个inference rule，实际上就可以了. 注意normal form的定义并不依赖type system，显然neutral term这种东西在STLC根本不可能出现... 
 \end{annotation}
 
+\newpage
+\subsection{Recursion}
+
+\begin{annotation}
+\rm 首先经历几个思考recurison历程. 首先给出一个标准recurison过程，阶乘过程
+$$
+\text{fact}~\overline{n} = \text{if}~(\iszero~\overline{n})(\overline{1})~\text{then}~(\text{mult}~\overline{n}~(\text{fact}~(\text{pred}~\overline{n}))). 
+$$
+其中$\overline{n}$代表church number. 因此$\text{fact}$表示的abstraction为
+$$
+\text{fact} = \lam{n}{\text{if}~(\iszero~n)(\overline{1})~\text{then}~(\text{mult}~n~(\text{fact}~(\text{pred}~n)))}
+$$
+这里我们只有一个等式，那么我们应当如何准确地给出$\text{fact}$的定义呢？ 如果我们尝试给左边的$\text{fact}$提出来，即
+$$
+\text{fact} = (\lam{f}{\lam{n}{\text{if}~(\iszero~n)(\overline{1})~\text{then}~(\text{mult}~n~(f(\text{pred}~n)))}})~\text{fact}
+$$
+将左边括号里面的abstraction看做一个函数，那么$\text{fact}$实际上就是它的一个fixed point. 我们的下一个目标就是想办法构造出这个函数的不动点，如果这个不动点正好就是我们需要的$\text{fact}$那就太好了.
+\end{annotation}
+
+
+\begin{definition}
+\rm A \redt{self-applicatin abstraction} is 
+$$
+\omega = \lam{x}{x~x}.
+$$
+The \redt{divergent omega combinator} is 
+\[
+	\Omega = \omega \omega = (\lam{x}{x~x})~(\lam{x}{x~x}).
+\]
+\end{definition}
+
+\begin{definition}
+\rm A  call-by-name \redt{Y combinator} is
+$$
+\mathbf{Y} = \lam{f}{(\lam{x}{f~(x~x)})~(\lam{x}{f~(x~x)})}.
+$$
+\end{definition}
+
+\begin{theorem}
+\rm For all abstractions $F \in \Lambda$, we have 
+$$
+\mathbf{Y}F = F(\mathbf{Y}F)
+$$
+\end{theorem}
+
+\begin{proof}
+只需要对$\mathbf{Y}F$做两次application即可
+$$
+\begin{aligned}
+\mathbf{Y}F &= (\lam{x}{F~(x~x)})~(\lam{x}{F~(x~x)}) \\
+&= F((\lam{x}{F~(x~x)})~(\lam{x}{F~(x~x)}) \\
+&= F(\mathbf{Y}F). 
+\end{aligned}
+$$
+\end{proof}
+
+\begin{annotation}
+\rm 我们将使用$\mathbf{Y}$ combinator继续$\text{fact}$的definition，我们使\[F = (\lam{f}{\lam{n}{\text{if}~(\iszero~n)(\overline{1})~\text{then}~(\text{mult}~n~(f(\text{pred}~n)))}}).\]由前述的theorem，现在我们有一个fixed point $\mathbf{Y}F$. 我们使$\text{fact} = \mathbf{Y}F$，显然有
+$$
+\begin{aligned}
+\text{fact}~n &= \mathbf{Y}F~n \\
+&= F({Y}F)~n \\
+&= \text{if}~(\iszero~n)(\overline{1})~\text{then}~(\text{mult}~n~(\mathbf{Y}F(\text{pred}~n))) \\
+&= \text{if}~(\iszero~n)(\overline{1})~\text{then}~(\text{mult}~n~(\text{fact}(\text{pred}~n))) 
+\end{aligned}
+$$
+当我们思考$\mathbf{Y}F$是不是我们想要的那个fixed point呢？ 实际上它就是$\text{fact}$的准确定义. 这个问题我们这样思考: 对于每一个church number $\overline{n}$, $\text{fact}$都有对应的形式$\text{fact}_{\overline{n}}$, 展开$\mathbf{Y}F \overline{n} = F^n(\mathbf{Y}F) \overline{n}$也可以得到相同的结果. 那么整个定义就是well-defined. 
+\end{annotation}
 
 \newpage
 \section{Simple Types}

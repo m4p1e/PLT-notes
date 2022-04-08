@@ -465,6 +465,30 @@ $$
 \newpage
 \subsection{Curry-Howard Conrrespondence}
 
+\begin{definition}
+\rm Curry-Howard correspondence is between the natural deduction and simply-typed $\lambda$-calculus at three levels
+\begin{itemize}
+	\item propositions are types;
+	\item proofs are programs; and
+	\item simplification of proofs is evaluation of programs.
+\end{itemize}
+That is
+\begin{center}
+\begin{tabular}{c|c}
+Types & Propositions \\
+\hline
+Unit types (1) & Truth ($\top$)\\
+\hline
+Product type ($\times$) & Conjunction ($\wedge$) \\
+\hline
+Union type ($+$)& Disjunction ($\vee$) \\
+\hline
+Function type ($\to$) & Implication ($\to$)\\
+\hline
+Void types (0) & False ($\perp$)
+\end{tabular}
+\end{center}
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
