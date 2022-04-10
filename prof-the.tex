@@ -540,7 +540,7 @@ Every typing rule has a correspondence with a deduction rule.
 \rm The typing derivation of the term $\lam{a}{\lam{b}{\left<a,b\right>}}$ can be seen as a deduction tree proving $A \supset B \supset A \wedge B$.
 \[
 \begin{aligned}
-	\infer[abs]{\lam{a}{\lam{b}{\left<a,b\right>}}:A \to B \to A \times B}{\infer[abs]{\lam{b}{\left<a,b\right>}:B \to A \times B}{\infer[pair]{\left<a,b\right>: A \times B}{a:A & b:B}}} & \iff & 
+	\infer[abs]{\Gamma\vdash\lam{x:A}{\lam{y:B}{\left<x,y\right>}}:A \to B \to A \times B}{\infer[abs]{\Gamma\vdash \lam{y:B}{\left<a,y\right>}:B \to A \times B}{\infer[pair]{\Gamma\vdash \left<a,b\right>: A \times B}{\infer[var]{\Gamma\vdash a:A}{a:A \in \Gamma} & \infer[var]{\Gamma\vdash b:B}{b:B \in \Gamma}}}} & \iff & 
 	\infer[\supset I^u]{A \supset B \supset A \wedge B~true}{\infer[\supset I^w]{B \supset A \wedge B~true}{\infer[\wedge \wedge I]{A \wedge B ~true}{\infer[u]{A~true}{} & \infer[w]{B~true}{}}}}		
 \end{aligned}
 \]
