@@ -546,6 +546,49 @@ Every typing rule has a correspondence with a deduction rule.
 \]
 \end{example}
 
+\begin{annotation}
+\rm 从上面例子中看的出来，the inference rule of natural deduction缺点什么，我也可以给原本每个inference rule都加上the annotation for proof terms. \cite{FP-pap}那么这里$M:A$有两种解释:
+\begin{enumerate}
+	\item $M$ is proof term for proposition $A$;
+	\item $M$ is a program of type $A$. 
+\end{enumerate}
+这样解释Curry-Howard ismorphism或许方便一点. 让proof terms make sense: 我们有"if $M:A$ then $A~true$"，反过来"if $A~true$ then $M:A$". 例如我们可以将the proof term of $A \wedge B~true$看做一个pair包含两个subterm，一个关于$A~true$和另一个关于$B~true$.
+$$
+\infer[\wedge I]{\left<M,N\right>: A \wedge B}{M:A & N:B}
+$$
+那么the elimination rule of conjunction对应一个natural projection.
+$$
+\begin{aligned}
+\infer[\wedge E_L]{\pi_1 M:A}{M:A \wedge B} &&& \infer[\wedge E_R]{\pi_2 M:B}{M:A \wedge B} 
+\end{aligned}
+$$ 
+\end{annotation}
+
+
+\begin{example}
+\rm 通过Curry-Howard isomorphism我们可以将我们想要证明的judgment转换到type system中，你会看到非常的便利! 例如
+$$
+(A \supset (B \wedge C)) \supset (A \supset B) \wedge (A \supset C)~true
+$$
+等价于
+$$
+\lam{x}{\left<\lam{y}{\pi_1(x~y)},\lam{y}{\pi_2(x~y)} \right>}: (A \to B \times C) \to (A \to B) \times (A \to C)
+$$
+一个implication被转换成了对应的abstraction，此时我们肯定会想如果给一个false proposition是不是就转不了？ 例如
+$$
+(A \supset B) \supset (B \supset A)
+$$
+显然我们无法在现有type system构造出一个合理的abstraction使得$(A \to B) \to (B \to A)$.
+
+迎面走来的问题是: 给定一个proposition true, 是否有其他的term with type和它对应呢？ 显然是有的，
+$$
+\lam{z}{\lam{x}{\left<\lam{y}{\pi_1(x~y)},\lam{y}{\pi_2(x~y)} \right>}}z'
+$$
+那这是不是违反Curry-Howard isomorphsim了呢？ 其实并不是，这里的对应是指proof terms和deduction of proposition true,  显然deduction变了，对应的proof terms也要变. 
+\end{example}
+
+
+
 \newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
@@ -554,5 +597,6 @@ Every typing rule has a correspondence with a deduction rule.
 \bibitem{cs245-sat} Propositional Logic: Semantics. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/05_Propositional_Logic_Semantics_Continued_post.pdf}
 \bibitem{cs245-nd} Propositional Logic: Soundness and
 Completeness for Natural Deduction. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
+\bibitem{FP-pap} Lecture Notes on Proofs as Programs. \url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/02-pap.pdf}
 \end{thebibliography}
 \end{document}
