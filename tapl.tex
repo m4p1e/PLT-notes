@@ -680,6 +680,15 @@ $$
 当我们思考$\mathbf{Y}F$是不是我们想要的那个fixed point呢？ 实际上它就是$\text{fact}$的准确定义. 这个问题我们这样思考: 对于每一个church number $\overline{n}$, $\text{fact}$都有对应的形式$\text{fact}_{\overline{n}}$, 展开$\mathbf{Y}F \overline{n} = F^n(\mathbf{Y}F) \overline{n}	$也可以得到相同的结果. 那么整个定义就是well-defined. 
 \end{annotation}
 
+\begin{example}
+\rm 如果$F = \lam{x}{x}$, 我们可以得到什么东西呢？ 所有term $x$都是其fixed point. 即
+$$
+x = \lam{x}{x} x  \Rightarrow x = x
+$$
+Nothing we have done. 
+\end{example}
+
+
 \newpage
 \section{Simple Types}
 
@@ -703,7 +712,6 @@ $$
 \end{array} 
 $$
 \end{definition}
-
 
 \begin{annotation}
 \rm 注意分支terms中的$\text{T}$表示任意的types即可能包括$\text{bool}$和$\text{nat}$. 理论上两个分支的表达式的type可以不一样，但是这一样以来似乎就不是well-typed, 处理这样的情况需要等到我们学习更多的类型的type之后才能来重新构造. 
@@ -874,16 +882,16 @@ proved by structural induction.
 \begin{annotation}
 \rm 对于一个language有两种特别的刻画形式：
 \begin{itemize}
-	\item \redt{Curry-style} 首先我们定义terms，再定义关于它们的求值规则(evaluation rules)，来确定terms的语义. 然后我们在定义一个类型系统来拒绝一些不符合我们预期的terms. 因此语义刻画是在类型之前，即它是一种implicit typing. 例如对于identity abstraction, 在curry-style下可以使用一种type variables，它可以代指所有可能的type， 
+	\item \redt{Curry-style} 首先我们定义terms，再定义关于它们的求值规则(evaluation rules)，来确定terms的语义. 然后我们在定义一个类型系统来拒绝一些不符合我们预期的terms. 因此语义刻画是在类型之前，即它是一种implicit typing, 也可以看做一种ploymorphism. 例如对于identity abstraction, 在curry-style下可以使用一种type variables，它可以代指所有可能的type， 
 	$$
 	I = \lam{x}{x} : \sigma \to \sigma
 	$$ 
-	\item \redt{Church-style} 首先我们定义terms，再确定一些well-typed的terms. 然后只给well-typed terms制定求值规则，来确定其语义. 因此类型先于语义，即它是一种explicit typing，也可以看做一种ploymorphism. 例如对于identity abstraction, 对每一种可能type，在church-style下我们都可以得到family of identity,
+	\item \redt{Church-style} 首先我们定义terms，再确定一些well-typed的terms. 然后只给well-typed terms制定求值规则，来确定其语义. 因此类型先于语义，即它是一种explicit typing. 例如对于identity abstraction, 对每一种可能type，在church-style下我们都可以得到family of identity,
 	$$
 	I_A = \lam{x:A}{x} : A \to A.
 	$$
 \end{itemize}
-它们两个最大的不同就是我们在谈论一个term的语义的时候到底是否关系它此时是well-typed. Curry-style通常适用于刻画implicitly typed system，而Curry-style通常用于刻画explicitly typed system. 
+它们两个最大的不同就是我们在谈论一个term的语义的时候到底是否关系它此时是well-typed. Curry-style通常适用于刻画implicitly typed system，而Church-style通常用于刻画explicitly typed system. 
 \end{annotation}
 
 \newpage
@@ -1349,7 +1357,35 @@ $$
 \rm \redt{Progress} Suppose $\term{t}$ is closed, well-typed term, that is $\cdot \mid \Sigma \vdash \termtype{\term{t}}{\singletype{T}}$ for some $\singletype{T}$ and $\Sigma$. Then either $\term{t}$ is a value or else, for any store $\mu$ such that $\cdot \mid \Sigma \vdash \mu$, there is some term $\term{t}'$ and store $\mu'$ with $\term{t} \mid \mu \to \term{t}' \mid \mu'$.
 \end{theorem}
 
+\newpage
+\subsection{Recursion}
 
+\begin{definition}
+\rm An explicit \redt{recursion operator} $\mu$ for types:
+$$
+T = \mu X. S 
+$$
+which means "T is the infinite type statifying the equation X = S", where $T$, $X$ and $S$ are types.
+\end{definition}
+
+\begin{example}
+\rm The type natural list are defined as follow
+$$
+NatList = \mu X. \left<\text{nil}:Unit,~\text{cons}:\{Nat,X\} \right>. 
+$$
+\end{example}
+
+\begin{definition}
+\rm A fixed constructor for function $T$ is defined as follow
+$$
+\text{fix}_T = \lam{f:T \to T}{(\lam{x:(\mu A.A\to T)}{f~(x~x)})~~(\lam{x:(\mu A.A\to T)}{f~(x~x)})}.
+$$
+\end{definition}
+
+
+\begin{annotation}
+\rm 去掉$\text{fix}_T$中所以的type annotation，就可以得到在untyped lambda calculus里面的fix constructor. 这里$x$必须是一个arrow type，同时它的domain也是$x$，显然我们找不到这样finite type，recurison operator在这里就神奇的起作用了. 
+\end{annotation}
 \newpage
 \section{Subtyping}
 
