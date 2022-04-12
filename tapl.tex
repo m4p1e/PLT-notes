@@ -1363,28 +1363,30 @@ $$
 \begin{definition}
 \rm An explicit \redt{recursion operator} $\mu$ for types:
 $$
-T = \mu X. S 
+T = \mu \alpha. \tau 
 $$
-which means "T is the infinite type statifying the equation X = S", where $T$, $X$ and $S$ are types.
+a recursive type $T$ was regarded as an infinite type and
+considered equal to its unfolding $[\alpha \to T]\tau$
 \end{definition}
+
 
 \begin{example}
 \rm The type natural list are defined as follow
 $$
-NatList = \mu X. \left<\text{nil}:Unit,~\text{cons}:\{Nat,X\} \right>. 
+NatList = \mu \alpha. \left<\text{nil}:Unit,~\text{cons}:\{Nat,\alpha\} \right>. 
 $$
 \end{example}
 
 \begin{definition}
-\rm A fixed constructor for function $T$ is defined as follow
+\rm A fixed constructor for function type $\tau$ is defined as follow
 $$
-\text{fix}_T = \lam{f:T \to T}{(\lam{x:(\mu A.A\to T)}{f~(x~x)})~~(\lam{x:(\mu A.A\to T)}{f~(x~x)})}.
+\text{fix}_\tau = \lam{f:\tau \to \tau}{(\lam{x:(\mu \alpha.\alpha\to \tau)}{f~(x~x)})~~(\lam{x:(\mu \alpha.\alpha\to \tau)}{f~(x~x)})}.
 $$
 \end{definition}
 
 
 \begin{annotation}
-\rm 去掉$\text{fix}_T$中所以的type annotation，就可以得到在untyped lambda calculus里面的fix constructor. 这里$x$必须是一个arrow type，同时它的domain也是$x$，显然我们找不到这样finite type，recurison operator在这里就神奇的起作用了. 
+\rm 去掉$\text{fix}_\tau$中所以的type annotation，就可以得到在untyped lambda calculus里面的fix constructor. 这里$x$必须是一个arrow type，同时它的domain也是$x$它自己，显然我们找不到这样finite type，recurison operator在这里就神奇的起作用了. 
 \end{annotation}
 \newpage
 \section{Subtyping}
