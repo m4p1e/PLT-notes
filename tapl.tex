@@ -1386,8 +1386,43 @@ $$
 
 
 \begin{annotation}
-\rm 去掉$\text{fix}_\tau$中所以的type annotation，就可以得到在untyped lambda calculus里面的fix constructor. 这里$x$必须是一个arrow type，同时它的domain也是$x$它自己，显然我们找不到这样finite type，recurison operator在这里就神奇的起作用了. 
+\rm 去掉$\text{fix}_\tau$中所有的type annotation，就可以得到在untyped lambda calculus里面的fix constructor. 这里$x$必须是一个arrow type，同时它的domain也是$x$它自己，显然我们找不到这样finite type，recurison operator在这里就神奇的起作用了. 
 \end{annotation}
+
+\begin{definition}
+\rm A well-typed term whose evalutaion will diverge.
+$$
+\text{diverge}_\tau = \lam{:Unit}{\text{fix}_\tau~\text{id}}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm 这意味recursive type的引入将会破坏strong normalization. 
+\end{annotation}
+
+\begin{example}
+\rm 利用recursive type可以完美地将untyped lambda calculus $\Lambda$(only include variables, abstraction and application)变成typed. 给每个在$\Lambda$里面的term都assign上一个recursive type $D$
+$$
+D = \mu \alpha. \alpha \to \alpha. 
+$$
+因为arrow type的天然存在，会导致出现$D \to D$，因此我们需要一个unifier. 其中abstraction对应了fold操作，我们需要将$D \to D$变成$D$保持一致, 即
+$$
+\text{lam} = \lam{f:D \to D}{f~\text{as}~D},
+$$
+而application对应unfold操作，我们需要将第一个term从$D$变成$D \to D$, 这样才能apply，即
+$$
+\text{ap} = \lam{f:D}{\lam{x:D}{f~a}}.
+$$
+给定closed term $M \in \Lambda$，用$M^*$表示$M$对应的typed term，两者对应如下
+$$
+\begin{aligned}
+&x^* = x \\
+&(\lam{x}{M})^* = \text{lam}~(\lam{x:D}{M^*}) \\
+&(M N)^* = \text{ap}~ M^* N^*
+\end{aligned}
+$$
+\end{example}
+
 \newpage
 \section{Subtyping}
 
