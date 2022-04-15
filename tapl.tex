@@ -1361,14 +1361,43 @@ $$
 \subsection{Recursion}
 
 \begin{definition}
-\rm An explicit \redt{recursion operator} $\mu$ for types:
-$$
-T = \mu \alpha. \tau 
-$$
-a recursive type $T$ was regarded as an infinite type and
-considered equal to its unfolding $[\alpha \to T]\tau$
+\rm There are two basic approaches to recursive types.
+\begin{enumerate}
+	\item \redt{equi-resursive} approach: given two types expression as definition-ally equal-interchangeable in all contexts. 
+	\item \redt{iso-resurisive} approach: takes a recursive type and its unfolding  as diffrent, but isomorphic. 
+\end{enumerate}
 \end{definition}
 
+\begin{definition}
+\rm An explicit \redt{recursion operator} $\mu$ for types:
+$$
+\mu \alpha. \tau 
+$$
+it has two interepretion from above tow approaches.
+\begin{enumerate}
+	\item equi-resursive: A recursive type $\mu \alpha. \tau$ is the infinite type satifying the equation $\alpha = \tau$.
+	\item iso-resursive: A recursive type $\mu \alpha. \tau$ was regarded as an infinite type and consider equal to its unfolding $[\alpha \to \mu \alpha. \tau ]\tau$. 
+\end{enumerate}
+\end{definition}
+
+\begin{annotation}
+\rm equi-recursive性质可以告诉typechecker对应的recursion type它可以适当的转换，例如我们可以recursion type $T$满足等式$X = X \to X$, 给定两个type均为$T$的terms $M,N$，当考虑application时$M N$， typechecker就知道$M: T \to T$和$N: T$. 
+
+而iso-resursive性质就是将equi-recurisve里面隐式的转换用unfolding和unfold变成显式的了. 这里有一个小小问题探讨，以上的所有recursion的描述都是针对type而言的，不是之前在untyped $\lambda$-calculus里面针对term而言的.  
+但是unfold和fold会作为primilitives出现在terms里面，那么这里需要对它们有一个准确的描述. 
+
+首先每个recursive typeun都有unfold和fold，因此它们形式化的定义如下
+$$
+\begin{aligned}
+\text{unfold}[\mu \alpha.\tau]: \mu \alpha.\tau \to [\alpha \to \mu \alpha.\tau]\tau \\
+\text{fold}[\mu \alpha.\tau]: [\alpha \to \mu \alpha.\tau]\tau \to \mu \alpha.\tau
+\end{aligned}
+$$
+例如某个term具有unfolded formation，对其进行fold可以写作$\text{fold}[\mu \alpha.\tau]~t$. 那么它们的isomorphism体现在
+$$
+\text{fold}[\mu \alpha.\tau] (\text{unfold}[\mu \alpha.\tau]~t) = t
+$$ 
+\end{annotation}
 
 \begin{example}
 \rm The type natural list are defined as follow
@@ -1423,13 +1452,6 @@ $$
 $$
 \end{example}
 
-\begin{definition}
-\rm There are two basic approaches to recursive types.
-\begin{enumerate}
-	\item \redt{equi-resursive} approach: given two types expression as definition-ally equal-interchangeable in all contexts. 
-	\item \redt{iso-resurisive} approach: takes a recursive type and its unfolding  as diffrent, but isomorphic. 
-\end{enumerate}
-\end{definition}
 
 \newpage
 \section{Subtyping}
