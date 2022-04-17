@@ -1588,7 +1588,7 @@ $$
 
 
 \begin{annotation}
-\rm 上面提到的第二类问题就是这里需要探究的问题，尽管我们没有了term里面的存在的annotation，但是term里面依然暗含一些constraint. 例如给定一个application $e_1~e_2$和对应的$\Gamma \vdash e_1 : \tau_1$ and $\Gamma \vdash e_2: \tau_2$, 那么这里就有一个constraint用等式来描述就是$\tau_1 = \tau_2 \to X$，其中$X$是一个fresh variable. 因此我们需要注意到这些constraints来限定可用的substitutions，于是就提出了unifer的概念. 
+\rm 上面提到的第二类问题就是这里需要探究的问题，尽管我们没有了term里面的存在的annotation，但是term里面依然暗含一些constraints. 例如给定一个application $e_1~e_2$和对应的$\Gamma \vdash e_1 : \tau_1$ and $\Gamma \vdash e_2: \tau_2$, 那么这里就有一个constraint用等式来描述就是$\tau_1 = \tau_2 \to X$，其中$X$是一个fresh variable. 因此我们需要注意到这些constraints来限定可用的substitutions，于是就提出了unifer的概念. 
 \end{annotation}
 
 \begin{definition}
