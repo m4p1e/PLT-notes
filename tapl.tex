@@ -1554,13 +1554,13 @@ where $\tau$ is base type and $\text{Tvar}$ is type variable.
 
 
 \begin{definition}
-\rm A \redt{type substitution} $f$ is any function from type variables to type templates. Any type substitution $f$ can be extended to a function between type templates called $F$ and defined inductively by
+\rm A \redt{type substitution} $f$ is any function from type variables to type templates. Any type substitution $f$ can be extended to a function between type templates and defined inductively by
 $$
-F(T) = \left\{
+f(T) = \left\{
 \begin{aligned}
 	&T && \text{if}~T~\text{is any basic type}~\tau \\
 	&f(T) &&  \text{if}~T~\text{is any type variable}~x \\
-	&F(A) \to F(B) &&  \text{if}~T~\text{is}~A \to B~\text{for any two type templates}~A~\text{and}~B 
+	&f(A) \to f(B) &&  \text{if}~T~\text{is}~A \to B~\text{for any two type templates}~A~\text{and}~B 
 \end{aligned}
 \right.
 $$
@@ -1596,7 +1596,7 @@ $$
 \end{definition}
 
 \begin{definition}
-\rm A substitution $f$ is called an \redt{unifier} of two sequences of type templates $A_1,\cdots,A_n$ and $B_1,\cdots,B_n$ if $F(A_i) = F(B_i)$ for all $i = 1,\cdots,n$. We say that it is the \redt{most general unifier} if given any other unifier $g$ exists a substitution $h$ such that $g = H \circ f$. 
+\rm A substitution $f$ is called an \redt{unifier} of two sequences of type templates $A_1,\cdots,A_n$ and $B_1,\cdots,B_n$ if $f(A_i) = f(B_i)$ for all $i = 1,\cdots,n$. We say that it is the \redt{most general unifier} if given any other unifier $g$ exists a substitution $h$ such that $g = h \circ f$. 
 \end{definition}
 
 \begin{annotation}
@@ -1604,12 +1604,12 @@ $$
 \[
 % https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAEEQBfU9TXfIRRkATFVqMWbAELdeIDNjwEiI0gEZx9Zq0QgAwnL5LBRACwatk3SAAi3cTCgBzeEVAAzAE4QAtkjIQHAgkNQkdNgAxIxBvPyR1amDQ6m0pPWjqBjoAIxgGAAV+ZSEQLyxnAAscGLj-REDkxABmajywKCRmwLSbAHFan3rEoJCWtpgOpABabtTrNgGs3PyikxU9cqqank8hlNGu+Yi9AAkHLiA
 \begin{tikzcd}
-A \arrow[rrd, "F"] \arrow[rrrrd, "G", bend left]    &  &                   &  &   \\
-                                                    &  & C \arrow[rr, "H"] &  & D \\
-B \arrow[rru, "F"'] \arrow[rrrru, "G"', bend right] &  &                   &  &  
+A \arrow[rrd, "f"] \arrow[rrrrd, "g", bend left]    &  &                   &  &   \\
+                                                    &  & C \arrow[rr, "h"] &  & D \\
+B \arrow[rru, "f"'] \arrow[rrrru, "g"', bend right] &  &                   &  &  
 \end{tikzcd}
 \]
-如果存在两种unifier，那么显然它们是上述这种关系，当考虑所有unifier的时候，就存在一个most general unifier(？). 还有一个疑问怎么不直接用$G = H \circ F$来刻画的呢？
+如果存在两种unifier，那么显然它们是上述这种关系，当考虑所有unifier的时候，就存在一个most general unifier(？). 
 \end{annotation}
 
 \begin{lemma}
@@ -1629,11 +1629,11 @@ B \arrow[rru, "F"'] \arrow[rrrru, "G"', bend right] &  &                   &  &
 \end{proof}
 
 \begin{theorem}
-\rm (\redt{type inference}) The function $\text{typeinfer}(M,B)$, partially defined as follows, finds the most general substitution $\sigma$ such that $x_1:\sigma A_1,\cdots,x_n:\sigma A_n \vdash M:\Sigma B$ is a valid typing judgment if it exists; and fails otherwise.
+\rm (\redt{type inference}) The function $\text{typeinfer}(M,B)$, partially defined as follows, finds the most general substitution $\sigma$ such that $x_1:\sigma A_1,\cdots,x_n:\sigma A_n \vdash M:\sigma B$ is a valid typing judgment if it exists; and fails otherwise.
 \begin{enumerate}
 	\item (var) $\text{typeinfer}(\Gamma,x_i:A_i \vdash x_i:B) = \text{unify}(A_i,B)$;
-	\item (app) $\text{typeinfer}(\Gamma \vdash MN:B) = F \circ g$, where $g = \text{typeinfer}(\Gamma \vdash M:X\to B)$ and $f = \text{typeinfer}(G\Gamma\vdash N:GX)$ for a fresh type variable $X$. 
-	\item (abs) $\text{typeinfer}(\Gamma \vdash \lam{x}{M:B}) = F \circ g$ where $g = \text{unify}(B,z \to z')$ and $f = \text{typeinfer}(G\Gamma, x:Gz \vdash M:Gz')$ for fresh type variables $z,z'$. 
+	\item (app) $\text{typeinfer}(\Gamma \vdash MN:B) = f \circ g$, where $g = \text{typeinfer}(\Gamma \vdash M:X\to B)$ and $f = \text{typeinfer}(g\Gamma\vdash N:gX)$ for a fresh type variable $X$. 
+	\item (abs) $\text{typeinfer}(\Gamma \vdash \lam{x}{M:B}) = f \circ g$ where $g = \text{unify}(B,z \to z')$ and $f = \text{typeinfer}(g\Gamma, x:gz \vdash M:gz')$ for fresh type variables $z,z'$. 
 \end{enumerate}
 \end{theorem}
 
