@@ -1637,6 +1637,14 @@ B \arrow[rru, "F"'] \arrow[rrrru, "G"', bend right] &  &                   &  &
 \end{enumerate}
 \end{theorem}
 
+\begin{annotation}
+\rm 上述过程用inference rule说明会更好也方便证明，我们需要证明该算法的soundness和completeness. 其中
+\begin{enumerate}
+	\item soundness指该算法得到的$\sigma$和$\Sigma B$是well-defined.
+	\item completeness指任意一个满足上述$\sigma$，有一个利用上述算法得到的$\sigma'$使得$\sigma B = \sigma' B$. 
+\end{enumerate}
+\end{annotation}
+
 \newpage
 \begin{thebibliography}{00}
 \bibitem{typinf} Mario Román García. Category Theory and Lambda Calculus. \url{https://mroman42.github.io/ctlc/ctlc.pdf}
