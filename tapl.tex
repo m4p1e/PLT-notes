@@ -1626,6 +1626,18 @@ B \arrow[rru, "f"'] \arrow[rrrru, "g"', bend right] &  &                   &  &
 
 \begin{proof}
 \rm 这里需要证明3个部分:(1 上述描述的确实是一个unifier (2 the most general unifier (3 termination. 
+
+对于(3 termination, 我们需要model一个degree关于当且需要解决的constraints，这个degree用两个维度来表示: the number of distinct type variables和 the number of whole types. 对于上述算法的每一步只会出现两种情况: (1 要么直接结束了 i.e. step1或者step6 (2 要么就是degree在减少 i.e. step2,3,5比较明显，step4中减少了两个arrow type. step 5相当于从一堆constraints里面取一个出来接近. 因此我们的degree是finite，最终算法会停止.
+
+对于(2 还是通常手法hypothesis induction，对constraints的规模做归纳. Base: 对于empty sequence, unfier实际上得到的是一个identity $\text{id}$, 那么对于任意的substitution $\delta$，都有$\delta = \delta \circ \text{id}$. Induction: 当n+1规模时，即$\mathcal{C} = (A, B) \cup \mathcal{C}'$, 其中$\mathcal{C}' = (A_1,\cdots,A_n; A_1,\cdots,A_n)$. 根据假设我们有$\sigma' = \text{unify}(\mathcal{C}')$，这里要对$(\sigma' A,\sigma' B)$的结构继续按照unfier算法讨论，现在仅考虑$\sigma' A = x$时，即step2. 对于任意$\delta$ unifies $\mathcal{C}$, 也有$\delta$ unifies $\mathcal{C}'$, 那么这里存在$\gamma$使得$\delta = \gamma \circ \sigma'$, 这里提前假设给我们带来的. 而这里的$\sigma = \text{unify}(\mathcal{C}) =  (\sigma' A \to \sigma' B) \circ \sigma'$, 要是能证明
+$$
+\delta = \gamma \circ (\sigma' A \to \sigma' B) \circ \sigma'
+$$
+就好了. 对于任意的type variable$x$, 当$\sigma' x \neq \sigma'A$时，有$(\gamma \circ (\sigma' A \to \sigma' B) \circ \sigma')x = (\gamma \circ \sigma') x = \delta x$; 当$\sigma'x = \sigma 'A$时，有
+$$
+(\gamma \circ (\sigma' A \to \sigma' B) \circ \sigma')x = \gamma(\sigma' B) = \delta(B),
+$$
+而$\delta(A) = \delta(B)$, 因此$\delta(B) =(\gamma\circ \sigma') A = \delta(x)$. 
 \end{proof}
 
 \begin{annotation}
