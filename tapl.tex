@@ -1619,7 +1619,7 @@ B \arrow[rru, "f"'] \arrow[rrrru, "g"', bend right] &  &                   &  &
 	\item $\text{unify}(x;B) = (x \to B)$, the substitution that only changes $x$ by $B$; if $x$ does not occur in $B$. The algorithm fails if $x$ occurs in $B$;
 	\item $\text{unify}(A;x)$ is defined symmetrically;
 	\item $\text{unify}(A \to A'; B \to B') = \text{unify}(A,A';B,B')$;
-	\item $\text{unify}(A,A_1,\cdots,A_n;B,B_1,\cdots,B_n) = F \circ g$ where $g = \text{unify}(A_1,\cdots,A_n;B_1,\cdots,B_n)$ and $f = \text{unify}(G(A);G(B))$.
+	\item $\text{unify}(A,A_1,\cdots,A_n;B,B_1,\cdots,B_n) = f \circ g$ where $g = \text{unify}(A_1,\cdots,A_n;B_1,\cdots,B_n)$ and $f = \text{unify}(g(A);g(B))$.
 	\item unify fails in any other case.
 \end{enumerate}
 \end{lemma}
@@ -1627,6 +1627,10 @@ B \arrow[rru, "f"'] \arrow[rrrru, "g"', bend right] &  &                   &  &
 \begin{proof}
 \rm 这里需要证明3个部分:(1 上述描述的确实是一个unifier (2 the most general unifier (3 termination. 
 \end{proof}
+
+\begin{annotation}
+\rm 你可能会在评估unifier算法的时候，想如果不同的type templates含有相同的type variables是否出现问题？ 只要对应type templates，不出现上面提到的那种问题，就不会有问题. 因为我们处理的过程是one by one, 那么处理下一个的时候，前面的所有已经被某个$\sigma$给弄成一样了，这样其中一个变，全部都得变，最后还是一样的. 
+\end{annotation}
 
 \begin{theorem}
 \rm (\redt{type inference}) The function $\text{typeinfer}(M,B)$, partially defined as follows, finds the most general substitution $\sigma$ such that $x_1:\sigma A_1,\cdots,x_n:\sigma A_n \vdash M:\sigma B$ is a valid typing judgment if it exists; and fails otherwise.
@@ -1640,7 +1644,7 @@ B \arrow[rru, "f"'] \arrow[rrrru, "g"', bend right] &  &                   &  &
 \begin{annotation}
 \rm 上述过程用inference rule说明会更好也方便证明，我们需要证明该算法的soundness和completeness. 其中
 \begin{enumerate}
-	\item soundness指该算法得到的$\sigma$和$\Sigma B$是well-defined.
+	\item soundness指该算法得到的$\sigma$和$\sigma B$是well-defined.
 	\item completeness指任意一个满足上述$\sigma$，有一个利用上述算法得到的$\sigma'$使得$\sigma B = \sigma' B$. 
 \end{enumerate}
 \end{annotation}
