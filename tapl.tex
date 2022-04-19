@@ -1654,12 +1654,27 @@ $$
 \end{theorem}
 
 \begin{annotation}
-\rm 上述过程用inference rule说明会更好也方便证明，我们需要证明该算法的soundness和completeness. 其中
+\rm 关于type inference有两种方法，但实质都是一样的. 
+
+\begin{enumerate}
+	\item 我们上述提到的方法实际上在一边构造constraints of types, 同时也在解决这些constrains. 
+	\item 另外一种方法是首先把某个term对应的constraints都构造出来，最后我们可以得到一个关于该term的一个shape of type $S$，然后我们再去找到满足该constraints的$\sigma$，最后对应term的type为$\sigma S$. 构造constraints的过程采用inference rules. 
+\end{enumerate}
+无论哪种方法，我们都需要证明该算法的soundness和completeness. 其中
 \begin{enumerate}
 	\item soundness指该算法得到的$\sigma$和$\sigma B$是well-defined.
 	\item completeness指任意一个满足上述$\sigma$，有一个利用上述算法得到的$\sigma'$使得$\sigma B = \sigma' B$. 
 \end{enumerate}
 \end{annotation}
+
+
+\begin{definition}
+\rm Suppose $\Gamma \vdash M:\pi$, where $pi$ is type template. If every possible type $T$ for $M$ is a instance of $\pi$, that is, $T = \sigma \pi$, we say $\pi$ is a \redt{principle type} of $M$.    
+\end{definition}
+
+\begin{theorem}
+\rm If $\Gamma \vdash M:B$ has possible solution, then $M$ has principle type. 
+\end{theorem}
 
 \newpage
 \begin{thebibliography}{00}
