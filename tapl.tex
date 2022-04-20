@@ -1655,7 +1655,6 @@ $$
 
 \begin{annotation}
 \rm 关于type inference有两种方法，但实质都是一样的. 
-
 \begin{enumerate}
 	\item 我们上述提到的方法实际上在一边构造constraints of types, 同时也在解决这些constrains. 
 	\item 另外一种方法是首先把某个term对应的constraints都构造出来，最后我们可以得到一个关于该term的一个shape of type $S$，然后我们再去找到满足该constraints的$\sigma$，最后对应term的type为$\sigma S$. 构造constraints的过程采用inference rules. 
@@ -1675,6 +1674,64 @@ $$
 \begin{theorem}
 \rm If $\Gamma \vdash M:B$ has possible solution, then $M$ has principle type. 
 \end{theorem}
+
+
+\newpage
+\subsection{Let Polymorphism}
+
+\begin{annotation}
+\rm 如果想要实现如下语法
+$$
+\begin{aligned}
+&\text{let}~\text{double} = \lam{f:\tau \to \tau}{\lam{x:\tau}{f(f(x))}}~\text{in} \\
+&\text{let}~ a = ~\text{double}~ (\lam{x:nat}{\text{succ}~(\text{succ}~x)})~ 1~\text{in} \\
+&\text{let}~ b = ~\text{double}~ (\lam{x:bool}{x})~false~\text{in}~\cdots
+\end{aligned}
+$$
+在现有let语义下有些问题，这里会给出两个矛盾的constraints即
+$$
+\tau \to \tau = nat \to nat, \,\tau \to \tau = bool \to bool.  
+$$
+出现这种问题的原因在于let本身的typing inference rule
+$$
+\infer[\text{T}{\tiny{-}}\textsc{Let}]{\Gamma \vdash \text{let}~x  = e_1~\text{in}~e_2:\tau_2}{\Gamma \vdash e_1:\tau_1 & \Gamma, x:\tau_1 \vdash e_2:\tau_2}
+$$
+这里将$e_1$和$x$的type绑定起来了，因此首先我们首先去掉这种绑定状态.
+\end{annotation}
+
+\begin{definition}
+\rm Let-polymorphism typing rule as follow
+$$
+\infer[\text{T}{\tiny{-}}\textsc{LetPoly}]{\Gamma \vdash \text{let}~x  = e_1~\text{in}~e_2:\tau_2}{\Gamma \vdash [x \to e_1]e_2:\tau_2}
+$$
+\end{definition}
+
+
+\begin{annotation}
+\rm 
+这样我们直接将let-body中的$x$替换成$e_1$, 去掉了单独关于$e_1$的单独typechecking, 等到它在let-body中出现的时候在考虑其type. 
+
+这样还是有一点问题就是double里面还是存在argument annotation, 还是解决不了问题，我们得想办法把不同case里面的argument annotation用不同的variables表示. 这里我们在语法上引入不带annotation的lambda abstraction，在parser typing阶段再给assign一个annotation. 这样做的好处就是对同一个abstraction，我们能拷贝不同annotation的abstraction.  
+\end{annotation}
+
+\begin{definition}
+\rm Typing rule for unannotated abstration.
+$$
+\infer{\Gamma \vdash \lam{x}{e_1}:A \to B}{X \notin \mathcal{X} & \Gamma, x: A \vdash e_1:B |_{\mathcal{X}}}
+$$
+where $\mathcal{X}$ represents type variable used in $\Gamma$,\,$e_1$ and $B$. 
+\end{definition}
+
+\begin{annotation}
+\rm 现在就可以正常工作了, 但是还有一些不那么明显的问题:
+\begin{enumerate}
+	\item 如果$e_1$没有在let-body中出现，那么它永远不会被typecheck. 我们可以改写一下let-poly来解决这个问题:
+	$$
+	\infer[\text{T}{\tiny{-}}\textsc{LetPoly}]{\Gamma \vdash \text{let}~x  = e_1~\text{in}~e_2:\tau_2}{\Gamma \vdash [x \to e_1]e_2:\tau_2 & \Gamma \vdash e_1:\tau_1}
+	$$
+	\item 因为$e_1$将会被替换到let-body每一处它出现的地方，那么每个地方都会经历typecheck, 无论其是否含有type variables. 我们最好首先对$e_1$做一个simplify，可以先把$e_1$提出来，构造关于$e_1$的principle type $\pi$; 然后generalize $\pi$里面出现的type variables $X_1,\cdots,X_2$, 注意不包含$\Gamma$里面出现的type variables，仅仅是对$e_1$的刻画，利用这些type variables构造一个type scheme $\forall X_1,\cdots,X_2 \pi$; 最后开始typecheck let-body, 对于每一个$x$出现的地方，我们都实例化一下这个type scheme，即给里面每个type variables都assign一个fresh variables得到一个type，再把这个type给$x$. 
+\end{enumerate}
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
