@@ -406,6 +406,14 @@ where $\left[ x \mapsto \term{t_2} \right]$ means "the term obtainted by replaci
 {\color{red} Evaluation strategies are used by programming languages to determine two things—when to evaluate the arguments of a function call and what kind of value to pass to the function}.
 \end{definition}
 
+\begin{definition}
+\rm Given lambda abstraction $\lam{x}{e}$, then the \redt{$\eta$-conversation} of it as follow
+$$
+\lam{y}{(\lam{x}{e})~y}
+$$
+where $y$ is not in $e$.  
+\end{definition}
+
 \newpage
 \subsection{Programming in the Lambda-Calculus}
 
