@@ -202,6 +202,14 @@ $$
 Here $\wedge I$ stands for "conjunction introduction".
 \end{definition}
 
+\begin{annotation}
+\rm 实际上面的inference rule的general form应该是
+$$
+\infer[\wedge I]{A \wedge B ~true}{A~prog & B~prog & A~true & B~true}
+$$
+这里才能帮助后面的$\vDash$ make sense. 
+\end{annotation}
+
 \begin{definition}
 \rm Inference rules that describe how to deconstruct information about a compound proposition into information about its consitiuents are elimination rules. i.e., from $A \wedge B~true$, we can conclude $A~true$ and $B~true$:
 $$
@@ -369,7 +377,7 @@ As u can see it's not local soundness.
 \end{definition}
 
 \begin{annotation}
-\rm natural deduction实际上像constructive logic或者intuitive logic,  不像classic logic, 例如Proposition $A \vee (A \supset B)$在classic logic就是正确的，因为我们$A$和$B$都需要给定是true/false tag, 但是在natural deduction里面我们好像没有办法来处理. 更甚，如果我们要证明一个$B$是accpeted in natural deduction, 你可能首先需要证明$A \supset B$和$B$都是accepted，就是根据结构来做derivation. 
+\rm natural deduction实际上像constructive logic或者intuitive logic,  不像classic logic, 例如Proposition $A \vee (A \supset B)$在classic logic就是正确的，因为我们$A$和$B$都需要给定是true/false tag, 但是在natural deduction里面我们好像没有办法来处理. 更甚，如果我们要证明一个$B$是accpeted in natural deduction, 你可能首先需要证明$A \supset B$和$B$都是accepted，就需要根据其结构bottom-up来做derivation. 
 \end{annotation}
 
 
@@ -449,7 +457,7 @@ $$
 \begin{definition}
 \rm \cite{cs245-nd}\redt{Soundness} of natural deduction means that the conclusion of proof is always a logical consequence of the premises. That is
 $$
-\text{If}~\Sigma \vdash \alpha, \text{then}~\sigma \vDash \alpha. 
+\text{If}~\Sigma \vdash \alpha, \text{then}~\Sigma \vDash \alpha. 
 $$ 
 \end{definition}
 
@@ -457,9 +465,32 @@ $$
 \begin{definition}
 \rm \redt{Completeness} of natural deduction means that all logical consequences in propositional logic are provable in natural deduction. That is,
 $$
-\text{If}~\Sigma \vDash \alpha, \text{then}~\sigma \vdash \alpha.
+\text{If}~\Sigma \vDash \alpha, \text{then}~\Sigma \vdash \alpha.
 $$ 
 \end{definition}
+
+\begin{annotation}
+\rm 其中$\Sigma \vdash \alpha$， 表示存在一个以$\Sigma$作为premise得到conclusion为$\alpha$的proof. 而$\Sigma \vDash \alpha$，就考虑两端的proposition加上truth-falsehood了， 即如$\Sigma^t = True$则有$\alpha^t = True$.
+
+对于soundness的证明，我们需要根据$\alpha$的结构来做归纳，而后再考虑赋予其true/false来考虑. 这里记录一下对于结构归纳它是怎样对应一般归纳法命题$P(n)$结构上，这里的$n$应该对应$\alpha$的bottom-up derivation里面的maximum depth of line. 
+
+而对于completeness的证明，相对来说会复杂一点. 我们需要下面3个lemma.
+\end{annotation}
+
+\begin{lemma}
+\rm If $\Sigma \vDash \beta$, then
+$$
+\emptyset \vDash (\alpha_0 \to (\alpha_1 \to (\cdots \to (\alpha_n \to \beta)\cdots)).
+$$
+\end{lemma}
+
+\begin{lemma}
+\rm For any well-formed formula $\gamma$, if $\emptyset \vDash \gamma$, then $\emptyset \vdash \gamma$. 
+\end{lemma}
+
+\begin{lemma}
+\rm If $\emptyset \vdash (\alpha_0 \to (\alpha_1 \to (\cdots \to (\alpha_n \to \beta)\cdots))$, then $\{\alpha_0, \alpha_1,\cdots,\alpha_n\} \vdash \beta$, that is, $\Sigma \vdash \beta$. 
+\end{lemma}
 
 \newpage
 \subsection{Notational Definition}
@@ -478,10 +509,18 @@ $$
 \begin{example}
 \rm We can define negation $\neg A$ as 
 $$
-\neg A = (A \supset \perp). 
+\neg A = (A \supset \perp) \Longrightarrow \infer[\neg I]{\neg A}{\deduce[\vdots]{\perp}{A}}
 $$
+We also can give the introduction rule of falsehood.
+$$
+\infer[\perp I]{\perp}{\neg A & A}
+$$
+so $\perp$ actually means any contradictions. 
 \end{example}
 
+\begin{annotation}
+\rm notaional definition可以看做用已有的东西构造出一些东西. 与之对应的是我们可以直接符号化的给出某个新的定义，称之为symbolic definition. 
+\end{annotation}
 
 \newpage
 \subsection{Derived Rules of Inference}
@@ -504,6 +543,13 @@ $$
 	\item 使用elimination rule从上至下，即我们知道什么.
 \end{itemize}
 \end{annotation}
+
+\begin{example}
+\rm Modus tollens(这玩意不就是逆否命题)
+$$
+\infer[MT]{\neg A}{A \to B & \neg B}.
+$$
+\end{example}
 
 
 \newpage
