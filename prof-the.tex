@@ -451,7 +451,7 @@ $$
 \rm 对于atomic props，我们只能对它赋予一个property，没有关于它的verification. 因此上述的规则是在进行一个转换，只要我们assumption了关于它的一个property，就默认它已经被verified. 
 \end{annotation}
 
-
+\newpage
 \subsection{Soundness and Completeness of Natural Deduction}
 
 \begin{definition}
@@ -474,7 +474,7 @@ $$
 
 对于soundness的证明，我们需要根据$\alpha$的结构来做归纳，而后再考虑赋予其true/false来考虑. 这里记录一下对于结构归纳它是怎样对应一般归纳法命题$P(n)$结构上，这里的$n$应该对应$\alpha$的bottom-up derivation里面的maximum depth of line. 
 
-而对于completeness的证明，相对来说会复杂一点. 我们需要下面3个lemma.
+而对于completeness的证明，相对来说会复杂一点. 我们需要下面3个lemma. 有一个疑问不引入negation是不是还说明不了completeness?
 \end{annotation}
 
 \begin{lemma}
@@ -484,9 +484,62 @@ $$
 $$
 \end{lemma}
 
-\begin{lemma}
+\begin{lemma}\label{how-to-construct-provable-formula}
+\rm For any well-form formula $\gamma$ containing atoms $p_1,p_2,\cdots,p_n$ and any valuation $t$, we have 
+\begin{enumerate}
+	\item If $\gamma^t = True$ then $\widehat{p}_1,\widehat{p}_2,\cdots,\widehat{p}_n \vdash \gamma$;
+	\item If $\gamma^t = False$ then $\widehat{p}_1,\widehat{p}_2,\cdots,\widehat{p}_n \vdash \neg\gamma$;
+\end{enumerate}
+where defines $\widehat{p}_i$ as follow
+$$
+\widehat{p}_i = \left\{
+\begin{aligned}
+&p_i && \text{if}~p_i^t = True \\
+&\neg p_i && \text{if}~p_i^t = False
+\end{aligned}
+\right.
+$$
+\end{lemma}
+
+\begin{example}
+\rm 若$\gamma = p \to q$，我们可以构造一个真值表
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+$p$ & $q$ & $p \to q$ & Claim \\ 
+$T$ & $T$ & $T$ & $p , q \vdash p \to q$ \\
+$T$ & $F$ & $F$ & $p , \neg q \vdash \neg(p \to q)$ \\
+$F$ & $T$ & $T$ & $\neg p , q \vdash p \to q$ \\
+$F$ & $F$ & $T$ & $\neg p , \neg q \vdash p \to q$ \\ 
+\hline
+\end{tabular}
+\end{center}
+那么上面的claims是怎么来的呢？我们可以来分别证明, 对于第一行
+$$
+\infer[u]{p \to q~true}{\infer{q~true}{\infer[u]{p~true}{} & q~true}}
+$$
+感觉有点奇怪，这里需要用到vars inference rule, 这里相对于对$q \vdash p \to q$的weaken premise. 对于第二行
+$$
+\infer[u]{\neg (p \to q)~true}{\infer{\perp}{\infer{q}{\infer[u]{p \to q~true}{} & p~true} & \neg q ~true}}
+$$
+对于第三行
+$$
+\infer[u]{p \to q~true}{\infer{q~true}{\infer{\perp}{\infer[u]{p~true}{} & \neg p ~true}}}
+$$
+对于第四行，和第三行类似. 可以看的出来这个lemma非常深刻，\bluet{只要将atoms调整为在当前valuation下都是true的命题，结论再对应调整，就可以构造一个对应的proof}. 
+\end{example}
+
+\begin{lemma}\label{tautologies-are-provable}
 \rm For any well-formed formula $\gamma$, if $\emptyset \vDash \gamma$, then $\emptyset \vdash \gamma$. 
 \end{lemma}
+
+\begin{annotation}
+\rm Lemma \ref{tautologies-are-provable}一句话概况就是tautologies are provable. 其证明过程可以用Lemma \ref{how-to-construct-provable-formula}来说明. 现在$\gamma$是一个tautology，那么对于所有的valuation都有$\gamma^t = true$，这有什么用呢？ 这里还需要引入另外一种tautology $p \vee \neg p$，配合emilination rule of $vee$，即
+$$
+\infer{\gamma}{(p_1 \vee \neg p_1) & (p_2 \vee \neg p_2) & \cdots & (p_n \vee \neg p_n)&\deduce[\vdots]{\gamma}{\infer{}{\infer{p_1}{} & \cdots & \infer{p_n}{}}} & \cdots & \deduce[\vdots]{\gamma}{\infer{}{\infer{\neg p_1}{} & \cdots & \infer{\neg p_n}{}}}}
+$$
+这里需要考虑有$2^n$个cases，每一个对应一种valuation，又因为$\gamma$是tautology，因此最后的conclusion也都是$\gamma$. 
+\end{annotation}
 
 \begin{lemma}
 \rm If $\emptyset \vdash (\alpha_0 \to (\alpha_1 \to (\cdots \to (\alpha_n \to \beta)\cdots))$, then $\{\alpha_0, \alpha_1,\cdots,\alpha_n\} \vdash \beta$, that is, $\Sigma \vdash \beta$. 
@@ -515,7 +568,7 @@ We also can give the introduction rule of falsehood.
 $$
 \infer[\perp I]{\perp}{\neg A & A}
 $$
-so $\perp$ actually means any contradictions. 
+so $\perp$ actually means any contradictions. moreover double negation is coming.
 \end{example}
 
 \begin{annotation}
