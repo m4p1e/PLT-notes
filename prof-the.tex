@@ -389,6 +389,10 @@ As u can see it's not local soundness.
 \rm Writing $A\downarrow$ for the judgment "A may be used". $A\downarrow$ should be the case when either $A~true$ is a hypothesis, or $A$ is deduced from a hypothesis via elimination rules. 
 \end{definition}
 
+\begin{annotation}
+\rm 上述两个definitions里面隐藏着非常重要但有点不正式的结论:If $A$ has a vertification then $A$ true, 反之依然. 后面我们将形式化地证明它们. 
+\end{annotation}
+
 \begin{definition}
 \rm For conjunction. 
 $$
@@ -448,7 +452,7 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 对于atomic props，我们只能对它赋予一个property，没有关于它的verification. 因此上述的规则是在进行一个转换，只要我们assumption了关于它的一个property，就默认它已经被verified. 
+\rm 对于atomic props，我们只能对它赋予一个property，没有关于它的verification. 因此上述的规则是在进行一个转换，只要我们assume了关于它的一个property，就默认它已经被verified. 
 \end{annotation}
 
 \newpage
@@ -478,11 +482,15 @@ $$
 \end{annotation}
 
 \begin{lemma}
-\rm If $\Sigma \vDash \beta$, then
+\rm If $\Sigma =\{\alpha_0,\alpha_1,\cdots,\cdots,\alpha_n\} $ and $\Sigma \vDash \beta$, then
 $$
 \emptyset \vDash (\alpha_0 \to (\alpha_1 \to (\cdots \to (\alpha_n \to \beta)\cdots)).
 $$
 \end{lemma}
+
+\begin{annotation}
+\rm Deduction theorem体现的淋漓尽致，将$\beta$完美转换成了一个tautology. 
+\end{annotation}
 
 \begin{lemma}\label{how-to-construct-provable-formula}
 \rm For any well-form formula $\gamma$ containing atoms $p_1,p_2,\cdots,p_n$ and any valuation $t$, we have 
@@ -687,6 +695,67 @@ $$
 \end{example}
 
 
+\newpage
+\section{More Delicate}
+
+\subsection{Validity}
+
+\begin{definition}
+\rm $A~valid$ if $\bullet \vdash A~true$ where $\bullet$ is emphasizing that there are no truth hypotheses(different from $\cdot$ that represents empty collection of hypotheses), and we call $\bullet \vdash A~true$ is \redt{categorical judgement}. Written $\Delta A$ for reflecting the notion of validity as a proposition. 
+\end{definition}
+
+\begin{annotation}
+\rm 其中$\square A$表示一个proposition claimed $A$ is vaild, 因此$\square A ~true$表示这个proposition成立. 那么关于它的introduction rule是什么？ 很自然地由$A ~ valid$的definition有
+$$
+\infer[\square I]{\Gamma \vdash \square A~true}{\bullet \vdash A~true}
+$$
+那么它的elimination rule又是什么呢？ 第一次尝试
+$$
+\infer[\square E]{\bullet \vdash A~true}{\Gamma \vdash \square A~true}
+$$
+看起来是local soundness，通过它得到的infos还行. 但是实际上有问题
+$$
+\infer[\square E]{\bullet \vdash A~true}{\infer{\square A~true \vdash \square A~true}{}}
+$$
+这等于我们可以no assumption推出所有proposition都是valid，因此这个elimination rule有点太强了. 那么我们考虑让它弱一点，第二次尝试
+$$
+\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}
+$$
+这里确实是local soundness，但却不是local completeness
+$$
+\infer[?]{\Gamma \vdash \square A~true}{\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}}
+$$
+我们得改变一下思路，如果$A~vaild$，那么其他premise包含$A~vaild$的judgement那么实际上都是可以去掉$A~vaild$，但也仅仅局限以此，这才是emilination故事的主线. 
+\end{annotation}
+
+\begin{definition}
+\rm Then general judgement form
+$$
+\underbrace{u_1::B_1~vaild,\cdots,u_k::B_k~vaild}_{\Delta}; \underbrace{x_1:A_1~true,\cdots,x_n:A_n~true}_{\Gamma} \vdash C~true
+$$
+\end{definition}
+
+\begin{example}
+\rm The introduction rule and elimination rule of $A~vaild$ as follow
+$$
+\begin{aligned}
+\infer[\square I]{\Delta; \Gamma \vdash \square A~true}{\Delta; \bullet \vdash A~true} &&&& \infer[\square E]{\Delta;\Gamma \vdash C~true}{\Delta;\Gamma \vdash \square A~true & \Delta, u::A~vaild; \Gamma \vdash C~true}
+\end{aligned}
+$$
+\end{example}
+
+
+
+
+\begin{definition}
+\rm Proof of $\cdot;\cdot\vdash \square A \supset A$.
+$$
+\infer[\supset I^x]{\cdot;\cdot\vdash (\square A \supset A)~true}{\infer[\square E^u]{\cdot;x:\square A~true}{\infer[x]{\cdot;x:\square A~true \vdash \square A~true}{} & \infer[u]{u::A~vaild; x:\square A~true \vdash A~true}{}  }}
+$$
+\end{definition}
+
+
+\subsection{Box is Powerful}
 
 \newpage
 \begin{thebibliography}{00}
