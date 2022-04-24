@@ -307,7 +307,7 @@ $$
 \end{definition}
 
 \begin{definition}
-\rm \redt{Local completeness} shows that the elimination rules are not weak: there is alwayws a way to apply elimination rules so that we can reconstitute a proof of the original proposition from the the results by apply intruduction ruls. 
+\rm \redt{Local completeness} shows that the elimination rules are not weak: there is always a way to apply elimination rules so that we can reconstitute a proof of the original proposition from the the results by apply intruduction ruls. 
 \end{definition}
 
 \begin{annotation}
@@ -735,27 +735,87 @@ $$
 $$
 \end{definition}
 
-\begin{example}
+\begin{definition}
 \rm The introduction rule and elimination rule of $A~vaild$ as follow
 $$
 \begin{aligned}
 \infer[\square I]{\Delta; \Gamma \vdash \square A~true}{\Delta; \bullet \vdash A~true} &&&& \infer[\square E]{\Delta;\Gamma \vdash C~true}{\Delta;\Gamma \vdash \square A~true & \Delta, u::A~vaild; \Gamma \vdash C~true}
 \end{aligned}
 $$
-\end{example}
+\end{definition}
+
+\begin{theorem}
+\rm Local soundness and local completeness of above introduction and elimination rule are held 
+\end{theorem}
+
+\begin{annotation}
+\rm 可以看到emilination rule变成了substitution，而不是从单纯从本身要得到什么，后面会看见更多这样的东西. 
+\end{annotation}
 
 
-
-
-\begin{definition}
+\begin{example}
 \rm Proof of $\cdot;\cdot\vdash \square A \supset A$.
 $$
 \infer[\supset I^x]{\cdot;\cdot\vdash (\square A \supset A)~true}{\infer[\square E^u]{\cdot;x:\square A~true}{\infer[x]{\cdot;x:\square A~true \vdash \square A~true}{} & \infer[u]{u::A~vaild; x:\square A~true \vdash A~true}{}  }}
 $$
+\end{example}
+
+
+
+\newpage
+\subsection{Box is Powerful}
+
+\begin{definition}
+\rm $\square$ is $\square$. 
 \end{definition}
 
 
-\subsection{Box is Powerful}
+\begin{definition}
+\rm A term $\text{box} M$ means $M$ is a quated source expression such that there are not any free variables $x$. 
+\end{definition}
+
+
+\begin{definition}
+\rm And $\square A$ is necessity modality. 
+\end{definition}
+
+
+\newpage
+\subsection{Possibility}
+
+\begin{definition}
+\rm We use $\Diamond A$ for possibility modality.
+\end{definition}
+
+\begin{annotation}
+\rm $\Diamond A$就是一个claim $A$ is possible的命题. 通常在classic modal logic里面我们定义$A$ is possible if its negation is not necessary, that is $\Diamond A = \neg \square \neg A$. 但是这种手法在现在我们讨论的intuitionistic logic无法奏效，我们希望的是有一个直观的introduction rule来得到它，也就是我们需要一些explicit evidences，一开始就它的negation那显然是做不到的. 
+\end{annotation}
+
+\begin{definition}
+\rm \cite{15-816-ciom}The definition of possiblity.
+$$
+\infer[poss]{\Delta,\Gamma \vdash A~poss}{\Delta,\Gamma \vdash A~true}
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm The introduction and emilination rule of possiblity.
+$$
+\begin{aligned}
+\infer[\Diamond I]{\Delta;\Gamma \vdash \Diamond A~true}{\Delta;\Gamma \vdash A~poss} &&&&
+\infer[\Diamond E]{\Delta;\Gamma \vdash C~poss}{\Delta;\Gamma \vdash \Diamond A~true & \Delta;x:A~true \vdash C~poss}
+\end{aligned}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm Local soundness and completeness are held. 
+\end{theorem}
+
+\begin{annotation}
+\rm td;
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
@@ -766,5 +826,7 @@ $$
 \bibitem{cs245-nd} Propositional Logic: Soundness and
 Completeness for Natural Deduction. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
 \bibitem{FP-pap} Lecture Notes on Proofs as Programs. \url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/02-pap.pdf}
+\bibitem{15-816-ciom} Computational Interpretations of Modalities
+\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/04-compmodal.pdf}
 \end{thebibliography}
 \end{document}
