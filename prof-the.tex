@@ -170,8 +170,37 @@ if and only if for all truth valuations $t$, if $\Sigma^t = T$ then also $\alpha
 \rm For example, $\Sigma = \{p_1,p_2,\cdots,p_n\}$ could be a set of premises and let $\alpha$ could be the conclusion that we want to derive. 
 \end{annotation}
 
+\newpage
+\subsection{Classic Propositional Modal Logic}
 
 
+\begin{definition}
+\rm Let $\Sigma$ be a set of propositional letters or atomic propositions. The set $F_P(\Sigma)$ of formulas of classical propositional modal logic is the smallest set with:
+\begin{enumerate}
+	\item If $A \in \Sigma$ is a propositional letter, then $A \in F_P(\Sigma)$;
+	\item If $\phi,\psi \in F_P(\Sigma)$, then $\neg \phi, (\phi \wedge \psi), (\phi \vee \psi), (\phi \to \psi) \in F_P(\Sigma)$;
+	\item If $\phi \in F_P(\Sigma)$, then $(\square \phi),(\Diamond \phi) \in F_P(\Sigma)$. 
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+\rm Let $\mathcal{S}$ be a system of modal logic, this is $F_P(\Sigma)$ with a set of axioms and rules. If axioms and rules as follow
+$$
+\begin{aligned}
+&\text{all propostional tautologies}&(\text{P}) \\
+&\square(\phi \to \psi) \to (\square\phi \to \square\psi)& (\text{Kripke axiom})\\
+&\square\phi \to \phi & (\text{T}) \\
+&\square\phi \to \square\square\phi &(4) \\
+&\infer{\psi}{\phi & \phi \to \psi} & (\text{modus ponens})\\
+&\infer{\square \phi}{\phi} & (\text{G\"{o}del}) 
+\end{aligned}
+$$
+We call it modal logic $\mathcal{S}4$.
+\end{definition}
+
+\begin{definition}
+\rm 
+\end{definition}
 
 \newpage
 \section{Natural Deduction}
