@@ -198,9 +198,50 @@ $$
 We call it modal logic $\mathcal{S}4$.
 \end{definition}
 
+
+\begin{annotation}
+\rm Kriple axiom原本的形式应为
+$$
+\square \phi \wedge \square(\phi \to \psi) \to \square \psi
+$$
+上面是它经常用的等价形式. Axiom T是指若$\phi$ is necessary, 那么$\phi$ is true. Axiom 4是指$\phi$ is necessary, 那么命题"$\phi$ is necessary" is necessary, 有点别扭，举个形象的例子如果box是指某个人知道某件事，假设我知道$A~true$, 那么我肯定知道我知道$A~true$. 最后一个叫G\"{o}del translation, 它将intuitionistic logic里面的formulas转换到modal logic里面. 
+\end{annotation}
+
 \begin{definition}
-\rm 
+\rm Let $\mathcal{S}$ be a system of modal logic. For a formula $\psi$ and a set of formulas $\Phi$,  we write $\Phi \vdash_\mathcal{S} \psi$ and say that $\psi$ can be derived from $\Phi$(or is provable from $\Phi$), iff there is a proof of $\psi$ that uses only the formulas of $\Phi$ and the axioms and proof rules of $\mathcal{S}$. That is, we define $\Phi \vdash_\mathcal{S} \psi$ inductively as:
+$$
+\Phi \vdash_\mathcal{S} \psi
+$$
+iff $\psi \in \Phi$ or there is an instance
+$$
+\infer{\psi}{\phi_1 &  \cdots & \phi_n}
+$$
+of a proof rule of $\mathcal{S}$ with conclusion $\psi$ and some number $n \geq 0$ of premises such that for all $i=1,2,\cdots,n$, the premises $\phi_i$ is derivable, i.e:
+$$
+\Phi \vdash_\mathcal{S} \phi_i
+$$
+When the case $n=0$ corresponds to axioms. 
 \end{definition}
+
+\begin{annotation}
+\rm 现在以$\square$表示provable的视角来看待前面提到的axioms. 首先是
+$$
+\square(\phi \to \psi) \to (\square\phi \to \square\psi)~~ (\text{Kripke axiom})
+$$
+若$\phi \to \psi$ is provable且$\phi$ is provable, 那么则$\psi$ is provable. 
+$$
+\square\phi \to \phi ~~(\text{T})
+$$
+若$\phi$ is provable, 那么$\phi$ should be true.
+$$
+\square\phi \to \square\square\phi ~~(4)
+$$
+若$\phi$ is provable, 那么$\phi$ should be provably provable, 也就是我们肯定知道存在一个proof. 
+$$
+\infer{\square \phi}{\phi} ~~(\text{G\"{o}del}) 
+$$
+若$\phi$ is proven, 那么$\phi$ should be provable. 
+\end{annotation}
 
 \newpage
 \section{Natural Deduction}
