@@ -243,6 +243,54 @@ $$
 若$\phi$ is proven, 那么$\phi$ should be provable. 
 \end{annotation}
 
+
+\begin{definition}
+\rm A Kripke frame $(W,\rho)$ consists of a non-empty set $W$ and a relation $\rho \subseteq W \times W$ on worlds. The element of $W$ are called possible worlds and $\rho$ is called accessibility relation. 
+\end{definition}
+
+\begin{definition}
+\rm A Kripke structure $K = (W, \rho, v)$ consists of Kripke frame $(W,\rho)$ and a mapping $v : W \to \Sigma \to \{true, false\}$ that assigns truth-values to all the propositional letters in all worlds.
+\end{definition}
+
+\begin{definition}
+\rm Given a Kriple structure $K=(W, \rho, v)$, the interpretation  $\vDash$ of modal formulas in worlds $s$ is defined as
+\begin{itemize}
+	\item $K, s \vDash A$ iff $v(s)(A) = true$;
+	\item $K, s \vDash \phi \wedge \psi$ iff $K, s \vDash \phi$ and $K, s \vDash \psi$;
+	\item $K, s \vDash \phi \vee \psi$ iff $K, s \vDash \phi$ or $K, s \vDash \psi$;
+	\item $K, s \vDash \neg \phi$ iff it is not the case that $K, s \vDash \phi$;
+	\item $K, s \vDash \square \phi$ iff $K, t \vDash \phi$ for all worlds $t$ with $s \rho t$;
+	\item $K, s \vDash \Diamond \phi$ iff $K, t \vDash \phi$ for some worlds $t$ with $s \rho t$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+\rm Given a Kripke structure $K = (W,\rho, v)$, formula $\phi$ is \redt{vaild} in $K$, written $K \vDash \phi$, iff $K,s \vDash \phi$ for all worlds $s \in W$.
+\end{definition}
+
+\begin{definition}
+\rm (\redt{local consequence}) Let $\psi$ be a formula and $\Phi$ a set of formulas. Then we write $\Phi \vDash_l \psi$ if and only if, for each Kripke structure $K = (W, \rho, v)$ and each world $s \in W$, we have $K, s \vDash \Phi~\text{implies}~K,s \vDash \psi$.  
+\end{definition}
+
+\begin{definition}
+\rm (\redt{global consequence}) Let $\psi$ be a formula and $\Phi$ a set of formulas. Then we write $\Phi \vDash_g \psi$ if and only if, for each Kripke structure $K = (W, \rho, v)$, if for world $s \in W:K, s \vDash \Phi$, then for world $s \in W: K,s \vDash \psi$.
+\end{definition}
+
+\begin{annotation}
+\rm local consequence和global consequence的区别就是assumption是在某个world里面还是在所有的worlds里面. 
+\end{annotation}
+
+\begin{definition}
+\rm A formula $\phi$ is vaild or a tautology, iff $\emptyset \vDash_l \phi$, which we write $\vDash \phi$. A set of formulas $\Phi$ is called \redt{satisifable}, iff there is a Kripke structure $K$ and a world $s$ with $K,s \vDash \Phi$. 
+\end{definition}
+
+\begin{lemma}
+\rm (\redt{local deduction theorem}) For formulas $\phi, \psi$ we have 
+$$
+\phi \vDash_l \psi \iff \vDash_l \phi \to \psi.
+$$
+\end{lemma}
+
 \newpage
 \section{Natural Deduction}
 
