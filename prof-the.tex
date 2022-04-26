@@ -175,7 +175,7 @@ if and only if for all truth valuations $t$, if $\Sigma^t = T$ then also $\alpha
 
 
 \begin{definition}
-\rm Let $\Sigma$ be a set of propositional letters or atomic propositions. The set $F_P(\Sigma)$ of formulas of classical propositional modal logic is the smallest set with:
+\rm \cite{15-816-cml}Let $\Sigma$ be a set of propositional letters or atomic propositions. The set $F_P(\Sigma)$ of formulas of classical propositional modal logic is the smallest set with:
 \begin{enumerate}
 	\item If $A \in \Sigma$ is a propositional letter, then $A \in F_P(\Sigma)$;
 	\item If $\phi,\psi \in F_P(\Sigma)$, then $\neg \phi, (\phi \wedge \psi), (\phi \vee \psi), (\phi \to \psi) \in F_P(\Sigma)$;
@@ -263,6 +263,10 @@ $$
 	\item $K, s \vDash \Diamond \phi$ iff $K, t \vDash \phi$ for some worlds $t$ with $s \rho t$.
 \end{itemize}
 \end{definition}
+
+\begin{annotation}
+\rm 最后两个关于modality $\square$和$\Diamond$定义是最重要的，它们借助accessible possible world来make sense. 可以通过它们的nesting形式来描述更长的路径即$\square\square,\Diamond\Diamond,\square\Diamond$. 
+\end{annotation}
 
 \begin{definition}
 \rm Given a Kripke structure $K = (W,\rho, v)$, formula $\phi$ is \redt{vaild} in $K$, written $K \vDash \phi$, iff $K,s \vDash \phi$ for all worlds $s \in W$.
@@ -946,14 +950,17 @@ $$
 
 \newpage
 \begin{thebibliography}{00}
-\bibitem{tln} John Slaney. The Logic Notes. \url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
-\bibitem{discharged-stack} The relation between deduction theorem and discharged. \url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
-\bibitem{discharged-proofwiki} Definition:Discharged Assumption. \url{https://proofwiki.org/wiki/Definition:Discharged_Assumption}
-\bibitem{cs245-sat} Propositional Logic: Semantics. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/05_Propositional_Logic_Semantics_Continued_post.pdf}
+\bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
+\bibitem{discharged-stack} The relation between deduction theorem and discharged. \newline\url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
+\bibitem{discharged-proofwiki} Definition:Discharged Assumption. \newline\url{https://proofwiki.org/wiki/Definition:Discharged_Assumption}
+\bibitem{cs245-sat} Propositional Logic: Semantics. \newline\url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/05_Propositional_Logic_Semantics_Continued_post.pdf}
 \bibitem{cs245-nd} Propositional Logic: Soundness and
-Completeness for Natural Deduction. \url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
-\bibitem{FP-pap} Lecture Notes on Proofs as Programs. \url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/02-pap.pdf}
+Completeness for Natural Deduction. 
+\newline\url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
+\bibitem{FP-pap} Lecture Notes on Proofs as Programs. \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/02-pap.pdf}
 \bibitem{15-816-ciom} Computational Interpretations of Modalities
-\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/04-compmodal.pdf}
+\newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/04-compmodal.pdf}
+\bibitem{15-816-cml} Classic Modal Logic
+\newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/05-pml.pdf}
 \end{thebibliography}
 \end{document}
