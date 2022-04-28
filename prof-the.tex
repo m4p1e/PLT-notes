@@ -396,6 +396,10 @@ $$
 \rm G\"{o}del Rule $\infer{\square\phi}{\phi}$ is sound.
 \end{lemma}
 
+\begin{proof}
+注意这里的结论是建立在global assumption上的，即$K,s \vDash \phi$ for any $s \in W$，证明过程是显然的.
+\end{proof}
+
 \begin{lemma}
 \rm A Kripke frame $(W,\rho)$ is reflexive, that $\rho$ is reflexive, if and only if $K,s \vDash \square q \to q$ for all Kripke structures $K = (W,\rho,v)$. 
 \end{lemma}
@@ -462,6 +466,8 @@ characterizest the class of all multimodal kripke frames $(W, \rho_a,\rho_b)$ su
 
 \begin{proof}
 \rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula，我有点不太确定，因为$p \to \square_b p$和$p \to \square_a p$在$K$里面都是vaild.
+
+
 \end{proof}
 
 \newpage
