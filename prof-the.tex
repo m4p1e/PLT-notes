@@ -421,10 +421,21 @@ $$
 
 \begin{proof}
 \rm ($\Rightarrow$) 若$(W,\rho)$ is transitive, 给定$K,s \vDash \square q$，对于$s$的任意一个successor $t$($s \rho t$)则有$K,t \vDash p$，进一步对$t$的任意一个successor $r$($t \rho r$)，考虑transitive $s \rho r$，那么有$K,r \vDash p$. 由于$t$和$r$的任意性，因此$K,s \vDash \square\square p$. 
+
+($\Leftarrow$) 若Kriple frame满足对任意的valuation $v$都有$K,s \vDash \square q \to \square\square q$. 假设$(W,\rho)$不是transitive， 那么存在$r_1,r_2,r_3 \in W$ such that $r_1 \rho r_2, r_2 \rho r_3$ and $(r_1,r_3) \notin \rho$. 构造一个valuation $v$
+$$
+v(s)(q) = \left\{
+\begin{aligned}
+&true && \text{if}~r_0 \rho s \\
+&false && \text{otherwise}
+\end{aligned}
+\right.
+$$
+那么$K,r_0 \vDash \square q$，但是因为$(r_0,r_3) \notin \rho$，因此$K, r_0 \nvDash \square\square q$，和假设前提矛盾了. 
 \end{proof}
 
 \begin{annotation}
-\rm 这座需要两边的支撑一样高，给定特定axiomatic modal logic, 我们得到找到与之对应的semantic modal logic，我们的手法就是sketch it from basic Kripke frame，再其上面加钢筋水泥. 当我们尝试建造了一部分之后，我们需要让其make sense，上述lemma利用formula来characterize是一个不错的选择. 
+\rm 这座需要两边的支撑一样高，给定特定axiomatic modal logic, 我们得到找到与之对应的semantic modal logic，我们的手法就是sketch it from basic Kripke frame. 当我们尝试构造了一部分之后，我们需要让其make sense，上述lemma利用formula来characterize是一个不错的选择. 
 \end{annotation}
 
 \begin{definition}
@@ -434,6 +445,24 @@ $$
 $$
 \end{definition}
 
+\begin{theorem}
+\rm (\redt{soundness of $\mathcal{S}4$})The Kriple proof rules for $\mathcal{S}4$ are sound for the class of reflexive and transitive frames.
+\end{theorem}
+
+\begin{theorem}
+\rm The conjunction of the following two multimodal formulas
+$$
+\begin{aligned}
+&\square_a p \to (p \wedge \square_a\square_b p) \\
+&\square_a(p \to \square_b p) \to (p \to \square_a p)
+\end{aligned}
+$$
+characterizest the class of all multimodal kripke frames $(W, \rho_a,\rho_b)$ such that $\rho_a$ is the reflxive, transitive closure of $\rho_b$. 
+\end{theorem}
+
+\begin{proof}
+\rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula，我有点不太确定，因为$p \to \square_b p$和$p \to \square_a p$在$K$里面都是vaild.
+\end{proof}
 
 \newpage
 \section{Natural Deduction}
