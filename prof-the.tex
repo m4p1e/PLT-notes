@@ -277,7 +277,7 @@ $$
 \end{definition}
 
 \begin{definition}
-\rm (\redt{global consequence}) Let $\psi$ be a formula and $\Phi$ a set of formulas. Then we write $\Phi \vDash_g \psi$ if and only if, for each Kripke structure $K = (W, \rho, v)$, if for world $s \in W:K, s \vDash \Phi$, then for world $s \in W: K,s \vDash \psi$.
+\rm (\redt{global consequence}) Let $\psi$ be a formula and $\Phi$ a set of formulas. Then we write $\Phi \vDash_g \psi$ if and only if, for each Kripke structure $K = (W, \rho, v)$, if for all world $s \in W:K, s \vDash \Phi$, then for all world $s \in W: K,s \vDash \psi$.
 \end{definition}
 
 \begin{annotation}
@@ -294,6 +294,146 @@ $$
 \phi \vDash_l \psi \iff \vDash_l \phi \to \psi.
 $$
 \end{lemma}
+
+\begin{annotation}
+\rm \redt{(view of finite automata)} 对于Kripke frame的第一反应应该是finite automata, 但是对于一个给定的finite automata我们还需要一些额外的说明. 例如
+\begin{center}
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (9.1,-16.5) circle (3.4);
+\draw (9.1,-16.5) node {$p$};
+\draw [black] (29.7,-16.5) circle (3.4);
+\draw (29.7,-16.5) node {$q$};
+\draw [black] (46.9,-16.5) circle (3.4);
+\draw (46.9,-16.5) node {$F$};
+\draw [black] (46.9,-16.5) circle (2.8);
+\draw [black] (63.9,-16.5) circle (3.4);
+\draw (63.9,-16.5) node {$s$};
+%\draw [black] (9.1,-3.6) circle (3.4);
+\draw (9.1,-5.6) node {$start$};
+%\draw [black] (12.8,-16.5) -- (26.3,-16.5);%p-q
+\draw (12.5,-15.5) edge[bend left, above,-Stealth] node{0} (26.3,-15.5);
+\draw (26.3,-17.5) edge[bend left, below,-Stealth] node{1} (12.5,-17.5); 
+%\draw (18,-18) node [below] {$0$};
+\draw [black] (33.2,-16.5) -- (43.5,-16.5);%q-f
+\draw (38,-18) node [below] {$1$};
+\fill [black] (43.5,-16.5) -- (42.7,-16) -- (42.7,-17);
+\draw [black] (50.5,-16.5) -- (60.5,-16.5);%F-s
+\draw (55,-18) node [below] {$1$};
+\fill [black] (60.5,-16.5) -- (59.7,-16) -- (59.7,-17);
+\draw [black] (9.1,-7.1) -- (9.1,-13.1);
+\fill [black] (9.1,-13.1) -- (9.6,-12.3) -- (8.6,-12.3);
+\draw [black] (6.063,-17.999) arc (-36:-324:2.55);
+\draw (0.95,-16.5) node [left] {$1$};
+\fill [black] (6.06,-15) -- (5.71,-14.13) -- (5.12,-14.94);
+\draw [black] (30.768,-19.714) arc (46.11307:-241.88693:2.55);
+\draw (28.07,-24.74) node [below] {$0,1$};
+\fill [black] (27.8,-19.3) -- (26.88,-19.53) -- (27.6,-20.23);
+\draw [black] (45.401,-13.463) arc (234:-54:2.55);
+\draw (46.9,-8.35) node [above] {$1$};
+\fill [black] (48.4,-13.46) -- (49.27,-13.11) -- (48.46,-12.52);
+\draw [black] (66.937,-15.001) arc (144:-144:2.55);
+\draw (72.05,-16.5) node [right] {$0,1$};
+\fill [black] (66.94,-18) -- (67.29,-18.87) -- (67.88,-18.06);
+\end{tikzpicture}
+\end{center}
+每一个state里面存在一个proposition，它表示这个proposition is hold at this state，自然地states就变成了possible worlds. state现在可以接受多个输入$\{0,1\}$，那么这里就表示我们有两个relations $\rho_0$和$\rho_1$，对应我们需要两个pair来构建不同的modality $(\square_0,\Diamond_0)$和$(\square_1,\Diamond_1)$，它们都是用于描述某个state的successor. 因此这里可以对应上一个Kripke structure, 对上图我们可以列举几个vaild formula.
+$$
+\begin{aligned}
+&K \vDash \neg \Diamond_0 F && \text{does not end with 0} \\
+&K \vDash p \to \Diamond_0 p &&\text{$p$ has a 1-loop} \\
+&K \vDash \Diamond_0~true && \text{never stuck with input 0} \\
+&K \vDash \Diamond_1~true && \text{never stuck with input 1} \\
+\end{aligned}
+$$
+再看一个稍微复杂一点
+$$
+K \vDash F \to \Diamond_0(\neg \Diamond_0 F \wedge \neg \Diamond_1 F)
+$$
+它意思如果某个状态$\sigma$下$F$ is hold, 那么$\sigma$ accept 0 的successors $\{s_i\}$中每个$s_i$的successors都无法hold $F$，显然这是成立的. 
+\end{annotation}
+
+
+\begin{definition}
+\rm A system $\mathcal{S}$ of proof rules and axioms of modal logic is sound iff, for all formulas $\psi$ and all sets of formulas $\Phi$:
+$$
+\Phi \vdash_S \psi~\text{implies}~\Phi \vDash_g \psi
+$$
+\end{definition}
+
+
+\begin{annotation}
+\rm 上述soundness实际在建立关于axiomatic modal logic和semantic modal logic之间的一座桥，这座桥需要每一个axiom make sense. 
+\end{annotation}
+
+\begin{lemma}
+\rm Kripke axiom $\square(\phi \to \psi) \to (\square\phi \to \square\psi)$ is sound.
+\end{lemma}
+
+\begin{proof}
+\rm 首先给定任意一个Kripke structure $K$. 我们需要证明
+$$
+K,s \vDash \square(\phi \to \psi) \to (\square\phi \to \square\psi).
+$$
+因此假设其前提
+$$
+\begin{aligned}
+&K,s \vDash \square(\phi \to \psi) \\
+&K,s \vDash \square\phi
+\end{aligned}
+$$
+那么对应所有满足$s \rho t$的successor $t$, 都有
+$$
+\begin{aligned}
+&K,t \vDash \phi \to \psi \\
+&K,t \vDash \phi
+\end{aligned}
+$$
+自然地这里有$K,t \vDash \psi$，于是$K,s \vDash \Diamond \psi$. 
+\end{proof}
+
+\begin{lemma}
+\rm G\"{o}del Rule $\infer{\square\phi}{\phi}$ is sound.
+\end{lemma}
+
+\begin{lemma}
+\rm A Kripke frame $(W,\rho)$ is reflexive, that $\rho$ is reflexive, if and only if $K,s \vDash \square q \to q$ for all Kripke structures $K = (W,\rho,v)$. 
+\end{lemma}
+
+\begin{proof}
+($\Rightarrow$) 若$(W,\rho)$ is reflexive, 这是显然的.
+
+($\Leftarrow$) 若$K,s \vDash \square q \to q$ for all Kripke structures $K = (W,\rho,v)$. 假设存在一个$r$ such that $(r,r) \notin \rho$, 构造一个比较巧妙地valuation $v$
+$$
+v(s)(q) = \left\{
+\begin{aligned}
+&true && \text{if}~r \rho s \\
+&false && \text{otherwise}
+\end{aligned}
+\right.
+$$
+那么显然有$K,r \vDash \square q$，根据前提这里有$K,r \vDash q$，而根据valuation这里就$r$存在一个successor是它自己，即$(r,r)$与假设矛盾. 
+\end{proof}
+
+\begin{lemma}
+\rm  A Kriple frame $(W,\rho)$ is transitive, that $\rho$ is transitive, if and only if $K,s \vDash \square q \to \square\square q$ for all Kripke structures $K=(W,\rho,v)$. 
+\end{lemma}
+
+\begin{proof}
+\rm ($\Rightarrow$) 若$(W,\rho)$ is transitive, 给定$K,s \vDash \square q$，对于$s$的任意一个successor $t$($s \rho t$)则有$K,t \vDash p$，进一步对$t$的任意一个successor $r$($t \rho r$)，考虑transitive $s \rho r$，那么有$K,r \vDash p$. 由于$t$和$r$的任意性，因此$K,s \vDash \square\square p$. 
+\end{proof}
+
+\begin{annotation}
+\rm 这座需要两边的支撑一样高，给定特定axiomatic modal logic, 我们得到找到与之对应的semantic modal logic，我们的手法就是sketch it from basic Kripke frame，再其上面加钢筋水泥. 当我们尝试建造了一部分之后，我们需要让其make sense，上述lemma利用formula来characterize是一个不错的选择. 
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{characterization})Let $C$ be a class of Kripke frames and $\phi$ a formula in modal logic.  Formula $\phi$ characterizes $C$, if for every Kripke frame $(W,\rho)$:
+$$
+(W,\rho) \in C ~\text{iff for each}~v: K,s \vDash \phi~\text{holds for}~K=(W,\rho,v).  
+$$
+\end{definition}
+
 
 \newpage
 \section{Natural Deduction}
