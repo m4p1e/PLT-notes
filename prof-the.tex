@@ -465,8 +465,19 @@ characterizest the class of all multimodal kripke frames $(W, \rho_a,\rho_b)$ su
 \end{theorem}
 
 \begin{proof}
-\rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula, todo
-
+\rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula, 先给一个思考图
+$$
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBoBGAXVJADcBDAGwFcYkQEBfU9TXfQigBMFanSat2ORGgAEAHXk4IC+XACOzegCcYAfQBGsuQD9FOGAA8cwemCicTxkN17Y8BIgHZRNBizZEEG0XHhAMdwEiABZSYjF-SSCAdz1gLE5Qt35PFABWOISJQJBU9IBqckzOMRgoAHN4IlAAM20IAFskMhBlJHI-YvY4VW0ACwhDAD0AKlkcLJA2zv6aPsQRcQCpUYnpuZDXJfauxABmNYgkWK2kkANEVKxdyaMyrErqsOXTgd6r840RhYMAlKD0OBjOogQbbIIGGaLH7XS5ITbA0HscGQ6Gwu4IpEnbqowH3GD2JBnHqJEojRTjV6zFyUThAA
+\begin{tikzcd}
+                                                                    &  &                                                                                            &  & w_{i} \arrow[r, "b:w_i \rho_b w_{i+1}"] & w_{i+1} \arrow[rrd, "b*", dashed] &  &   \\
+s \arrow[rr, "s \rho_b^* t"] \arrow[rrrru, "s \rho_b^* w_i", bend left] &  & t:p \to \square_b p ~\text{and}~ p \arrow[rrrrr, "t \rho_b^* r"] \arrow[rru, "b*", dashed] &  &                                         &                                   &  & r
+\end{tikzcd}
+$$
+这里$\rho_a  = \rho_b^*$. 这里证明手法是
+$$
+\square_a(p \to \square_b p) \to \square_a(p \to \square_a p) ~\text{and}~ \square_a(p \to \square_a p) \to (p \to \square_a p)   
+$$
+最重要是证明第一个implication，第二个implication是前面已经证明过的reflexive. 对于第一个implication它描述的是首先给出前提(1)$\square_a(p \to \square_b p)$即$s \rho_b^* t$. 然后我们想要将$t$中$p \to \square p$扩展至$p \to \square_b^* p$，因此再给一个假设前提$t$ holds p，我们来考察$\square_b^* p$是否成立即$t \rho_b^* r$. 这里我们需要分解$t \rho_b^* r$使其为$w_i \rho_b w_{i+1}$ for all $i < n$，其中$w_0=t$和$w_{n} = r$. 利用数学归纳法证明$K,w_i \vdash p$，这里就不详细描述了，和后面一个证明过程类似，但是说明几点: (1)$s \rho_b^* w_i$送来了$p \to \square_b p$ (2)假设前提保证了$K,w_i \vDash p$. 因此$K,w_{i+1}\vDash p$. 
 
 ($\Rightarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame such that above formulas are vaild in it for any valution $v$. 我们得证明$\rho_a = \rho_b^*$. 这种证明两个集合相等的手法，还是用两边证.
 
@@ -509,7 +520,7 @@ $$
 \end{proof}
 
 \begin{annotation}
-\rm 回顾上面的证明手法，我们如果想要刻画两个possible world是否存在某种关系，例如$r ?\rho t$，我们可以额外借助一个formula $p$和valuation $v$，仅使得所有$w$满足$r \rho w$都hold $p$. 这样如果我们能利用额外和$p$相关的条件间接证明$t$ holds $p$, 那么就可以证明$s \to t$. 我们应该意识到relations是Kripke frame固有的性质，与valuation无关因此这里我们可以任意的定义它.  
+\rm \bluet{回顾上面的证明手法}，我们如果想要刻画两个possible worlds是否存在某种关系，例如$(r,t) \stackrel{?}{\in} \rho$，我们可以额外借助一个formula $p$和valuation $v$，仅使得所有$w$满足$r \rho w$都hold $p$. 这样如果我们能利用额外和$p$相关的条件间接证明$t$ holds $p$, 那么就可以证明$s \to t$. 我们应该意识到relations是Kripke frame固有的性质，与valuation无关因此这里我们可以任意的定义它.  
 \end{annotation}
 
 \newpage
