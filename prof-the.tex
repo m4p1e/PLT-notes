@@ -465,10 +465,52 @@ characterizest the class of all multimodal kripke frames $(W, \rho_a,\rho_b)$ su
 \end{theorem}
 
 \begin{proof}
-\rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula，我有点不太确定，因为$p \to \square_b p$和$p \to \square_a p$在$K$里面都是vaild.
+\rm ($\Leftarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame where $\rho_a$ is the reflexive, transitive closure of $\rho_b$. 对于一个formula只要注意到$\square_a\square_a p \to \square_a\square_b p$即可，可以从需要考虑的successors数量来证明. 对于第二个formula, todo
 
 
+($\Rightarrow$) 如果$(W, \rho_a, \rho_b)$is Kripke frame such that above formulas are vaild in it for any valution $v$. 我们得证明$\rho_a = \rho_b^*$. 这种证明两个集合相等的手法，还是用两边证.
+
+先证\bluet{$\rho_a \subseteq \rho_b^*$}. 取任意的$(s,t) \in \rho_a$，我们得证明$(s,t) \in \rho_b^*$. 还是构造一个特殊的valuation
+$$
+v(w)(q) = \left\{
+\begin{aligned}
+&true && \text{if}~(s,w) \in \rho_b^* \\
+&false && \text{otherwise}
+\end{aligned}
+\right.
+$$
+我们的思路是首先证明第二个formula的前提(1) $\square_a(p \to \square_b p)$，从而得到对应的conclusion (2) $(p \to \square_a p)$，由给定的$v$结合$\rho_b^*$的reflexive性质，自然地有$K,s \vDash p$，在使用一下(2)得到$K,t \vDash p$, 这样就有$(s,t) \in \rho_b^*$.  证明(1)思路是依然是假设前提: 给定$s \rho_a w$且$K,w \vDash p$，实际上$(s,w) \in \rho_b^*$. 考虑下面的思考过程
+$$
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAQF9T1Nd9CUAJnJVajFmwDuiAARoQXHtjwEiAFhHV6zVohCSA5AtEwoAc3hFQAMwBOEALZIyIHBCQBGLeN0g6suBkAHSDbAAsIAH0AIwA9ACoZSRBqBjpomAYABV4VARAGGGscBW4QO0dnajckYTEdNkCQ8Ki4xMMUgvTMnOV+NkLizoywKCQAZmJFcvsnRC9Xd0Q67Qk9aNlJZoiYhI7U7uzc-r1Bko4KDiA
+\begin{tikzcd}
+s \arrow[rr, "a: s \rho_b^* w"] \arrow[rrrr, "s \rho_b^* w'", bend left] &  & w: p \arrow[rr, "b: w\rho_b^*w'"] &  & w'
+\end{tikzcd}
+$$
+另外又给了一个$w'$满足$w \rho_b w'$，再根据$\rho_b^*$的transitive得到$s \rho_b^* w'$，从而$K,w' \vDash p$. 
+
+再证\bluet{$\rho_a \supseteq \rho_b^*$}. 取任意的$(s,t) \in \rho_b^*$，我们要证明$(s,t) \in \rho_a$. 依然构造一个类似的valuation
+$$
+v(w)(q) = \left\{
+\begin{aligned}
+&true && \text{if}~(s,w) \in \rho_a \\
+&false && \text{otherwise}
+\end{aligned}
+\right.
+$$
+我们的思路: 由于我们构造地特别的$v$有$K,s \vDash \square_a p$, 借助命题中的第一个formula得到对应的conclusion (1) $K,s \vDash p \wedge \square_a\square_b p$. 考虑下面的思考过程
+$$
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBoBGAXVJADcBDAGwFcYkQ5E0QBfU9TLnyEUAJlLFqdJq3YB3APpYuvfiAzY8BIgFYKUhizaIQOFXwGbhRAMwSDM4yEXAsAanI9zUmFADm8ESgAGYAThAAtkhkphBI4tJG7HAABAA6aaEAFhAKAEYAegBUKTiqIeFRiDE4cYjkNIxYYE5Q9HBZviA0eTBgUEg2xBYgYZFIDbGDPX0D1TSGsiZ5iCmKWOmZOflrCq4ePOWjldNTiAlNLextHV0z-YPDlDxAA
+\begin{tikzcd}
+                                                                 &  & w_i:p \arrow[r, "b: w_i \rho_b w_{i+1}"] & w_{i+1}:p \arrow[rrd, dashed, bend left] &  &     \\
+s:p \arrow[rrrrr, "s \rho_b^* t"] \arrow[rru, dashed, bend left] &  &                                          &                                          &  & t:p
+\end{tikzcd}
+$$
+我们考虑将$s \rho_b^* t$拆开，设$w_i \rho_b w_{i+1}$ for all $i < n$，其中$w_0 = s$和$w_n = t$，这是可以做到的，考虑closure的构造过程. 再用一下数学归纳法证明$K, w_i \vDash p$，在$i=0$显然是成立的，假设$w_i$成立，那么根据$v$即有$s \rho_a w_i$，再利用一下(1)可以得到$K,w_i \vDash \square_b p$，因此$K,w_{i+1} \vDash p$. 最终$K,t \vDash p$，那么$(s,t) \in \rho_a$. 
 \end{proof}
+
+\begin{annotation}
+\rm 回顾上面的证明手法，我们如果想要刻画两个possible world是否存在某种关系，例如$r ?\rho t$，我们可以额外借助一个formula $p$和valuation $v$，仅使得所有$w$满足$r \rho w$都hold $p$. 这样如果我们能利用额外和$p$相关的条件间接证明$t$ holds $p$, 那么就可以证明$s \to t$. 我们应该意识到relations是Kripke frame固有的性质，与valuation无关因此这里我们可以任意的定义它.  
+\end{annotation}
 
 \newpage
 \section{Natural Deduction}
