@@ -1244,7 +1244,7 @@ $\infer[\perp L]{\Gamma,\perp~left}{C~right}$ & \rule{0mm}{10mm}\\
 \end{annotation}
 
 \begin{theorem}
-\rm Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
+\rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
 \begin{enumerate}
 \item If $\Gamma \vdash C \uparrow$ then $\widehat{\Gamma} \vdash C~right$;
 	\item If $\Gamma \vdash A \downarrow$ and $\widehat{\Gamma} \vdash A~left \vdash C~right$ then $\widehat{\Gamma} \vdash C~right$. 
@@ -1284,7 +1284,7 @@ $$
 则
 $$
 \begin{aligned}
-&(1) &&\widehat{\Gamma}, A_2~left \vdash C~right && \text{assumaption} \\
+&(1) &&\widehat{\Gamma}, A_2~left \vdash C~right && \text{assumption} \\
 &(2) &&\widehat{\Gamma}, A_1 \supset A_2~left, A_2~left \vdash C~right && \text{weakening} (1) \\ 
 &(3) &&\widehat{\Gamma} \vdash A_2~right && \text{hyp}.1~\text{from}~\text{premise}1 \\
 &(4) &&\widehat{\Gamma}, A_1 \supset A_2~left \vdash A_2~right && \text{weakening} (3) \\
@@ -1293,7 +1293,57 @@ $$
 \end{aligned}
 $$
 \end{case}
+\begin{case}若
+$$
+\infer[hyp]{\Gamma', A\downarrow\,\, \vdash A \downarrow}{}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \widehat{\Gamma}, A~left, A~left \vdash C~right && \text{assumption} \\
+&(2) && \widehat{\Gamma}, A~left \vdash C~right && \text{contraction}(1)
+\end{aligned}
+$$
+\end{case}
 \end{proof}
+
+\begin{theorem}
+\rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$. Then 
+\begin{enumerate}
+	\item if $\Gamma, A \downarrow \,\,\vdash B \downarrow$ then $\Gamma \vdash B \downarrow$, and
+	\item if $\Gamma, A \downarrow \,\,\vdash C \uparrow$ then $\Gamma \vdash C \uparrow$,
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+\rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \downarrow$. 
+\end{theorem}
+
+\begin{definition}
+\rm The rule of \redt{cut}
+$$
+\infer[cut]{\Gamma \vdash C~right}{\Gamma \vdash A~right & \Gamma, A~left \vdash C~right}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{admissibility of cut}) If $\Gamma \vdash A~right$ and $\Gamma, A~left \vdash C~right$ then $\Gamma \vdash C~right$.
+\end{theorem}
+
+\begin{definition}
+\rm The rule of  identity
+$$
+\infer[id]{\Gamma, A~left \vdash A~right}{}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
+\end{theorem}
+
+\begin{theorem}
+\rm (\redt{truth and verification}) $A~true$ iff $A \uparrow$. 
+\end{theorem}
 
 \newpage
 \begin{thebibliography}{00}
