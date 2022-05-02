@@ -726,6 +726,7 @@ As u can see it's not local soundness.
 \rm a verification should be a proof that only analyzes the consitituents of a proposition.
 \end{definition}
 
+
 \begin{annotation}
 \rm natural deduction实际上一种constructive logic或者intuitive logic,  与classic logic有所区别, 例如proposition $A \vee (A \supset B)$ is true在classic logic中是accepted，因为我们可以根据真值表来验证. 但是在natural deduction里面我们需要一些explicit evidences，例如你得首先说明$A~true$或者$(A \supset B)~true$才行，这里似乎就会被卡住.  
 \begin{verbatim}
@@ -745,7 +746,7 @@ As u can see it's not local soundness.
 \end{verbatim}
 这里引入了negation introduction, falsehood introduction and double negation使得natural deduction变成complete才能解决这个问题. 
 
-首先不考虑这么复杂的问题，我们显式区分开来某个formula has verfication or is just hypothesis for use，先从结构来分析问题. 
+首先不考虑这么复杂的问题，我们显式区分开来某个formula has verfication or is just hypothesis for use，先从结构(shape)上来分析问题. 不过上面的例子也暗示了我们可以找到一个automation来帮助我们进行推导，如果如今存在的local reduction会让证明过程过程变成不确定，也就是说我们可能得到很多不同的proofs，解决这个问题也是我们引入verification和uses目的\cite{15-317-vu}. 
 \end{annotation}
 
 
@@ -756,6 +757,14 @@ As u can see it's not local soundness.
 \begin{definition}
 \rm Writing $A\downarrow$ for the judgment "A may be used". $A\downarrow$ should be the case when either $A~true$ is a hypothesis, or $A$ is deduced from a hypothesis via elimination rules. 
 \end{definition}
+
+\begin{annotation}
+\rm 我觉得下述两种理解方式更为明确易懂
+\begin{itemize}
+	\item $A \uparrow$ denotes that we are searching for a verfication of $A$;
+	\item $A  \downarrow$ denotes that we are allowed to use $A$. 
+\end{itemize}
+\end{annotation}
 
 \begin{annotation}
 \rm 上述两个definitions里面隐藏着非常重要但有点不正式的结论:If $A$ has a vertification then $A$ true, 反之依然. 后面我们将形式化地证明它们. 
@@ -778,14 +787,35 @@ $$
 &\infer[\supset^u]{A \supset B \uparrow}{\deduce[\vdots]{B\uparrow}{\infer[u]{A\downarrow}{}}} &&& \infer[\supset E]{B \downarrow}{A \supset B \downarrow & A \uparrow}
 \end{aligned}
 $$
-implication introduction rule里面的$B \uparrow$表示没看懂，因为这里的$B$显然是来自elimination的结果. 为什么implication elimination里面需要$A \uparrow$呢?
 \end{definition}
+
+\begin{annotation}
+\rm (\redt{why implication}) In order to have a verification of $A \supset B$, we need a proof of $B$ and we are given an assumption $A$ to work with. Therefore, we will need a verification of $B$ and we are allowed to use $A$. 
+
+When using an implication statement in a proof, we need to show that the antecedent holds, so we need a verification of it. Only then we are allowed to use the consequent.
+\end{annotation}
+
+\begin{example}
+\rm
+$$
+\infer{((A \supset A) \supset B) \supset B \uparrow}{\infer{B ~?}{(A\supset A) \supset B ~? & \infer{A \supset A ~?}{\infer{A~?}{A~?}}}}
+$$
+\end{example}
 
 \begin{example}
 \rm 
 $$
 \infer[\supset I^u]{(A \wedge B) \supset A~true}{\infer[\wedge E_L]{A~true}{\infer[u]{A\wedge B~true}{}}}
 $$
+那么它对应上verification和use
+$$
+\infer[\supset I^u]{(A \wedge B) \supset A~?}{\infer[\wedge E_L]{A \downarrow}{A \wedge B \downarrow}}
+$$
+一切都非常奇怪，这个verification和use到底是怎样对应truth？ 从前面两个例子都可以清晰地感觉到一个阻力，即
+$$
+\deduce[???]{A \uparrow}{A \downarrow}
+$$
+就是当我们在use $A$的时候，实际上存在一个$A$ has a verification. 
 \end{example}
 
 
@@ -812,7 +842,11 @@ $$
 \rm $\perp \downarrow$ signifies a contradiction from our hypotheses.
 \end{annotation}
 
-\begin{definition}
+\begin{annotation}
+\rm the elimination rule of disjunction and falsehood里面出现conclusion $C \uparrow$也很奇怪，为什么不是$C \downarrow$?
+\end{annotation}
+
+\begin{definition}\label{arrow switch of atomic}
 \rm For atomic propositions.
 $$
 \infer[\downarrow\uparrow]{P \uparrow}{P \downarrow}.
@@ -820,7 +854,7 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 对于atomic props，我们只能对它赋予一个property，没有关于它的verification. 因此上述的规则是在进行一个转换，只要我们assume了关于它的一个property，就默认它已经被verified. 
+\rm 
 \end{annotation}
 
 \newpage
@@ -854,7 +888,7 @@ so $\perp$ actually means any contradictions. moreover double negation is coming
 \end{annotation}
 
 \newpage
-\subsection{Soundness and Completeness of Natural Deduction}
+\subsection{Soundness and Completeness of Native Natural Deduction}
 
 \begin{definition}
 \rm \cite{cs245-nd}\redt{Soundness} of natural deduction means that the conclusion of proof is always a logical consequence of the premises. That is
@@ -1247,7 +1281,7 @@ $\infer[\perp L]{\Gamma,\perp~left}{C~right}$ & \rule{0mm}{10mm}\\
 \rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
 \begin{enumerate}
 \item If $\Gamma \vdash C \uparrow$ then $\widehat{\Gamma} \vdash C~right$;
-	\item If $\Gamma \vdash A \downarrow$ and $\widehat{\Gamma} \vdash A~left \vdash C~right$ then $\widehat{\Gamma} \vdash C~right$. 
+	\item If $\Gamma \vdash A \downarrow$ and $\widehat{\Gamma} , A~left \vdash C~right$ then $\widehat{\Gamma} \vdash C~right$. 
 \end{enumerate}
 \end{theorem}
 
@@ -1315,6 +1349,12 @@ $$
 \end{enumerate}
 \end{theorem}
 
+\begin{proof}
+\rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases
+\begin{case}若
+\end{case}
+\end{proof}
+
 \begin{theorem}
 \rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \downarrow$. 
 \end{theorem}
@@ -1359,5 +1399,7 @@ Completeness for Natural Deduction.
 \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/04-compmodal.pdf}
 \bibitem{15-816-cml} Classic Modal Logic
 \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/05-pml.pdf}
+\bibitem{15-317-vu} Verifications and uses
+\newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/06-verifications.pdf}
 \end{thebibliography}
 \end{document}
