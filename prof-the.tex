@@ -728,25 +728,11 @@ As u can see it's not local soundness.
 
 
 \begin{annotation}
-\rm natural deduction实际上一种constructive logic或者intuitive logic,  与classic logic有所区别, 例如proposition $A \vee (A \supset B)$ is true在classic logic中是accepted，因为我们可以根据真值表来验证. 但是在natural deduction里面我们需要一些explicit evidences，例如你得首先说明$A~true$或者$(A \supset B)~true$才行，这里似乎就会被卡住.  
-\begin{verbatim}
-1    assume -(A + (A => B)).
-2      assume A.
-3        A + (A => B).                                     +I1 2
-4        F.                                                =>E 1,3
-5      therefore -A.                                       =>I 2,4
-6      assume A.
-7        F.                                                =>E 5,6
-8        B.                                                Efq 7
-9      therefore A => B.                                   =>I 6,8
-10     A + (A => B).                                       +I2 9
-11     F.                                                  =>E 1,10
-12   therefore --(A + (A => B)).                           =>I 1,11
-13   A + (A => B).                                         Raa 12    	    
-\end{verbatim}
-这里引入了negation introduction, falsehood introduction and double negation使得natural deduction变成complete才能解决这个问题. 
-
-首先不考虑这么复杂的问题，我们显式区分开来某个formula has verfication or is just hypothesis for use，先从结构(shape)上来分析问题. 不过上面的例子也暗示了我们可以找到一个automation来帮助我们进行推导，如果如今存在的local reduction会让证明过程过程变成不确定，也就是说我们可能得到很多不同的proofs，解决这个问题也是我们引入verification和uses目的\cite{15-317-vu}. 
+\rm \cite{15-317-vu} 在natural deduction中由于local reduction的存在，可能会让一个证明过程变得非常的冗余，例如在证明conjunction commutativity
+$$
+\infer[\supset I^u]{(A \wedge B) \supset (B \wedge A)~true}{\infer[\wedge I]{B \wedge A~true}{\infer[\wedge E_2]{B~true}{\infer[\wedge I]{A \wedge B~true}{\infer[\wedge E_1]{A~true}{\infer[u]{A \wedge B ~true}{}}  &  \infer[\wedge E_2]{B~true}{\infer[u]{A \wedge B ~true}{}}}}  &  \infer[\wedge E_1]{A~true}{\infer[u]{A \wedge B ~true}{}}}}
+$$
+其中左上角的local reduction显然是冗余的. 这样对于谈论某个具体proposition的proof时就会出现问题，因为the shape of proof is not decidable. 同时我们也希望未来能够设计出一个tool用于deviates proofs automatically，也就是search proof automatically. 因此从natural deduction上诞生了一个新的calculus，它会在syntax level上来施加一些限制，借此限制the shape of proof. 最后我们将证明这个calculus引入的restrictions不会产生side-effect.   
 \end{annotation}
 
 
@@ -795,14 +781,14 @@ $$
 When using an implication statement in a proof, we need to show that the antecedent holds, so we need a verification of it. Only then we are allowed to use the consequent.
 \end{annotation}
 
-\begin{example}
+\begin{example}\label{use-is-weaker}
 \rm
 $$
 \infer{((A \supset A) \supset B) \supset B \uparrow}{\infer{B ~?}{(A\supset A) \supset B ~? & \infer{A \supset A ~?}{\infer{A~?}{A~?}}}}
 $$
 \end{example}
 
-\begin{example}
+\begin{example}\label{early-verification-and-truth}
 \rm 
 $$
 \infer[\supset I^u]{(A \wedge B) \supset A~true}{\infer[\wedge E_L]{A~true}{\infer[u]{A\wedge B~true}{}}}
@@ -854,7 +840,21 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 
+\rm 当引入上述的arrow switch之后我们可以回答前面的种种问题了. 首先是example \ref{use-is-weaker}，假设其中的$A,B$都是atomic proposition，则
+$$
+\infer[\supset I^w]{((A \supset A) \supset B) \supset B \uparrow}{\infer[\downarrow\uparrow]{B \uparrow}{\infer{B ~\downarrow}{\infer[w]{(A\supset A) \supset B ~\downarrow}{} & \infer[\supset I^u]{A \supset A ~\uparrow}{\infer[\downarrow\uparrow]{A~\uparrow}{\infer[u]{A~\downarrow}{}}}}}}
+$$
+同时如果将implication emilination的premise换成$A \downarrow$，在找$A \supset A \downarrow$的proof时就被卡住了. example \ref{early-verification-and-truth}类似. 那么有一个很自然的问题这个arrow switch能不能推广到任意的propositions上呢？ 本质上是没有问题的，例如
+$$
+\infer[\supset I^u]{A \supset A \uparrow}{\infer[\downarrow\uparrow]{A \uparrow}{\infer{A \downarrow}{A \supset A \downarrow & \infer[\downarrow\uparrow]{A \uparrow}{\infer[u]{A~\downarrow}{}}}}}
+$$
+但是这样的语法又会使得proof search space变大，并不符合我们的初衷，因此我们只将arrow switch放在的了atomic proposition上，这样做的后果你也可以看到，需要将connectives都展开.  
+
+再来思考另外一种arrow switch
+$$
+\infer[\uparrow\downarrow]{F \uparrow}{&F \downarrow&}
+$$
+这个人在本质上也是没有问题的，当我们有一个关于$F$的verification，我们当然可以use it. 但是引入它同样会造成我们的proof search space，就像classical logic中的tautologies，我们可以在任何proof中使用它，但是有时候是没有意义的. 同在emilinotation rule of disjunction and falsehood中的conclusion中我们都是使用的verification，而不是use，也是为了防止后续使得我们的proof变得复杂. 
 \end{annotation}
 
 \newpage
