@@ -1301,7 +1301,7 @@ $$
 \end{proof}
 
 \begin{theorem}
-\rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$. Then 
+\rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$ then 
 \begin{enumerate}
 	\item if $\Gamma, A \downarrow \,\,\vdash B \downarrow$ then $\Gamma \vdash B \downarrow$, and
 	\item if $\Gamma, A \downarrow \,\,\vdash C \uparrow$ then $\Gamma \vdash C \uparrow$,
@@ -1312,9 +1312,9 @@ $$
 \rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases.
 \begin{case}Base case
 $$
-\infer[\top I]{\top \uparrow}{}
+\infer[\top I]{\Gamma \vdash \top \uparrow}{}
 $$
-根据假设$A \downarrow \,\,\vdash \top \uparrow$，这里显然有$\vdash \top \uparrow$.
+根据假设$\Gamma, A \downarrow \,\,\vdash \top \uparrow$，这里显然有$\Gamma, \vdash \top \uparrow$.
 \end{case}
 \begin{case}若
 $$
