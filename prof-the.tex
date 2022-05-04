@@ -607,7 +607,7 @@ which means $J$ is derivable from $J_1, \cdots, J_n$.
 \end{annotation}
 
 \begin{definition}
-\rm (\redt{implication}) If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction and elimination rule as follow \[\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}~~~~~ \infer[\supset\!\!E]{B~true}{A\supset B & A~true}\]
+\rm (\redt{implication}) If $B$ is true under the assumption that $A$ is true, formly written $A \supset B$. The corresponed introduction and elimination rule as follow \[\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}~~~~~ \infer[\supset\!\!E]{B~true}{A\supset B~true & A~true}\]
 \end{definition}
 
 \begin{annotation}
@@ -857,6 +857,22 @@ $$
 这个人在本质上也是没有问题的，当我们有一个关于$F$的verification，我们当然可以use it. 但是引入它同样会造成我们的proof search space，就像classical logic中的tautologies，我们可以在任何proof中使用它，但是有时候是没有意义的. 同在emilinotation rule of disjunction and falsehood中的conclusion中我们都是使用的verification，而不是use，也是为了防止后续使得我们的proof变得复杂. 
 \end{annotation}
 
+\begin{theorem}
+\rm (\redt{Global Soundness}) $\deduce[\vdots]{\text{If}~A \uparrow~\text{and}~C\uparrow~\text{then}~C \uparrow}{A \downarrow}$
+\end{theorem}
+
+\begin{annotation}
+\rm Global Soundness意味着如果if the verification formula of $C$ under the verification formula $A$，那么在$C$中使用$A$，并不会得到任何其他new informations.
+\end{annotation}
+
+\begin{theorem}
+\rm (\redt{Global Completeness}) If $A \downarrow$, then $A \uparrow$. 
+\end{theorem}
+
+\begin{annotation}
+\rm Global completeness意味着如果我们确定formula $A$在某种情况下可以使用，那么在相同的assumptions下我们可以推导出一个关于它的verification. 这在前面关于$\downarrow\uparrow$转换规则的annotation中已经见识过一个特殊例子了. 
+\end{annotation}
+
 \newpage
 \subsection{Notational Definition}
 
@@ -1100,6 +1116,223 @@ $$
 \newpage
 \section{More Delicate}
 
+\subsection{Natural Deduction in Sequent Nation}
+
+\begin{definition}
+\rm A sequent is a pariticular form of hypothetical judgement
+$$
+A_1, \cdots, A_n \vdash C.
+$$
+where $A_1,\cdots,A_n$ and $C$ are well-defined formulas.
+\end{definition}
+
+\begin{definition}
+\rm The correspondence between natural deduction and natural deduction in sequent nation.
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline$\infer[\wedge I]{A \wedge B~true}{A~true & B~true}$ & $\infer[\wedge I]{\Gamma \vdash A \wedge B}{\Gamma \vdash A & \Gamma \vdash B}$ \rule{0mm}{10mm} \\
+\hline$\infer[\wedge E_1]{A~true}{A \wedge B~true}$ \quad $\infer[\wedge E_2]{B~true}{A \wedge B~true}$ & $\infer[\wedge E_1]{\Gamma \vdash A}{\Gamma \vdash A \wedge B}$ \quad $\infer[\wedge E_2]{\Gamma \vdash B}{\Gamma \vdash A \wedge B}$ \rule{0mm}{10mm} \\
+\hline$\infer[\vee I_1]{A \vee B~true}{A~true}$ \quad $\infer[\vee I_2]{A \vee B~true}{B~true}$ & $\infer[\vee I_1]{\Gamma \vdash A \vee B}{\Gamma \vdash A}$ \quad $\infer[\vee I_2]{\Gamma \vdash A \vee B}{\Gamma \vdash B}$ \rule{0mm}{10mm} \\
+\hline $\infer[\vee E^{u,w}]{C~true}{A \vee B ~true & \deduce[\vdots]{C~true}{\infer[u]{A~true}{}} & \deduce[\vdots]{C~true}{\infer[w]{B~true}{}}}$ & $\infer[\vee E]{\Gamma \vdash C}{\Gamma \vdash A \vee B & \Gamma, A \vdash C & \Gamma, B \vdash C}$ \rule{0mm}{18mm} \\
+\hline $\infer[\supset\!\!I^u]{A \supset B~true}{\deduce[\vdots]{B~true}{\infer[u]{A~true}{}}}$ & $\infer[\supset\!\!I]{\Gamma \vdash A \supset B}{\Gamma,A \vdash B}$ \rule{0mm}{18mm}  \\
+\hline $\infer[\supset\!\!E]{B~true}{A\supset B~true & A~true}$ & $\infer[\supset\!\!E]{\Gamma \vdash B}{\Gamma \vdash A\supset B & \Gamma \vdash A}$ \rule{0mm}{10mm} \\
+\hline $\infer[\top I]{\top ~true}{}$ & $\infer[\top I]{\Gamma \vdash \top}{}$ \rule{0mm}{10mm} \\
+\hline $\infer[\perp E]{C~true}{\perp~true}$ & $\infer[\perp E]{\Gamma \vdash C}{\Gamma \vdash \perp}$ \rule{0mm}{10mm}\\
+\hline Hypothesis discharging & $\infer[hyp]{\Gamma,A \vdash A}{}$ \rule{0mm}{10mm}\\
+\hline Substitution & $\infer[subst]{\Gamma \vdash C}{\Gamma, A \vdash C & \Gamma \vdash A}$ \rule{0mm}{10mm}\\
+\hline
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{annotation}
+\rm (\redt{detail of correspondence}) 其中$\Gamma$是一个set of formulas，它可以是empty set. 思考上述sequent形式下的natural deduction，我们应该用bottom-up的视角来观察. 试想我们在没有additional assumptions证明一个formulas，在最开始$\Gamma$应该是empty的，随着我们不断apply上述规则过程中将不断的填充$\Gamma$. 那么什么时候证明算接结束了呢？ 在natural deduction中我们从下往上使用introduction rules，并添加相应的assumptions，再从上往下使用emilination rules，直到它们在中途相遇，这时候我们的证明就结束了，当证明结束的时候，此时所有的assumptions都应该被discharge了，这个操作对应到sequent形式下就是上述hyp rule，在利用sequent构造proof的时候，总是以hyp rule结束的.
+
+显然sequent提供了一种收集assumptions的方式，使得assumptions和需要证明的formula总是在一个level，一旦某个assumption建立之后，以此往后的证明过程中这个assumption都是visible的.    
+\end{annotation}
+
+\begin{example}
+\rm A proof in sequent.
+$$
+\infer[\supset I]{\vdash (A \supset B) \supset ((A\wedge C) \supset (B \wedge C) ) }{\infer[\supset I]{A \supset B \vdash (A\wedge C) \supset (B \wedge C)}{\infer[\wedge I]{A \supset B,(A\wedge C) \vdash  (B \wedge C)}{\infer[\supset\!\!E]{A \supset B,(A\wedge C) \vdash B}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \supset B}{} & \infer[\wedge E_1]{A \supset B,(A\wedge C) \vdash A}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}} } & \infer[\wedge E_2]{A \supset B,(A\wedge C) \vdash C}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}}}}}
+$$
+\end{example}
+
+\begin{definition}
+\rm We say a rule is \redt{admissible} if all proofs using the rule can be transformed into proofs that do not use the rule.
+\end{definition}
+
+\begin{lemma}
+\rm The \emph{subst} rule is admissible.
+\end{lemma}
+
+\begin{proof}
+我们可以将其替换为等价的形式
+$$
+\infer[subst]{\Gamma \vdash C}{\Gamma, A \vdash C & \Gamma \vdash A} ~~\leadsto ~~ \infer[\supset\!\!E]{\Gamma \vdash C}{\infer[\supset I]{\Gamma \vdash A \supset C}{\Gamma, A \vdash C} & \Gamma \vdash A}
+$$
+\end{proof}
+
+
+
+\newpage
+\subsection{Sequent Calculus}
+
+\begin{definition}
+\rm A sequent is a pariticular form of hypothetical judgement
+$$
+A_1~left,\cdots,A_n~left \vdash C~right. 
+$$
+where $A~left$ corresponds to a proposition that can be used ($A\downarrow$) and $C~right$ corresponds to a proposition we have to verify ($C \uparrow$). The \redt{right rules} decompose $C$ in analogy with introduction rules from the perspective of "bottom-up",  while the \redt{left rule} decompose one of the hypotheses, in analogy with elimination rules, but "upside-down". 
+\end{definition}
+
+
+\begin{definition}
+\rm 引入上述sequent及其inferences是为了正式地说明proof search, 即从conclusion到premises的derivations.  
+\end{definition}
+
+\begin{definition}
+\rm The initial rule
+$$
+\infer[init]{\Gamma, P~left \vdash P~right}{}
+$$
+where $P$ is atomic proposition. 
+\end{definition}
+
+\begin{definition}
+\rm The left rules and right rules
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+$\begin{aligned} \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\\ \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\end{aligned}$ &  $\infer[\wedge R]{\Gamma \vdash A \wedge B ~right}{\Gamma \vdash A~right & \Gamma \vdash B~right}$ \rule{0mm}{15mm}\\
+\hline
+$\infer[\supset L]{\Gamma, A \supset B~left \vdash C~right}{\Gamma, A \supset B~left \vdash A~right & \Gamma, A \supset B~left, B~left \vdash C~right}$ & $\infer[\supset R]{\Gamma \vdash A~left \supset B~right}{\Gamma, A~left \vdash B~right}$ \rule{0mm}{10mm} \\
+\hline
+ $\infer[\vee L]{\Gamma, A \vee B~left \vdash C~right}{\Gamma, A \vee B~left,A~left \vdash C~right & \Gamma, A \vee B~left, B~left \vdash C~right}$ & $\begin{aligned}\infer[\vee R_1]{\Gamma\vdash A \vee B~right}{A~right} \\ \infer[\vee R_2]{\Gamma\vdash A \vee B~right}{B~right} \end{aligned}$ \rule{0mm}{15mm} \\
+\hline
+& $\infer[\top R]{\Gamma \vdash \top~right}{}$ \rule{0mm}{10mm}  \\
+\hline
+$\infer[\perp L]{C~right}{\Gamma,\perp~left}$ & \rule{0mm}{10mm}\\
+\hline
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{annotation}
+\rm 这里frank给出的left rules怪怪的，因为conclusion里面的assumptions依然出现在了primises里面，这让人很奇怪，虽然不影响其正确性. frank对此的意见是这只是一种weakening操作，同时他想表达一个"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的构造过程中同样available. 
+
+我的感觉是left rules应该和right rules一样，right rules在simplify conclusion，而left rules也应该去simplify hypotheses. 这里simplify是指去掉formula里面存在的connectives. 
+\end{annotation}
+
+\begin{theorem}
+\rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
+\begin{enumerate}
+\item If $\Gamma \vdash C \uparrow$ then $\widehat{\Gamma} \vdash C~right$;
+	\item If $\Gamma \vdash A \downarrow$ and $\widehat{\Gamma} , A~left \vdash C~right$ then $\widehat{\Gamma} \vdash C~right$. 
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\rm 这里需要对$\Gamma \vdash C \uparrow$和$\Gamma \vdash A \downarrow$做mutual induction. 记录几个representative cases.
+\begin{case} 若
+$$
+\infer[\supset I]{\Gamma \vdash C_1 \supset C_2 \uparrow}{\Gamma, C_1 \downarrow\,\, \vdash C_2 \uparrow}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \widehat{\Gamma}, C_1~left \vdash C_2~right && \text{hyp.1}~\text{from}~\text{premise}1 \\
+&(2) &&\widehat{\Gamma} \vdash C_1 supset C_2 ~right && \supset R.~(1)
+\end{aligned}
+$$
+\end{case}
+\begin{case}若
+$$
+\infer[\downarrow\uparrow]{\Gamma \vdash P \uparrow}{\Gamma \vdash P \downarrow}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \widehat{\Gamma}, P~left \vdash P~right && init \\
+&(2) && \widehat{\Gamma} \vdash P~right && \text{hyp}.2~\text{from}~\text{premise}1
+\end{aligned}
+$$
+\end{case}
+\begin{case}若
+$$
+\infer[\supset E]{\Gamma \vdash A_2 \downarrow}{\Gamma \vdash A_1 \supset A_2 \downarrow & \Gamma \vdash A_1 \uparrow}
+$$
+则
+$$
+\begin{aligned}
+&(1) &&\widehat{\Gamma}, A_2~left \vdash C~right && \text{assumption} \\
+&(2) &&\widehat{\Gamma}, A_1 \supset A_2~left, A_2~left \vdash C~right && \text{weakening} (1) \\ 
+&(3) &&\widehat{\Gamma} \vdash A_2~right && \text{hyp}.1~\text{from}~\text{premise}1 \\
+&(4) &&\widehat{\Gamma}, A_1 \supset A_2~left \vdash A_2~right && \text{weakening} (3) \\
+&(5) &&\widehat{\Gamma}, A_1 \supset A_2~left \vdash C~right && \supset L (2) (4) \\
+&(6) &&\widehat{\Gamma} \vdash C~right && \text{hyp}.1~\text{from}~\text{premise}2
+\end{aligned}
+$$
+\end{case}
+\begin{case}若
+$$
+\infer[hyp]{\Gamma', A\downarrow\,\, \vdash A \downarrow}{}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \widehat{\Gamma}, A~left, A~left \vdash C~right && \text{assumption} \\
+&(2) && \widehat{\Gamma}, A~left \vdash C~right && \text{contraction}(1)
+\end{aligned}
+$$
+\end{case}
+\end{proof}
+
+\begin{theorem}
+\rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$. Then 
+\begin{enumerate}
+	\item if $\Gamma, A \downarrow \,\,\vdash B \downarrow$ then $\Gamma \vdash B \downarrow$, and
+	\item if $\Gamma, A \downarrow \,\,\vdash C \uparrow$ then $\Gamma \vdash C \uparrow$,
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases
+\begin{case}若
+\end{case}
+\end{proof}
+
+\begin{theorem}
+\rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \downarrow$. 
+\end{theorem}
+
+\begin{definition}
+\rm The rule of \redt{cut}
+$$
+\infer[cut]{\Gamma \vdash C~right}{\Gamma \vdash A~right & \Gamma, A~left \vdash C~right}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{admissibility of cut}) If $\Gamma \vdash A~right$ and $\Gamma, A~left \vdash C~right$ then $\Gamma \vdash C~right$.
+\end{theorem}
+
+\begin{definition}
+\rm The rule of  identity
+$$
+\infer[id]{\Gamma, A~left \vdash A~right}{}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
+\end{theorem}
+
+\begin{theorem}
+\rm (\redt{truth and verification}) $A~true$ iff $A \uparrow$. 
+\end{theorem}
+\newpage
+
 \subsection{Validity}
 
 \begin{definition}
@@ -1228,162 +1461,7 @@ $$
 \end{example}
 
 
-\newpage
-\subsection{Sequent Calculus}
 
-\begin{definition}
-\rm A sequent is a pariticular form of hypothetical judgement
-$$
-A_1~left,\cdots,A_n~left \vDash C~right. 
-$$
-where $A~left$ corresponds to a proposition that can be used ($A\downarrow$) and $C~right$ corresponds to a proposition we have to verify ($C \uparrow$). The \redt{right rules} decompose $C$ in analogy with introduction rules from the perspective of "bottom-up",  while the \redt{left rule} decompose one of the hypotheses, in analogy with elimination rules, but "upside-down". 
-\end{definition}
-
-
-\begin{definition}
-\rm 引入上述sequent及其inferences是为了正式地说明proof search, 即从conclusion到premises的derivations.  
-\end{definition}
-
-\begin{definition}
-\rm The initial rule
-$$
-\infer[init]{\Gamma, P~left \vdash P~right}{}
-$$
-where $P$ is atomic proposition. 
-\end{definition}
-
-\begin{definition}
-\rm The left rules and right rules
-\begin{center}
-\begin{tabular}{|c|c|}
-\hline
-$\begin{aligned} \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\\ \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\end{aligned}$ &  $\infer[\wedge R]{\Gamma \vdash A \wedge B ~right}{\Gamma \vdash A~right & \Gamma \vdash B~right}$ \rule{0mm}{15mm}\\
-\hline
-$\infer[\supset L]{\Gamma, A \supset B~left \vdash C~right}{\Gamma, A \supset B~left \vdash A~right & \Gamma, A \supset B~left, B~left \vdash C~right}$ & $\infer[\supset R]{\Gamma \vdash A~left \supset B~right}{\Gamma, A~left \vdash B~right}$ \rule{0mm}{10mm} \\
-\hline
- $\infer[\vee L]{\Gamma, A \vee B~left \vdash C~right}{\Gamma, A \vee B~left,A~left \vdash C~right & \Gamma, A \vee B~left, B~left \vdash C~right}$ & $\begin{aligned}\infer[\vee R_1]{\Gamma\vdash A \vee B~right}{A~right} \\ \infer[\vee R_2]{\Gamma\vdash A \vee B~right}{B~right} \end{aligned}$ \rule{0mm}{15mm} \\
-\hline
-& $\infer[\top R]{\Gamma \vdash \top~right}{}$ \rule{0mm}{10mm}  \\
-\hline
-$\infer[\perp L]{\Gamma,\perp~left}{C~right}$ & \rule{0mm}{10mm}\\
-\hline
-\end{tabular}
-\end{center}
-\end{definition}
-
-\begin{annotation}
-\rm 这里frank给出的left rules怪怪的，因为conclusion里面的assumptions依然出现在了primises里面，这让人很奇怪，虽然不影响其正确性. frank对此的意见是这只是一种weakening操作，同时他想表达一个"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的构造过程中同样available. 
-
-我的感觉是left rules应该和right rules一样，right rules在simplify conclusion，而left rules也应该去simplify hypotheses. 这里simplify是指去掉formula里面存在的connectives. 
-\end{annotation}
-
-\begin{theorem}
-\rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
-\begin{enumerate}
-\item If $\Gamma \vdash C \uparrow$ then $\widehat{\Gamma} \vdash C~right$;
-	\item If $\Gamma \vdash A \downarrow$ and $\widehat{\Gamma} , A~left \vdash C~right$ then $\widehat{\Gamma} \vdash C~right$. 
-\end{enumerate}
-\end{theorem}
-
-\begin{proof}
-\rm 这里需要对$\Gamma \vdash C \uparrow$和$\Gamma \vdash A \downarrow$做mutual induction. 记录几个representative cases.
-\begin{case} 若
-$$
-\infer[\supset I]{\Gamma \vdash C_1 \supset C_2 \uparrow}{\Gamma, C_1 \downarrow\,\, \vdash C_2 \uparrow}
-$$
-则
-$$
-\begin{aligned}
-&(1) && \widehat{\Gamma}, C_1~left \vdash C_2~right && \text{hyp.1}~\text{from}~\text{premise}1 \\
-&(2) &&\widehat{\Gamma} \vdash C_1 supset C_2 ~right && \supset R.~(1)
-\end{aligned}
-$$
-\end{case}
-\begin{case}若
-$$
-\infer[\downarrow\uparrow]{\Gamma \vdash P \uparrow}{\Gamma \vdash P \downarrow}
-$$
-则
-$$
-\begin{aligned}
-&(1) && \widehat{\Gamma}, P~left \vdash P~right && init \\
-&(2) && \widehat{\Gamma} \vdash P~right && \text{hyp}.2~\text{from}~\text{premise}1
-\end{aligned}
-$$
-\end{case}
-\begin{case}若
-$$
-\infer[\supset E]{\Gamma \vdash A_2 \downarrow}{\Gamma \vdash A_1 \supset A_2 \downarrow & \Gamma \vdash A_1 \uparrow}
-$$
-则
-$$
-\begin{aligned}
-&(1) &&\widehat{\Gamma}, A_2~left \vdash C~right && \text{assumption} \\
-&(2) &&\widehat{\Gamma}, A_1 \supset A_2~left, A_2~left \vdash C~right && \text{weakening} (1) \\ 
-&(3) &&\widehat{\Gamma} \vdash A_2~right && \text{hyp}.1~\text{from}~\text{premise}1 \\
-&(4) &&\widehat{\Gamma}, A_1 \supset A_2~left \vdash A_2~right && \text{weakening} (3) \\
-&(5) &&\widehat{\Gamma}, A_1 \supset A_2~left \vdash C~right && \supset L (2) (4) \\
-&(6) &&\widehat{\Gamma} \vdash C~right && \text{hyp}.1~\text{from}~\text{premise}2
-\end{aligned}
-$$
-\end{case}
-\begin{case}若
-$$
-\infer[hyp]{\Gamma', A\downarrow\,\, \vdash A \downarrow}{}
-$$
-则
-$$
-\begin{aligned}
-&(1) && \widehat{\Gamma}, A~left, A~left \vdash C~right && \text{assumption} \\
-&(2) && \widehat{\Gamma}, A~left \vdash C~right && \text{contraction}(1)
-\end{aligned}
-$$
-\end{case}
-\end{proof}
-
-\begin{theorem}
-\rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$. Then 
-\begin{enumerate}
-	\item if $\Gamma, A \downarrow \,\,\vdash B \downarrow$ then $\Gamma \vdash B \downarrow$, and
-	\item if $\Gamma, A \downarrow \,\,\vdash C \uparrow$ then $\Gamma \vdash C \uparrow$,
-\end{enumerate}
-\end{theorem}
-
-\begin{proof}
-\rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases
-\begin{case}若
-\end{case}
-\end{proof}
-
-\begin{theorem}
-\rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \downarrow$. 
-\end{theorem}
-
-\begin{definition}
-\rm The rule of \redt{cut}
-$$
-\infer[cut]{\Gamma \vdash C~right}{\Gamma \vdash A~right & \Gamma, A~left \vdash C~right}
-$$
-\end{definition}
-
-\begin{theorem}
-\rm (\redt{admissibility of cut}) If $\Gamma \vdash A~right$ and $\Gamma, A~left \vdash C~right$ then $\Gamma \vdash C~right$.
-\end{theorem}
-
-\begin{definition}
-\rm The rule of  identity
-$$
-\infer[id]{\Gamma, A~left \vdash A~right}{}
-$$
-\end{definition}
-
-\begin{theorem}
-\rm $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
-\end{theorem}
-
-\begin{theorem}
-\rm (\redt{truth and verification}) $A~true$ iff $A \uparrow$. 
-\end{theorem}
 
 \newpage
 \begin{thebibliography}{00}
