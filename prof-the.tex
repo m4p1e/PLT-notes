@@ -1152,7 +1152,7 @@ where $A_1,\cdots,A_n$ and $C$ are well-defined formulas.
 \end{annotation}
 
 \begin{example}
-\rm A proof in sequent.
+\rm A proof in sequent form.
 $$
 \infer[\supset I]{\vdash (A \supset B) \supset ((A\wedge C) \supset (B \wedge C) ) }{\infer[\supset I]{A \supset B \vdash (A\wedge C) \supset (B \wedge C)}{\infer[\wedge I]{A \supset B,(A\wedge C) \vdash  (B \wedge C)}{\infer[\supset\!\!E]{A \supset B,(A\wedge C) \vdash B}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \supset B}{} & \infer[\wedge E_1]{A \supset B,(A\wedge C) \vdash A}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}} } & \infer[\wedge E_2]{A \supset B,(A\wedge C) \vdash C}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}}}}}
 $$
@@ -1204,7 +1204,7 @@ where $P$ is atomic proposition.
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
-$\begin{aligned} \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\\ \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\end{aligned}$ &  $\infer[\wedge R]{\Gamma \vdash A \wedge B ~right}{\Gamma \vdash A~right & \Gamma \vdash B~right}$ \rule{0mm}{15mm}\\
+$\begin{aligned} \infer[\wedge L_1]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, A~left \vdash C~right}\\ \infer[\wedge L_2]{\Gamma, A \wedge B~left \vdash C~right}{\Gamma, A \wedge B~left, B~left \vdash C~right}\end{aligned}$ &  $\infer[\wedge R]{\Gamma \vdash A \wedge B ~right}{\Gamma \vdash A~right & \Gamma \vdash B~right}$ \rule{0mm}{15mm}\\
 \hline
 $\infer[\supset L]{\Gamma, A \supset B~left \vdash C~right}{\Gamma, A \supset B~left \vdash A~right & \Gamma, A \supset B~left, B~left \vdash C~right}$ & $\infer[\supset R]{\Gamma \vdash A~left \supset B~right}{\Gamma, A~left \vdash B~right}$ \rule{0mm}{10mm} \\
 \hline
@@ -1219,10 +1219,22 @@ $\infer[\perp L]{C~right}{\Gamma,\perp~left}$ & \rule{0mm}{10mm}\\
 \end{definition}
 
 \begin{annotation}
+\rm The above rules we can use $\Gamma \Rightarrow A$ instead of them.
+\end{annotation}
+
+\begin{annotation}
 \rm 这里frank给出的left rules怪怪的，因为conclusion里面的assumptions依然出现在了primises里面，这让人很奇怪，虽然不影响其正确性. frank对此的意见是这只是一种weakening操作，同时他想表达一个"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的构造过程中同样available. 
 
 我的感觉是left rules应该和right rules一样，right rules在simplify conclusion，而left rules也应该去simplify hypotheses. 这里simplify是指去掉formula里面存在的connectives. 
 \end{annotation}
+
+
+\begin{example}
+\rm The proof in sequent calculus.
+$$
+\infer[\supset R]{\Rightarrow (A \supset B) \supset ((A\wedge C) \supset (B \wedge C) ) }{\infer[\supset R]{A \supset B \Rightarrow (A\wedge C) \supset (B \wedge C)}{\infer[\wedge R]{A \supset B,(A\wedge C) \Rightarrow  (B \wedge C)}{\infer[\supset\!\! L]{A \supset B,(A\wedge C) \Rightarrow B}{\infer[\wedge L_1]{A \supset B,(A\wedge C) \Rightarrow A}{\infer[init]{A \supset B,(A\wedge C), A \Rightarrow A}{}} & \infer[init]{A \supset B,(A\wedge C),B \Rightarrow B}{} } & \infer[\wedge L_2]{A \supset B,(A\wedge C) \Rightarrow C}{\infer[init]{A \supset B,(A\wedge C),C \Rightarrow C}{}}}}}
+$$
+\end{example}
 
 \begin{theorem}
 \rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
@@ -1242,7 +1254,7 @@ $$
 $$
 \begin{aligned}
 &(1) && \widehat{\Gamma}, C_1~left \vdash C_2~right && \text{hyp.1}~\text{from}~\text{premise}1 \\
-&(2) &&\widehat{\Gamma} \vdash C_1 supset C_2 ~right && \supset R.~(1)
+&(2) &&\widehat{\Gamma} \vdash C_1 \supset C_2 ~right && \supset R.~(1)
 \end{aligned}
 $$
 \end{case}
@@ -1297,8 +1309,26 @@ $$
 \end{theorem}
 
 \begin{proof}
-\rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases
+\rm 这里需要对$\Gamma, A \downarrow \,\,\vdash B \downarrow$和$\Gamma, A \downarrow \,\,\vdash C \uparrow$做mutual induction. 还是列举几个代表性的cases.
+\begin{case}Base case
+$$
+\infer[\top I]{\top \uparrow}{}
+$$
+根据假设$A \downarrow \,\,\vdash \top \uparrow$，这里显然有$\vdash \top \uparrow$.
+\end{case}
 \begin{case}若
+$$
+\infer[\supset E]{\Gamma' \vdash B\downarrow}{\Gamma' \vdash C \supset B \downarrow & \Gamma' \vdash C \uparrow}
+$$
+其中$\Gamma' = (\Gamma, A\downarrow)$. 那么
+$$
+\begin{aligned}
+&(1) && \Gamma \vdash A \downarrow && \text{assumption} \\
+&(2) && \Gamma \vdash C \supset B \downarrow && \text{hyp}.1 \\
+&(3) && \Gamma \vdash C \uparrow && \text{hyp}.2 \\
+&(4) && \Gamma \vdash B \downarrow && \supset E (3)(4)     
+\end{aligned}
+$$
 \end{case}
 \end{proof}
 
@@ -1307,25 +1337,29 @@ $$
 \end{theorem}
 
 \begin{definition}
-\rm The rule of \redt{cut}
+\rm (\redt{another of substitution}) The rule of \redt{cut}
 $$
 \infer[cut]{\Gamma \vdash C~right}{\Gamma \vdash A~right & \Gamma, A~left \vdash C~right}
 $$
 \end{definition}
+
+\begin{annotation}
+\rm 注意\emph{cut} rule是在用the vertification of $A$去替换the use of $A$，这和前面substitution of uses是不太一样的. 
+\end{annotation}
 
 \begin{theorem}
 \rm (\redt{admissibility of cut}) If $\Gamma \vdash A~right$ and $\Gamma, A~left \vdash C~right$ then $\Gamma \vdash C~right$.
 \end{theorem}
 
 \begin{definition}
-\rm The rule of  identity
+\rm (\redt{generalization of \emph{init} rule}) The rule of \redt{identity}
 $$
 \infer[id]{\Gamma, A~left \vdash A~right}{}
 $$
 \end{definition}
 
 \begin{theorem}
-\rm $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
+\rm (\redt{admissibility of identity}) $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
 \end{theorem}
 
 \begin{theorem}
