@@ -13,7 +13,7 @@
 
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
-\usepackage{hyperref} %url
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -1300,7 +1300,11 @@ $$
 \end{case}
 \end{proof}
 
-\begin{theorem}
+\begin{annotation}
+\rm 注意这里的hypotheses是两个部分，因为verification calculus的elimintation rule存在，会导致use同样出现在左端. 实际这里缺一个过程，应该像ND in Seq那样，我们也应该对verificatio calculus也做一个sequent形式的变换. 
+\end{annotation}
+
+\begin{theorem}\label{substitution of uses}
 \rm (\redt{substitution of uses}) If $\Gamma \vdash A \downarrow$ then 
 \begin{enumerate}
 	\item if $\Gamma, A \downarrow \,\,\vdash B \downarrow$ then $\Gamma \vdash B \downarrow$, and
@@ -1332,9 +1336,47 @@ $$
 \end{case}
 \end{proof}
 
-\begin{theorem}
-\rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \downarrow$. 
+\begin{theorem}\label{seq-to-vu}
+\rm (\redt{from sequent calculus to verifications}) If $\widehat{\Gamma} \vdash C~right$ then $\Gamma \vdash C \uparrow$. 
 \end{theorem}
+
+\begin{proof}
+\rm 注意这里有个abuse symbol了，结合前面的theorem，可能会想成我们构造了一个isomorphism，其实不是这样的，我仅仅讨论从一边到另一边，并不是composition! 这里依然对$\widehat{\Gamma} \vdash C~right$做structure induction. 列举几个代表性cases.
+\begin{case} Base case
+$$
+\infer[\top R]{\widehat{\Gamma} \vdash \top~right}{}
+$$
+显然有$\Gamma \vdash \top \uparrow$.
+\end{case}
+\begin{case}若
+$$
+\infer[\supset R]{\widehat{\Gamma} \vdash A \supset B~right}{\widehat{\Gamma}, A~left \vdash B~right}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \Gamma,A \uparrow\,\, \vdash B \uparrow && \text{hyp} \\
+&(2) && \Gamma \vdash A \supset B \uparrow && \supset I(1)
+\end{aligned}
+$$
+\end{case}
+\begin{case} 若
+$$
+\infer[\supset L]{\widehat{\Gamma}, A \supset B~left \vdash C~right}{\widehat{\Gamma}, A \supset B~left \vdash A~right & \widehat{\Gamma}, A \supset B~left, B~left \vdash C~right}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \Gamma, A \supset B \downarrow\,\, \vdash A \uparrow && \text{hyp} \\
+&(2) && \Gamma, A \supset B \downarrow\,\, \vdash A \supset B \downarrow && hyp~\text{rule} \\
+&(3) && \Gamma, A \supset B \downarrow\,\, \vdash B \downarrow && \supset\!\! E(1)(2) \\
+&(4) && \Gamma, A \supset B \downarrow, B \downarrow\,\, \vdash C \uparrow && \text{hyp}\\
+&(n) &&\Gamma, A \supset B \vdash C \uparrow  && subst(\ref{substitution of uses})
+\end{aligned}
+$$
+\end{case}
+
+\end{proof}
 
 \begin{definition}
 \rm (\redt{another of substitution}) The rule of \redt{cut}
@@ -1351,7 +1393,11 @@ $$
 \rm (\redt{admissibility of cut}) If $\Gamma \vdash A~right$ and $\Gamma, A~left \vdash C~right$ then $\Gamma \vdash C~right$.
 \end{theorem}
 
-\begin{definition}
+\begin{proof}
+\rm 证明\emph{cut} rule是个技术活，因为$A$ can be any random formulas. td
+\end{proof}
+
+\begin{definition}\label{identity-rule}
 \rm (\redt{generalization of \emph{init} rule}) The rule of \redt{identity}
 $$
 \infer[id]{\Gamma, A~left \vdash A~right}{}
@@ -1362,11 +1408,96 @@ $$
 \rm (\redt{admissibility of identity}) $\Gamma, A~left \vdash A~right$ fir arbitrary propositions $A$ and contexts $\Gamma$.
 \end{theorem}
 
+\begin{proof}
+\rm 对$A$做structure induction. 列举几个代表性的cases.
+\begin{case}若$A = P$, 根据\emph{init} rule显然有$\Gamma,A~left \vdash A~right$.
+\end{case}
+\begin{case}若$A = B \supset C$. 则
+$$
+\begin{aligned}
+&(1) && \Gamma, B~left \vdash B~right && \text{hyp} \\
+&(2) && \Gamma, B \supset C~left, B~left \vdash B~right && \text{weakening} \\
+&(3) && \Gamma, C~left \vdash C~right && \text{hyp} \\
+&(4) && \Gamma, B \supset C~left, B~left,C~left \vdash C~right && \text{weakning} \\
+&(5) && \Gamma, B \supset C~left, B~left \vdash C~right && \supset L (2)(4)\\
+&(6) && \Gamma, B \supset C~left \vdash B \supset C~right&& \supset R(5)
+\end{aligned}
+$$
+\end{case}
+\end{proof}
+
+\begin{theorem}\label{nd-to-seq}
+\rm (\redt{from natural deduction to sequent calculus}) If $\Gamma \vdash A~true$ then $\widehat{\Gamma} \vdash A~right$.
+\end{theorem}
+
+\begin{proof}
+\rm 依然对$\Gamma \vdash A~true$做structure induction. 列举几种代表性cases.
+\begin{case}若
+$$
+\infer[hyp]{\Gamma', A~true}{A~true}
+$$
+此时$\Gamma = (\Gamma', A~true)$, 根据\emph{identity} rule(\ref{identity-rule})有$\widehat{\Gamma}, A~left \vdash A~right$.
+\end{case}
+\begin{case}若
+$$
+\infer[\supset I]{\Gamma \vdash B \supset C~true}{\Gamma, B~true \vdash C~true}
+$$
+则
+$$
+\begin{aligned}
+&(1) && \widehat{\Gamma} ,A~left \vdash B~right  && \text{hyp} \\
+&(2) && \widehat{\Gamma}  \vdash A \supset B ~right && \supset R(1)
+\end{aligned}
+$$
+\end{case}
+\begin{case}若
+$$
+\infer[\supset E]{\Gamma \vdash B~true}{\Gamma \vdash C \supset B~true & \Gamma \vdash C ~true}
+$$
+则
+$$
+\begin{aligned}
+&(1) &&\widehat{\Gamma} \vdash C\supset B~right && \text{hyp} \\
+&(2) &&\widehat{\Gamma} \vdash C~right && \text{hyp} \\
+&(3) &&\widehat{\Gamma},C \supset B~left, C~left \vdash C~right && identity \\
+&(4) &&\widehat{\Gamma},C \supset B~left, C~left, B~left \vdash B~right && identity \\ 
+&(5) &&\widehat{\Gamma},C \supset B~left, C~left \vdash B~right && \supset L(3)(4) \\
+&(6) &&\widehat{\Gamma}, C~left \vdash B~right && cut (1)(5) \\
+&(7) &&\widehat{\Gamma} \vdash B~right && cut(2)(6)
+\end{aligned}
+$$
+\end{case}
+\end{proof}
+
 \begin{theorem}
 \rm (\redt{truth and verification}) $A~true$ iff $A \uparrow$. 
 \end{theorem}
-\newpage
 
+\begin{proof}
+\rm ($\Rightarrow$) 从$A \updownarrow$到$A~true$是比较显然的，直接将所有的arrow都换成true即可，对于arrow switch $\downarrow\uparrow$，此时premise和conclusion都是相同，因此这里可以在转换中去掉. 
+
+($\Leftarrow$) 这里就需要多出中间一步. 利用Theorem \ref{nd-to-seq} 将$\cdot\vdash A~true$转换到$\cdot \vdash A~right$; 再利用Theorem \ref{seq-to-vu} 将$\cdot \vdash A~right$转换到$\cdot \vdash A~\uparrow$. 
+\end{proof}
+
+\begin{annotation}
+\rm How everything is related
+$$
+\begin{array}{cc}
+\text{Natural Deduction} \\
+\equiv \\
+\text{ND in sequent nation} \\
+\Updownarrow \\
+\text{Sequent Calculus(with cut, identity and weakening)}&\\
+\updownarrow \\
+\text{Sequent Calculus}& \\
+\equiv \\
+\text{Verification Calculus}
+\end{array}
+$$
+where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ means the systems are sound and complete each other, and $\redt{\updownarrow}$ means the system are shown to be equivalent by showing the rules cut, identity and weakening are admissible. 
+\end{annotation}
+
+\newpage
 \subsection{Validity}
 
 \begin{definition}
@@ -1507,11 +1638,13 @@ $$
 Completeness for Natural Deduction. 
 \newline\url{https://cs.uwaterloo.ca/~cbruni/CS245Resources/lectures/2018_Fall/09_Propositional_Logic_Natural_Deduction_Soundness_and_Completeness_post.pdf}
 \bibitem{FP-pap} Lecture Notes on Proofs as Programs. \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/02-pap.pdf}
-\bibitem{15-816-ciom} Computational Interpretations of Modalities
+\bibitem{15-816-ciom} Computational Interpretations of Modalities.
 \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/04-compmodal.pdf}
-\bibitem{15-816-cml} Classic Modal Logic
+\bibitem{15-816-cml} Classic Modal Logic.
 \newline\url{http://www.cs.cmu.edu/~fp/courses/15816-s10/lectures/05-pml.pdf}
-\bibitem{15-317-vu} Verifications and uses
+\bibitem{15-317-vu} Verifications and uses.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/06-verifications.pdf}
+\bibitem{15-317-seq} Sequent Calculus.
+\newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/07-sequents.pdf}
 \end{thebibliography}
 \end{document}
