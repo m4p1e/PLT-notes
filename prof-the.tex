@@ -1518,8 +1518,16 @@ $$
 \end{aligned}
 $$
 \end{case}
-\begin{case}若$A = B \wedge C$
-
+\begin{case}若$A = B \wedge C$. 则
+$$
+\begin{aligned}
+&(1) && \Gamma, B \wedge B, B \Rightarrow B &&  \text{hyp}~+~\text{weakening} \\ 
+&(2) && \Gamma, B \wedge C \Rightarrow C && \wedge L_1(1)\\
+&(3) && \Gamma, B \wedge C, C \Rightarrow C &&  \text{hyp}~+~\text{weakening}\\
+&(4) && \Gamma, B \wedge C \Rightarrow B && \wedge L_2(3)\\
+&(5) && \Gamma, B \wedge C \Rightarrow B \wedge C && \wedge R(2)(4) 
+\end{aligned}
+$$
 \end{case}
 \end{proof}
 
