@@ -1394,8 +1394,102 @@ $$
 \end{theorem}
 
 \begin{proof}
-\rm 证明\emph{cut} rule是个技术活，因为$A$ can be any random formulas. td
+\rm 证明\emph{cut} rule是个技术活. 我们要做一个nested structure induction. 首先给定\emph{cut} rule的shape
+$$
+\infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma,A \Rightarrow C}{\mathcal{E}}}
+$$
+这里我们要对triple $(C,\mathcal{D}, \mathcal{E})$做归纳. 有三种base cases:
+\begin{enumerate}
+	\item 若$\mathcal{E}$是\emph{init} rule. 这里两个地方可以apply \emph{init} rule. 此时$A$为atomic.
+	\begin{enumerate}
+		\item 若$A$不同于$C$. 那么这里可以马上知道$A \in \Gamma$，因此可以emilinate掉cut. 
+		$$
+			\infer[cut]{\Gamma \Rightarrow A}{\deduce{\Gamma \Rightarrow C}{\mathcal{D}} & \infer[init]{\Gamma,C \Rightarrow A}{}} \leadsto \infer[init]{\Gamma \Rightarrow A}{}
+		$$
+		\item 若$C=A$. 那么这里显然可以直接用$\mathcal{D}$得到$\Gamma \Rightarrow A$. 
+		$$
+			\infer[cut]{\Gamma \Rightarrow A}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \infer[init]{\Gamma,A \Rightarrow A}{}} \leadsto \deduce{\Gamma \Rightarrow A}{\mathcal{D}}
+		$$
+	\end{enumerate}
+	\item 若$\mathcal{D}$是\emph{init} rule. 此时$C$是atomic，那么可以知道$C \in \Gamma$，因此$\Gamma', C ,C \Rightarrow A$，再用一下contraction就有$\Gamma \Rightarrow A$，因此这里可以用$\mathcal{E}$作为proof derivation.
+	$$
+		\infer[cut]{\Gamma \Rightarrow A}{\infer[init]{\Gamma \Rightarrow C}{} & \deduce{\Gamma, C \Rightarrow A}{\mathcal{E}}} \leadsto \deduce{\Gamma \Rightarrow A}{\mathcal{E}}.
+	$$
+	\item 若$C$是atomic. 此时有可能$\mathcal{D}$和$\mathcal{E}$都不是\emph{init} rule, 此时我们需要一个lemma \ref{permute-is-safe} 来使得它们变成前面两种情况. 
+\end{enumerate}
+那么我们怎么来用这三个base case，这里就展示一下nested induction是咋worked. 首先我们给定一个命题$cut(F,l,r)$: 如果$l$是一个关于$\Gamma \Rightarrow F$的cut-free proof，$r$是一个关于$\Gamma, F \Rightarrow C$的cut-free proof，那么我们可以构造一个关于$\Gamma \Rightarrow C$的cut-free proof. 来正式开始我的induction.
+\begin{itemize}
+	\item \textsc{Base case}(1): $\forall l. \forall r.cut(atom,l,r)$
+	
+	对应前面的base case(3).
+	\item \textsc{Induction step}(1): to show $\forall l. \forall r.cut(F+1,l,r)$
+	
+	IH(1): $\forall l. \forall r.cut(F,l,r)$
+	
+	The proof procceeds by induction on $l$:
+	
+	\begin{itemize}
+		\item \textsc{Base case}(2): $\forall l. \forall r.cut(F+1,init,r)$
+		对应前面的base case(2).
+		\item  \textsc{Induction step}(2): to show $\forall l. \forall r.cut(F+1,l+1,r)$
+		
+		IH(2): $\forall l. \forall r.cut(F+1,l,r)$
+		
+		The proof procceeds by induction on $r$:
+		
+		\begin{enumerate}
+			\item \textsc{Base case}(3): $\forall l. \forall r.cut(F+1,l+1,init)$
+			
+			\item  \textsc{Induction step}(3): to show $\forall l. \forall r.cut(F+1,l+1,r+1)$
+			
+			IH(3): $\forall l. \forall r.cut(F+1,l+1,r)$
+			
+			Now we show this by cases.  As a bleow example:
+			$$
+			\begin{gathered}
+\infer[cut]{\Gamma \Rightarrow C}{\infer{\Gamma \Rightarrow A \wedge B}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma \Rightarrow B}{\mathcal{E}}} & \infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}} \\
+\rotatebox{270}{$\leadsto$}\\
+\infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \infer[cut]{\Gamma, A \Rightarrow C}{ \infer[\wedge R]{\Gamma, A \Rightarrow A \wedge B}{\deduce{\Gamma, A \Rightarrow A}{\mathcal{D}+~\text{weakening}} & \deduce{\Gamma,A \Rightarrow B}{\mathcal{E}+~\text{weakening}}}& \deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}}
+\end{gathered}
+			$$
+			on the upper-most cut, we apply IH(3), since $F+1$ and $l+1$ are unchanged, but right branch is now r, which is smaller. and on the lower cut, we apply IH(1), since we have $F$ as the cut-formula.
+		\end{enumerate}
+	\end{itemize}	 
+\end{itemize} 
 \end{proof}
+
+\begin{definition}
+\rm We call \redt{rank deduction} the rewriting operation that premutes the cut rule over other rules in a proof. 
+\end{definition}
+
+\begin{annotation}
+\rm "premutes it up"是啥意思呢？ 就是指某个cut rule"往上移"， 例如
+$$
+\begin{gathered}
+\infer[cut]{\Gamma, A \wedge B \Rightarrow C}{\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow A}{\infer[init]{\Gamma, A \wedge B,A \Rightarrow A}{}}  & \deduce{\Gamma, A \wedge B,A \Rightarrow C}{\mathcal{E}}}\\
+\mathrel{\rotatebox{270}{$\leadsto$}}\\
+\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\infer[cut]{F, A \wedge B, A \Rightarrow C}{\infer[init]{\Gamma, A \wedge B, A \Rightarrow A}{} & \deduce{\Gamma, A \wedge B, A, A \Rightarrow C}{\mathcal{E} + ~\text{weakening}}}}
+\end{gathered}
+$$
+此时cup拥有了smaller left branch，这其中为我们后续的nested induction hypothesis提供了途径. 再来看一个例子
+$$
+\begin{gathered}
+\infer[cut]{\Gamma \Rightarrow C}{\infer{\Gamma \Rightarrow A \wedge B}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma \Rightarrow B}{\mathcal{E}}} & \infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}} \\
+\rotatebox{270}{$\leadsto$}\\
+\infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \infer[cut]{\Gamma, A \Rightarrow C}{ \infer[\wedge R]{\Gamma, A \Rightarrow A \wedge B}{\deduce{\Gamma, A \Rightarrow A}{\mathcal{D}+~\text{weakening}} & \deduce{\Gamma,A \Rightarrow B}{\mathcal{E}+~\text{weakening}}}& \deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}}
+\end{gathered}
+$$
+此时\emph{cut rule}中的两个premises中的cut formula都是被apply了相应的rules，这种shape的cut我称为\redt{principal cases}，它和第一个例子不太相同. 此时下面这个cup拥有了smaller left branch, 而上面这个cup拥有了smaller right branch. 
+\end{annotation}
+
+\begin{lemma}\label{permute-is-safe}
+\rm The \emph{cut} rule permutes up all other rules that do not operate on the cut formula.
+\end{lemma}
+
+\begin{proof}
+换句话说就是对于任意的\emph{cut} rule，我们都可以重排它的primises，把cut放到right place. 那么这里分别要对它的primises应用sequent calculus的规则，两个primises就是20cases. td
+\end{proof}
+
 
 \begin{definition}\label{identity-rule}
 \rm (\redt{generalization of \emph{init} rule}) The rule of \redt{identity}
@@ -1423,6 +1517,9 @@ $$
 &(6) && \Gamma, B \supset C~left \vdash B \supset C~right&& \supset R(5)
 \end{aligned}
 $$
+\end{case}
+\begin{case}若$A = B \wedge C$
+
 \end{case}
 \end{proof}
 
