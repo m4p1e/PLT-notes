@@ -1491,6 +1491,11 @@ $$
 \end{proof}
 
 
+\begin{annotation}
+\rm \bluet{引入\emph{cut} rule不利于做proof search}. 
+\end{annotation}
+
+
 \begin{definition}\label{identity-rule}
 \rm (\redt{generalization of \emph{init} rule}) The rule of \redt{identity}
 $$
@@ -1731,7 +1736,113 @@ $$
 \end{example}
 
 
+\newpage
+\section{Proof Searching}
 
+\subsection{Simplification}
+
+\begin{annotation}
+\rm 目的是去掉sequent calculus里面the duplication of main formula. 为了区分simplified sequent，我们用$\to$代替$\Rightarrow$
+\end{annotation}
+
+\begin{definition}
+\rm Simplified sequent calculus defined as follow
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline $\infer[\wedge L]{\Gamma, A \wedge B \to C}{\Gamma, A, B \to C}$  & $\infer[\wedge R]{\Gamma \to A \wedge B}{\Gamma \to A & \Gamma \to B}$ \rule{0em}{3em} \\
+\hline $\infer[\vee L]{\Gamma, A \vee B \to C}{\Gamma, A \to C & \Gamma, B \to C}$ & $\begin{aligned}\infer[\vee R_1]{\Gamma \to A \vee B}{A} \\ \infer[\vee R_2]{\Gamma\to A \vee B}{B} \end{aligned}$ \rule{0em}{3em}\\
+\hline $\infer[\supset L]{\Gamma, A \supset B \to C}{\Gamma, A \supset B \to A & \Gamma, B \to C}$ & $\infer[\supset R]{\Gamma \to A \supset B}{\Gamma, A \to B}$ \rule{0em}{3em} \\
+\hline & $\infer[\top R]{\Gamma \to \top}{}$ \rule{0em}{2em}\\
+\hline $\infer[\perp L]{\Gamma, \perp \to C}{}$ & \rule{0em}{2em}\\
+\hline \multicolumn{2}{|c|}{$\infer[]{\Gamma,P \to P}{}$}\rule{0em}{2em}\\
+\hline
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{annotation}
+\rm \redt{为什么implication emilination的left premise中的main formual没有去掉?} 这是值得探讨的问题，right premise能去掉因为
+$$
+\infer[cut]{\Gamma, B \Rightarrow C}{\infer[id]{\Gamma, A \supset B \Rightarrow A \supset B}{} & \Gamma,A \supset B, B \vdash C}
+$$
+同时更加底层的原因是$\vdash B \supset (A \supset B)$. 而你此时思考$\Gamma, A \supset B \supset A$时，应当思考是否存在一个关于$A$的proof里面需要用到$A \supset B$? 注意此时的\emph{cut} rule在这里是无法奏效的，我好想想不到这样proof td.
+\end{annotation}
+
+\begin{theorem}
+\rm Simplified sequent calculus is soundness and completeness, that is
+\begin{itemize}
+	\item If $\Gamma \to C$ then $\Gamma \Rightarrow C$;
+	\item If $\Gamma \Rightarrow C$ then $\Gamma \to C$.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+依旧是straightforward structure induction.
+\end{proof}
+
+
+
+\newpage
+\subsection{Invertibility}
+
+\begin{annotation}
+\rm Why Invertibility
+\end{annotation}
+
+\begin{definition}
+\rm A rule $p$ is called \redt{invertible} in a sequent calculus system if a proof of its conclusion implies the existence of proofs of each of its premises. 
+\end{definition}
+
+\begin{annotation}
+\rm 简而言之就是可以从conclusion is vaild推出premise is vaild.
+\end{annotation}
+
+\begin{lemma}
+\rm The left rule for disjunction is invertible.
+$$
+\infer[\vee L]{\Gamma, A \vee B \to C}{\Gamma, A \to C & \Gamma, B \to C}
+$$
+\end{lemma}
+
+\begin{proof}
+\rm 很直接.
+$$
+\infer[cut]{\Gamma, A \to C}{\infer[\vee R_1]{\Gamma, A \to A \vee B}{\infer[id]{\Gamma,A \to A}{}} & \Gamma, A, A \vee B  \to C} ~~~~ \infer[cut]{\Gamma, B \to C}{\infer[\vee R_2]{\Gamma, B \to A \vee B}{\infer[id]{\Gamma,B \to B}{}} & \Gamma, B,A \vee B \to C}
+$$
+\end{proof}
+
+\begin{lemma}
+\rm Both rules for conjunction are invertible.
+\end{lemma}
+
+\begin{lemma}
+\rm The right rule for implication is invertible.
+\end{lemma}
+
+\begin{proof}
+\rm that is
+$$
+\infer[]{\Gamma, A \to B}{\Gamma, A \to A \supset B & \infer{\Gamma,A, A\supset B \to B}{\infer[init]{\Gamma, A, A \supset B \to A}{} & \infer[init]{\Gamma,A, B \to B}{}}}
+$$
+\end{proof}
+
+\begin{annotation}
+\rm \redt{为什么the left rule of implication is not invertible?} 因为从conclusion推不出left premise. 
+\end{annotation}
+
+\begin{definition}
+\rm \redt{Proof searching algorithm}. Assuming we want prove $\Gamma \to C$
+\begin{enumerate}
+	\item Starting with formula on right $C$, apply invertible rules as long as we can
+	\item When the only rule left to be applied on the right is non-invertible, we say $C^+$, stop working there and move to left.
+	\item Process the formulas in the left context $\Omega$ in order:
+	\begin{enumerate}
+		\item If the rule to be applied is invertible, go ahead and apply it, keeping the possibly generated sub-formuals in the front of the list.
+		\item If the rule to be applied is non-invertible or the formula is atomic, move it to a side context $\Gamma^-$ to delay working with it. 
+	\end{enumerate}
+	\item When we have absolutely no other choice, we can either apply a noninvertible rule on the right or on the left. Then we move the focus to the newly generated formulas in the hope they require inveritible.
+\end{enumerate}
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
