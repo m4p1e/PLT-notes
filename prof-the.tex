@@ -1419,7 +1419,7 @@ $$
 \end{enumerate}
 那么我们怎么来用这三个base case，这里就展示一下nested induction是咋worked. 首先我们给定一个命题$cut(F,l,r)$: 如果$l$是一个关于$\Gamma \Rightarrow F$的cut-free proof，$r$是一个关于$\Gamma, F \Rightarrow C$的cut-free proof，那么我们可以构造一个关于$\Gamma \Rightarrow C$的cut-free proof. 来正式开始我的induction.
 \begin{itemize}
-	\item \textsc{Base case}(1): $\forall l. \forall r.cut(atom,l,r)$
+	\item \cite{15-317-caie}\textsc{Base case}(1): $\forall l. \forall r.cut(atom,l,r)$
 	
 	对应前面的base case(3).
 	\item \textsc{Induction step}(1): to show $\forall l. \forall r.cut(F+1,l,r)$
@@ -1751,5 +1751,7 @@ Completeness for Natural Deduction.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/06-verifications.pdf}
 \bibitem{15-317-seq} Sequent Calculus.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/07-sequents.pdf}
+\bibitem{15-317-caie} Cut and Identity eliminations.
+\newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/08-cutelimination.pdf}
 \end{thebibliography}
 \end{document}
