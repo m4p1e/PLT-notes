@@ -1746,7 +1746,7 @@ $$
 \end{annotation}
 
 \begin{definition}
-\rm Simplified sequent calculus defined as follow
+\rm \cite{15-317-rsc}Simplified sequent calculus defined as follow
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline $\infer[\wedge L]{\Gamma, A \wedge B \to C}{\Gamma, A, B \to C}$  & $\infer[\wedge R]{\Gamma \to A \wedge B}{\Gamma \to A & \Gamma \to B}$ \rule{0em}{3em} \\
@@ -1786,7 +1786,11 @@ $$
 \subsection{Invertibility}
 
 \begin{annotation}
-\rm Why Invertibility
+\rm \redt{Why Invertibility?} \cite{15-317-inv} 我们想构造一个automation for proof searching，可能会面临一些问题. 假设我们想要找$\Gamma \vdash C$的verification， 其中$\Gamma$包含$n-1$个formuals，这意味我们要从$n$个formuals(加上$C$)，挑一个出来作为main formual，对其apply对应的rules. 如果我们挑到正确的那个rule，将会导致都后续一定会出错，因此我们要考虑backtrack. 例如证明$B \to A \vee B$时，我们对right side挑$\vee R_1$ rule
+$$
+\infer[\vee R_1]{\Gamma \to A \vee B}{\Gamma \to A},
+$$ 
+这显然就出问题了. 这样看起来我们得找到一个可以接受的search algorithm， 这里有策略是我们可以尽可能选right choice，直到选不出时候，我们再make a choice. 这样做的好处是我们可以尽可能减少backtrack，同时一旦选择了bad choice，那么无论你后续怎么选都还是错的，因此我还可以直接remove掉bad choice. 那么如何选right choice，就引出了invertible rule的概念. 
 \end{annotation}
 
 \begin{definition}
@@ -1931,6 +1935,9 @@ $$
 \end{enumerate}
 \end{definition}
 
+\begin{annotation}
+\rm 上述算法的核心我们称其为\redt{focuing}，它是proof search中非常重要的一个环节. 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
@@ -1952,5 +1959,9 @@ Completeness for Natural Deduction.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/07-sequents.pdf}
 \bibitem{15-317-caie} Cut and Identity eliminations.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/08-cutelimination.pdf}
+\bibitem{15-317-rsc} Restricted sequent calculus.
+\newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/09-simplified.pdf}
+\bibitem{15-317-inv} Invertibility.
+\newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/10-invertibility.pdf}
 \end{thebibliography}
 \end{document}
