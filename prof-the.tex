@@ -1842,7 +1842,95 @@ $$
 	\end{enumerate}
 	\item When we have absolutely no other choice, we can either apply a noninvertible rule on the right or on the left. Then we move the focus to the newly generated formulas in the hope they require inveritible.
 \end{enumerate}
+that $\Omega$ is context of left side, which is ordered and holds any formuals; and $\Gamma^-$ which holds only atoms or formuals that require non-invertible left rules.  
 \end{definition}
+
+\begin{annotation}
+\rm 接下来就是详细解释$\Omega$和$\Gamma^-$是如何构造的.
+\end{annotation}
+
+\begin{definition}
+\rm We will label the sequent arrows with $R$ or $L$, depending on whether we are on a right inversion phase or left inversion phase.
+$$
+\begin{gathered}
+\Gamma^-;\Omega \xrightarrow{R} C \\
+\Gamma^-;\Omega \xrightarrow{L} C \\
+\end{gathered}
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm \redt{Formalization of proof searching algorithm for $\Gamma \to C$}.
+\begin{enumerate}
+	\item \textsc{Start}: $\cdot;\Omega \xrightarrow{R} C$, where $\Gamma^-$ is empty and $\Omega = \Gamma$. 
+	\item \textsc{Process right side}: 
+	\begin{enumerate}
+		\item The right inversion phase consists of applying right invertibale rule:
+	$$
+	\begin{gathered}
+	\infer[\wedge R]{\Gamma^-; \Omega \xrightarrow{R} A \wedge B}{\Gamma^-; \Omega \xrightarrow{R} A & \Gamma^-; \Omega \xrightarrow{R} B} \\
+	\infer[\supset R]{\Gamma^-; \Omega \xrightarrow{R} A \supset B}{\Gamma^-; \Omega, A \xrightarrow{R} B} \\
+	\infer[\top R]{\Gamma^-; \Omega \xrightarrow{R} \top}{}
+	\end{gathered}
+	$$
+		\item If we reach an atom on the right side, we either check if it is in $\Gamma^-$ and close the branch with \emph{init}, or we move to apply left inversion rules.
+		$$
+		\begin{gathered}
+		\infer[init]{\Gamma^-; \Omega \xrightarrow{R} P}{P \in \Gamma^-} \\
+		\infer[\text{LR}_P]{\Gamma^-; \Omega \xrightarrow{R} P}{P \notin \Gamma^- & \Gamma^-; \Omega \xrightarrow{L} P}
+		\end{gathered}
+		$$
+		\item The only other cases left are when the right formula is disjunction or $\perp$. At this pointwe stop working on the right and move to the left.
+		$$
+		\begin{gathered}
+		\infer[\text{LR}_\vee]{\Gamma^-; \Omega \xrightarrow{R} A \vee B}{\Gamma^-; \Omega \xrightarrow{L} A \vee B} \\
+		\infer[\text{LR}_\perp]{\Gamma^-; \Omega \xrightarrow{R} \perp}{\Gamma^-; \Omega \xrightarrow{L} \perp}
+		\end{gathered}
+		$$
+	\end{enumerate}
+	\item \textsc{Process left side}:
+	\begin{enumerate}
+		\item The left inversion phase processes the formulas in $\Omega$ in order, always taking the rightmost one. 
+		$$
+		\begin{gathered}
+		\infer[\wedge L]{\Gamma^-; \Omega, A\wedge B \xrightarrow{L} C^+}{\Gamma^-; \Omega, A, B \xrightarrow{L}C^+}\\
+		\infer[\vee L]{\Gamma^-; \Omega, A \vee B \xrightarrow{L} C^+}{\Gamma^-; \Omega,A \xrightarrow{L} C^+& \Gamma^-; \Omega,B \xrightarrow{L} C^+}
+		\end{gathered}
+		$$
+		\item If the first formual in $\Omega$ is $\perp$, we can close the branch; If it is $\top$ we can  remove it form our list.
+		$$
+		\begin{gathered}
+		\infer[\perp L]{\Gamma^-; \Omega,\perp \xrightarrow{L} C^+}{} \\
+		\infer[\top L]{\Gamma^-; \Omega, \top \xrightarrow{L} C^+}{\Gamma^-; \Omega  \xrightarrow{L} C^+}
+		\end{gathered}
+		$$
+		\item If we encounter an atom, we can close the branch if it is equal to the right side or we can move it. and only case left is an implication, we also move it to $\Gamma^-$. 
+		$$
+		\begin{gathered}
+		\infer[init]{\Gamma^-; \Omega,P \xrightarrow{L} P}{} \\
+		\infer[\text{shift}_P]{\Gamma^-; \Omega,P \xrightarrow{L} C^+}{\Gamma^-, P; \Omega \xrightarrow{L} C^+} \\
+		\infer[\text{shift}_\supset]{\Gamma^-; \Omega,A \supset B \xrightarrow{L} C^+}{\Gamma^-,A \supset B; \Omega \xrightarrow{L} C^+} \\
+		\end{gathered}
+		$$
+	\end{enumerate}
+	\item \textsc{End}: 
+	\begin{enumerate}
+		\item We will end-up with a sequent where $\Omega$ is empty. Its time to make a choice by applying non-invertible rules.
+	$$
+	\begin{gathered}
+	\begin{aligned}
+	\infer[\vee R_1]{\Gamma^-;\cdot \xrightarrow{R} A \vee B}{\Gamma^-;\cdot \xrightarrow{R} A} &&&& \infer[\vee R_2]{\Gamma^-;\cdot \xrightarrow{R} A \vee B}{\Gamma^-;\cdot \xrightarrow{R} B} 
+	\end{aligned}\\
+	\infer[\supset L]{\Gamma^-, A \supset B;\cdot \xrightarrow{L} C^+}{\Gamma^-, A \supset B;\cdot \xrightarrow{L} A & \Gamma^-;B \xrightarrow{L} C^+}	
+	\end{gathered}
+	$$
+		\item After a choice is made, we try to go back to an inversion phase by using the sequent arrow corresponding to where auxiliary formuals went.
+		\item If it is failed at one choice, then we can backtrack to choice points. 
+	\end{enumerate}
+\end{enumerate}
+\end{definition}
+
 
 \newpage
 \begin{thebibliography}{00}
