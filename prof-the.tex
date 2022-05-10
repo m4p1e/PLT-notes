@@ -1965,6 +1965,20 @@ $$
 \end{example}
 
 
+\begin{example}
+\rm 如果$A$是$A_1 \wedge A_2$，考虑以下logical equivalent:
+$$
+(A_1 \wedge A_2) \supset B \equiv A_1 \supset (A_2 \supset B)
+$$
+为什么要这样换呢？ 可以对比一下下面的两个derivations:
+$$
+\begin{gathered}
+\infer[\supset L]{\Gamma, (A_1 \wedge A_2) \supset B \to C}{\Gamma, (A_1 \wedge A_2) \supset B \to A_1 \wedge A_2 & \Gamma, B \to C}
+\end{gathered}
+$$
+\end{example}
+
+
 \newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
