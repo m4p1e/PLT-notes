@@ -1786,7 +1786,7 @@ $$
 \subsection{Invertibility}
 
 \begin{annotation}
-\rm \redt{Why Invertibility?} \cite{15-317-inv} 我们想构造一个automation for proof searching，可能会面临一些问题. 假设我们想要找$\Gamma \vdash C$的verification， 其中$\Gamma$包含$n-1$个formuals，这意味我们要从$n$个formuals(加上$C$)，挑一个出来作为main formual，对其apply对应的rules. 如果我们挑到正确的那个rule，将会导致都后续一定会出错，因此我们要考虑backtrack. 例如证明$B \to A \vee B$时，我们对right side挑$\vee R_1$ rule
+ \rm \redt{Why Invertibility?} \cite{15-317-inv} 我们想构造一个automation for proof searching，可能会面临一些问题. 假设我们想要找$\Gamma \vdash C$的verification， 其中$\Gamma$包含$n-1$个formuals，这意味我们要从$n$个formuals(加上$C$)，挑一个出来作为main formual，对其apply对应的rules. 如果我们挑到正确的那个rule，将会导致都后续一定会出错，因此我们要考虑backtrack. 例如证明$B \to A \vee B$时，我们对right side挑$\vee R_1$ rule
 $$
 \infer[\vee R_1]{\Gamma \to A \vee B}{\Gamma \to A},
 $$ 
@@ -1938,6 +1938,32 @@ $$
 \begin{annotation}
 \rm 上述算法的核心我们称其为\redt{focuing}，它是proof search中非常重要的一个环节. 
 \end{annotation}
+
+
+\newpage
+\subsection{Contraction-free}
+
+\begin{annotation}
+\rm 在simplified sequent calculus中left implication rule里面的left premise还是留着main formula, 即
+$$
+\infer[\supset L]{\Gamma, A \supset B \to C}{\Gamma, A \supset B \to A & \Gamma, B \to C}
+$$
+这时你如果考虑对上面的left primise再使用一下$\supset L$，你会发现又得到了$\Gamma, A \supset B \to A$，这意味你可能陷入在proof searching中陷入loop. 为了尝试解决这个问题，同时让我们的proof searching变成更加的decidable，我需要分解$\supset L$，以归纳$A$的结构为切入点.
+\end{annotation}
+
+\begin{example}
+\rm 如果$A$是atom，那么此时的$\subset L$对应的instance为
+$$
+\infer[\supset L]{\Gamma, a \supset B \to C}{\Gamma, a \supset B \to a & \Gamma, B \to C}
+$$
+这里分三种情况讨论left premise的subproof:
+\begin{enumerate}
+	\item 如果$a \in \Gamma$, 那么显然我们是可以close掉left subproof，直接以right premise作为前提. 
+	\item 如果继续对left premise继续使用$\subset L$，前面说了没有意义，更何况这里$A$还只是一个atom.  那么什么时候重复apply $\subset L$有意义呢？ 除非我们还想从$A$里面提取点其他的信息，例如$A = A_1 \vee A_2$，可以两次apply $\subset L$，再利用一下$\vee R_1$和$\vee R_2$就能得到不一样的信息.
+	\item 如果从$\Gamma$里面挑一个formula出来apply rules，那么这里可能有两种选择，要么apply invertible rule或者non-invertible rule. 对于non-invertible rule而言，这里只能选择$\supset L$，因为此时right side是一个atom. 当我们考虑delay applying $\supset L$ for $a \supset B$，apply invertible rule and other left implicaion as possible we can, 我们最终会回到第一种情况. 
+\end{enumerate}
+\end{example}
+
 
 \newpage
 \begin{thebibliography}{00}
