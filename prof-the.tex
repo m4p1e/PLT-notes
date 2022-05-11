@@ -1952,7 +1952,7 @@ $$
 \end{annotation}
 
 \begin{example}
-\rm 如果$A$是atom，那么此时的$\subset L$对应的instance为
+\rm \redt{如果$A$是atom}，那么此时的$\subset L$对应的instance为
 $$
 \infer[\supset L]{\Gamma, a \supset B \to C}{\Gamma, a \supset B \to a & \Gamma, B \to C}
 $$
@@ -1971,7 +1971,7 @@ $$
 
 
 \begin{example}
-\rm 如果$A$是$A_1 \wedge A_2$，考虑以下logical equivalent:
+\rm \redt{如果$A$是$A_1 \wedge A_2$}，考虑以下logical equivalent:
 $$
 (A_1 \wedge A_2) \supset B \equiv A_1 \supset (A_2 \supset B)
 $$
@@ -1982,9 +1982,72 @@ $$
 \infer[\supset L]{\Gamma,A_1 \supset (A_2 \supset B) \to C}{\Gamma,A_1 \supset (A_2 \supset B) \to A_1 & \infer[\supset L]{\Gamma,A_2 \supset B \to C}{\Gamma, A_2 \supset B \to A_2 &  \Gamma, B \to C}}
 \end{gathered}
 $$
-很显然后者我们将所有antecedent里面implication都简化了，每个implication都只依赖一个assumption，这样是有利于我们做归纳的. 
+很显然后者我们将所有antecedent里面implication都简化了，每个implication都只依赖一个assumption，这样是有利于我们做归纳的. 因此在这里情况下可以简化$\supset L$为
+$$
+\infer[\wedge \subset L]{\Gamma, (A_1 \vee A_2) \subset B \to C}{\Gamma, A_1 \supset (A_2 \subset B) \to C}
+$$
 \end{example}
 
+\begin{example}
+\rm \redt{若$A$为$A_1 \vee A_2$}，这里依然使用一个logical equivalent:
+$$
+(A_1 \vee A_2) \supset B  \equiv (A_1 \supset B) \wedge (A_2 \supset B)
+$$
+%其derivation如下
+%$$
+%\infer[\supset L]{\Gamma, A_1 \supset B, A_2 \supset B \to C}{\infer{\Gamma, A_1 \supset B, A_2 \supset B \to A_2}{} & \infer{\Gamma, A_1 \supset B, A_2 \to C}{\Gamma,A_2, A_1 \subset B \to A_1 & \Gamma,A_2, B \to C}}
+%$$
+这样我们就不需要再使用$\vee R$来从$A_1 \vee A_2$获得信息，因此这里简化的$\subset L$为
+$$
+\infer[\vee \supset L]{\Gamma, (A_1 \vee A_2) \supset B  \to C}{\Gamma, A_1 \supset B, A_2 \supset B \to C}
+$$
+\end{example}
+
+\begin{example}
+\rm \redt{若$A$为$A_1 \supset A_2$}，我们可以尝试先derivation一下
+$$
+\infer[\supset L]{\Gamma,(A_1 \supset A_2) \supset B \to C}{\infer[\supset R]{\Gamma,(A_1 \supset A_2) \supset B \to A_1 \supset A_2}{\Gamma,(A_1 \supset A_2) \supset B, A_1 \to A_2} & \Gamma, B \to C}
+$$
+其中这里有一个logical equivalent:
+$$
+(A_1 \supset A_2) \supset B  \wedge A_1 \equiv (A_2 \supset B) \wedge A_1
+$$
+因此这里简化的$\supset L$为
+$$
+\infer[\supset\supset L]{\Gamma,(A_1 \supset A_2) \supset B \to C}{\Gamma, (A_2 \supset B), A_1 \to A_2 & \Gamma, B \to C}
+$$
+\end{example}
+
+\begin{example}
+\rm 若$A$为$\top$，显然有
+$$
+\infer[\top \supset L]{\Gamma, \top \subset B \to C}{\Gamma, B \to C}
+$$
+因为left branch $\Gamma, \top \subset B \to \top$显然是可以直接close掉的. 
+\end{example}
+
+\begin{example}
+\rm 若$A$为$\perp$，这里有一个显然的logical equivalent:
+$$
+\perp \subset B \equiv A
+$$
+因此这里简化的$\supset L$为
+$$
+\infer[\perp \supset L]{\Gamma, \perp \subset B \to C}{\Gamma \to C}
+$$
+\end{example}
+
+\begin{definition}
+\rm We call simplified sequent calculus with above compound left rules except original left implication \redt{G4ip: Contraction-free calculus for intuitionistic logic}.
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{Soundness}) If the sequent $\Gamma \to C$ is derivable in \textsc{G4ip}, then it is derivable in sequent calculus.
+\end{theorem}
+
+\begin{theorem}
+\rm (\redt{Completeness}) If the sequent $\Gamma \to C$ is derivable in sequent calculus, then it is derivable in \textsc{G4ip}.
+\end{theorem}
 
 \newpage
 \begin{thebibliography}{00}
