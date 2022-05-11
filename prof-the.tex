@@ -1962,6 +1962,11 @@ $$
 	\item 如果继续对left premise继续使用$\subset L$，前面说了没有意义，更何况这里$A$还只是一个atom.  那么什么时候重复apply $\subset L$有意义呢？ 除非我们还想从$A$里面提取点其他的信息，例如$A = A_1 \vee A_2$，可以两次apply $\subset L$，再利用一下$\vee R_1$和$\vee R_2$就能得到不一样的信息.
 	\item 如果从$\Gamma$里面挑一个formula出来apply rules，那么这里可能有两种选择，要么apply invertible rule或者non-invertible rule. 对于non-invertible rule而言，这里只能选择$\supset L$，因为此时right side是一个atom. 当我们考虑delay applying $\supset L$ for $a \supset B$，apply invertible rule and other left implicaion as possible we can, 我们最终会回到第一种情况. 
 \end{enumerate}
+因此我们分析告诉我们在这种情况下，我可以将$\supset L$化简为
+$$
+\infer[a \supset L]{\Gamma,a,a \supset B \to C}{\Gamma,a, B \to C}
+$$
+注意我们在conclusion中显式的标注$a$的存在，才能closed掉left branch. 
 \end{example}
 
 
@@ -1973,9 +1978,11 @@ $$
 为什么要这样换呢？ 可以对比一下下面的两个derivations:
 $$
 \begin{gathered}
-\infer[\supset L]{\Gamma, (A_1 \wedge A_2) \supset B \to C}{\Gamma, (A_1 \wedge A_2) \supset B \to A_1 \wedge A_2 & \Gamma, B \to C}
+\infer[\supset L]{\Gamma, (A_1 \wedge A_2) \supset B \to C}{\infer[\wedge R]{\Gamma, (A_1 \wedge A_2) \supset B \to A_1 \wedge A_2}{\Gamma, (A_1 \wedge A_2) \supset B \to A_1  & \Gamma, (A_1 \wedge A_2) \supset B \to  A_2} & \Gamma, B \to C} \\\\
+\infer[\supset L]{\Gamma,A_1 \supset (A_2 \supset B) \to C}{\Gamma,A_1 \supset (A_2 \supset B) \to A_1 & \infer[\supset L]{\Gamma,A_2 \supset B \to C}{\Gamma, A_2 \supset B \to A_2 &  \Gamma, B \to C}}
 \end{gathered}
 $$
+很显然后者我们将所有antecedent里面implication都简化了，每个implication都只依赖一个assumption，这样是有利于我们做归纳的. 
 \end{example}
 
 
