@@ -2046,12 +2046,32 @@ $$
 \end{theorem}
 
 \begin{proof}
-\rm  首先将G4ip中的derivation写成二维的形式$\deduce{\Gamma \to C}{\mathcal{D}}$，对$\mathcal{D}$做structure induction. 首先是bases cases，即$\mathcal{D}$为empty的cases，显然这些cases对应的rules在Gi4p和sequent calculus中是保持一致. 再假设$\mathcal{D},\mathcal{E}$ is a proof，其对应在sequent calculus中的proof为$\mathcal{D}',\mathcal{E}'$. 下面证明以它们为subproof的cases，整个过程是非常straightforward. 
+\rm  首先将G4ip中的derivation写成二维的形式$\deduce{\Gamma \to C}{\mathcal{D}}$，对$\mathcal{D}$做structure induction. 首先是bases cases，即$\mathcal{D}$为empty的cases，显然这些cases对应的rules在Gi4p和sequent calculus中是保持一致. 再假设$\mathcal{D},\mathcal{E}$ is a proof，其对应在sequent calculus中的proof为$\mathcal{D}',\mathcal{E}'$. 下面就是证明以它们为subproof的cases，其中只需要证明关于implication rules，整个过程是非常straightforward. 
 \end{proof}
+
+\begin{annotation}
+\rm 要证明completeness of derivability in G4ip，我们得先证明terminitation of proof searching in G4ip，是什么原因导致我们会担心会不会terminated呢？ 因为$\wedge \supset L$
+$$
+\infer[\wedge \subset L]{\Gamma, (A_1 \vee A_2) \subset B \to C}{\Gamma, A_1 \supset (A_2 \subset B) \to C}
+$$
+看起来premise和conclusion似乎有相同的规模，这里能否保证termination? 首先能证明它. 
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{Weight}) For each propositional formula $A$, we assign it a weight as follow:
+\begin{itemize}
+	\item $w(A)=w(\top)=w(\perp) = 2$ for atomic $A$;
+	\item $w(A \wedge B) = w(A)(1+w(B))$;
+	\item $w(A \vee B) = 1 + w(A) + w(B)$;
+	\item $w(A \supset B) = 1 + w(A)w(B)$.
+\end{itemize}
+\end{definition}
 
 \begin{theorem}
 \rm (\redt{Completeness}) If the sequent $\Gamma \to C$ is derivable in sequent calculus, then it is derivable in G4ip.
 \end{theorem}
+
+
 
 \newpage
 \begin{thebibliography}{00}
