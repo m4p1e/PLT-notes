@@ -746,15 +746,15 @@ $$
 \rm 我们利用structural induction来证一下progress. 首先基本的terms $\false, \true, 0, \succt{\term{nv}}$都是明显的values, 其中$\term{nv}$表示一个numeric value. 
 
 \begin{case}
-$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}.$
+$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~\text{hyp}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}.$
 
-由归纳假设当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$\term{t}_2$或者$\term{t}_3$.  另外当$\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t} \to \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$. 
+当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$\term{t}_2$或者$\term{t}_3$.  另外当$\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t} \to \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$. 
 \end{case} 
 
 \begin{case}
-$\term{t} = \succt{\term{t}_1} ~~~ \term{t}_1 = \text{nat}.$
+$\term{t} = \succt{\term{t}_1} ~~~ \text{hyp}:~ \term{t}_1 = \text{nat}.$
 
-由归纳假设当$\term{t}_1 = \text{nv}$时，那么$\succt{\term{t}_1}$还是一个numeric value. 另外当$\term{t}_1 \to \term{t}_1'$，我们也可以得到$\term{t} \to \succt{\term{t}_1'}$
+设当$\term{t}_1 = \text{nv}$时，那么$\succt{\term{t}_1}$还是一个numeric value. 另外当$\term{t}_1 \to \term{t}_1'$，我们也可以得到$\term{t} \to \succt{\term{t}_1'}$
 \end{case} 
 
 \begin{case}
@@ -778,6 +778,16 @@ $\term{t} = \iszero{\term{t}_1}~~~ \term{t}_1 = \text{nat}.$
 \begin{theorem}
 \rm \redt{preservation} If a well-typed term takes a step of  evaluation, then the resulting term is also well typed. 
 \end{theorem}
+
+\begin{proof}
+\rm 和证明progress类似，对于每个case需要分析其所有的one step, 然后根据typing rules，证明type perservation. i.e. representative case.
+\begin{case}
+$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~ \text{hyp}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}$. 
+
+当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$t' = \term{t}_2$或者$t' = \term{t}_3$，显然$t'$ with $T$.  另外当我们take $\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t}' = \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$，此时依然有$\term{t}'$ with $T$.  
+\end{case}
+
+\end{proof}
 
 \begin{definition}
 \rm
@@ -1387,7 +1397,6 @@ $$
 $$
 \end{example}
 
-
 \newpage
 \section{Subtyping}
 
@@ -1452,6 +1461,26 @@ $$
 \end{enumerate}
 \end{annotation}
 
+%\begin{annotation}
+%\rm 上面两个lemma更进一步告诉你了一个term的type不唯一了, polymorphism要来了，之前STLC里面保持的properties可能需要重新证明了...
+%\end{annotation}
+
+\newpage
+\subsection{Properties of Subtyping and Typing}
+
+\begin{annotation}
+\rm 当引入subtyping之后我们需要重新研究current type system已经证明过的properties，例如preservation and progress.
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{inversion}) 
+\begin{itemize}
+	\item If $\subtyp{S}{T_1 \to T_2}$, then $S$ has the form $S_1 \to S_2$, with $\subtyp{T_1}{S_1}$ and $\subtyp{S_2}{T_2}$. 
+	\item If $\subtyp{S}{\{(l_i:T_i)_{i \in 1\ldots n}\}}$, then  $S$ has the form $\{(k_j:S_j)_{j \in 1 \ldots m}\}$, with $\{{(l_i)}_{i \in 1\ldots n}\}\subseteq\{{(k_j)}_{j \in 1\ldots m}\}$ and for $\forall l_i = k_j. ~ \subtyp{S_i}{T_j}$.
+\end{itemize}
+\end{lemma}
+
+
 \begin{lemma}
 \rm If $\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}$, then $\subtyp{T_1}{S_1}$ and $\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}$. 
 \end{lemma}
@@ -1459,7 +1488,7 @@ $$
 \begin{proof}
 直接根据typing derivations
 $$
-\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}}{\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{S_1 \to T_2}}{\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}} & \infer{\subtyp{S_1}{T_2} \to \subtyp{T_1}{T_2}}{\subtyp{T_1}{S_1} & \subtyp{T_2}{T_2}}}
+\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}}{\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{S_1 \to T_2}}{\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}} & \infer{\subtyp{S_1 \to T_2}{T_1 \to T_2}}{\subtyp{T_1}{S_1} & \subtyp{T_2}{T_2}}}
 $$
 关键是将$\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}$看做一个abstraction，它的argument annotation显然和它的type里面的不一样，不能直接拆，因此首先整体要用一下function subtyping.
 \end{proof}
@@ -1468,9 +1497,50 @@ $$
 \rm If $\Gamma \vdash \termtype{\{{(k_j = s_j)}_{j \in 1\ldots m}\}}{\{{(l_i = T_i)}_{i \in 1\ldots n}\}}$, then $\{{(l_i)}_{i \in 1\ldots n}\}\subseteq\{{(k_j)}_{j \in 1\ldots m}\}$ and $\forall l_i = k_j.~ \Gamma \vdash \termtype{s_j}{T_i}$.
 \end{lemma}
 
-\begin{annotation}
-\rm 上面两个lemma更进一步告诉你了一个term的type不唯一了, polymorphism要来了，之前STLC里面保持的properties可能需要重新证明了...
-\end{annotation}
+\begin{lemma}
+\rm (\redt{substitution}) If $\Gamma, x:S \vdash t:T$ and $\Gamma \vdash s:S$, then $\Gamma \vdash [x \mapsto s]t: T$.
+\end{lemma}
+
+\begin{theorem}
+\rm (\redt{preservation}) If $\Gamma \vdash t:T$ and $t \to t'$, then $\Gamma \vdash t':T$
+\end{theorem}
+
+\begin{proof}
+证明过程是根据typing rules归纳well-typed $t:T$，这里只需要重点关心new typing rules即可. i.e. representative cases. 
+\begin{case}
+$$
+\infer{\Gamma\vdash t:T}{\Gamma \vdash t:S & \subtyp{S}{T}}
+$$
+由归纳假设$\Gamma \vdash t:S$ and $t \to t'$, then $\Gamma \vdash t':S$, 此时在对$t':S$用一下subsumption rule，即有$\Gamma \vdash t':T$. 
+\end{case}
+\end{proof}
+
+\begin{lemma}
+\rm (\redt{canonical forms})
+\begin{itemize}
+	\item If $v$ is closed value of type $T_1 \to T_2$, then $v$ has the form $\lam{x:S_1}{t_2}$.
+	\item If $v$ is closed value of type $\{(l_i:T_i)_{i \in 1\ldots n}\}$, then $v$ has the form $\{(k_i:v_i)_{i \in 1\ldots n}\}$, with $\{{(l_i)}_{i \in 1\ldots n}\}\subseteq\{{(k_j)}_{j \in 1\ldots m}\}$.
+\end{itemize}
+\end{lemma}
+
+\begin{theorem}
+\rm (\redt{progress}) If $t$ is closed, well-typed term, then either $t$ is value or else there is some $t'$ with $t \to t'$. 
+\end{theorem}
+
+\newpage
+\subsection{Bottom Type}
+
+\begin{definition}
+\rm Let type $Bot$ satifies $Bot <: T$ for any type $T$.
+\end{definition}
+
+\begin{lemma}
+\rm There are no closed values of type \emph{Bot}.
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
 
 \newpage
 \subsection{Coercion Semantics}
