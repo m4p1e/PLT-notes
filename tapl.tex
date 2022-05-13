@@ -1437,7 +1437,7 @@ $$
 \rm Subtyping rule for records.
 $$
 \begin{array}{ll}
-\subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}{\{l_1:T_1,l_2:T_2,\cdots,l_{n+k}:T_{n+k}\}} & \text{width subtyping} \\[0.5em]
+\subtyp{\{l_1:T_1,l_2:T_2,\cdots,l_{n+k}:T_{n+k}\}}{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}} & \text{width subtyping} \\[0.5em]
 \infer{\subtyp{\{l_1:S_1,l_2:S_2,\cdots,l_{n}:S_{n}\}}{\{l_1:T_1,l_2:T_2,\cdots,l_n:T_n\}}}{\forall i.~\subtyp{S_i}{T_i}} & \text{depth subtyping}
 \end{array}
 $$
@@ -1551,7 +1551,11 @@ evalutaion现在只考虑app-abs，设$t_1 = \lam{x:S_{11}}{t_{12}}$，注意这
 \end{lemma}
 
 \begin{proof}
-
+可以用canonical forms两个情况来说明:若$v$是一个abs $\lam{x:T_1}{t_2}$, 那么对于任意地type $S_1 \to S_2$我们应当有如下的derivation:
+$$
+\infer{\vdash \lam{x:T_1}{t_2}:S_1 \to S_2}{ \infer{\lam{x:T_1}{t_2}:T_1 \to T_2}{x:T_1 \vdash t_2:T_2} & \deduce{\subtyp{T_1\to T_2}{S_1 \to S_2}}{\subtyp{S_1}{T_1} &\subtyp{T_2}{S_2}}}
+$$
+换个思路我们希望找到是没有subtyp的type
 \end{proof}
 
 \newpage
