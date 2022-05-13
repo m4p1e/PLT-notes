@@ -746,15 +746,15 @@ $$
 \rm 我们利用structural induction来证一下progress. 首先基本的terms $\false, \true, 0, \succt{\term{nv}}$都是明显的values, 其中$\term{nv}$表示一个numeric value. 
 
 \begin{case}
-$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~\text{hyp}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}.$
+$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~\text{subterm}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}.$
 
-当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$\term{t}_2$或者$\term{t}_3$.  另外当$\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t} \to \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$. 
+由归纳假设subterm are not stuck term, 当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$\term{t}_2$或者$\term{t}_3$.  另外当$\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t} \to \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$. 
 \end{case} 
 
 \begin{case}
-$\term{t} = \succt{\term{t}_1} ~~~ \text{hyp}:~ \term{t}_1 = \text{nat}.$
+$\term{t} = \succt{\term{t}_1} ~~~ \text{subterm}:~ \term{t}_1 = \text{nat}.$
 
-设当$\term{t}_1 = \text{nv}$时，那么$\succt{\term{t}_1}$还是一个numeric value. 另外当$\term{t}_1 \to \term{t}_1'$，我们也可以得到$\term{t} \to \succt{\term{t}_1'}$
+由归纳假设当$\term{t}_1 = \text{nv}$时，那么$\succt{\term{t}_1}$还是一个numeric value. 另外当$\term{t}_1 \to \term{t}_1'$，我们也可以得到$\term{t} \to \succt{\term{t}_1'}$
 \end{case} 
 
 \begin{case}
@@ -782,9 +782,9 @@ $\term{t} = \iszero{\term{t}_1}~~~ \term{t}_1 = \text{nat}.$
 \begin{proof}
 \rm 和证明progress类似，对于每个case需要分析其所有的one step, 然后根据typing rules，证明type perservation. i.e. representative case.
 \begin{case}
-$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~ \text{hyp}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}$. 
+$\term{t} = \ifelse{\term{t}_1}{\term{t}_2}{\term{t}_3} ~~~~ \text{subterm}:~ \term{t}_1 = \text{bool} ~~ \term{t}_2 = \text{T} ~~ \term{t}_3 = \text{T}$. 
 
-当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$t' = \term{t}_2$或者$t' = \term{t}_3$，显然$t'$ with $T$.  另外当我们take $\term{t}_1 \to \term{t}_1'$时，我们也可以得到$\term{t}' = \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$，此时依然有$\term{t}'$ with $T$.  
+当$\term{t}_1 = \true$或者$\term{t}_1 = \false$时，我们对$\term{t}$一步evaluation得到$t' = \term{t}_2$或者$t' = \term{t}_3$，显然$t'$ with $T$.  另外当我们take $\term{t}_1 \to \term{t}_1'$时，此时对subterm $t_1$可以apply induction hypothesis得到$\term{t}_1':bool$，因此$\term{t}' = \ifelse{\term{t}_1'}{\term{t}_2}{\term{t}_3}$，此时依然有$\term{t}'$ with $T$.  
 \end{case}
 
 \end{proof}
@@ -1481,12 +1481,12 @@ $$
 \end{lemma}
 
 
-\begin{lemma}
+\begin{lemma}\label{app-subsum}
 \rm If $\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}$, then $\subtyp{T_1}{S_1}$ and $\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}$. 
 \end{lemma}
 
 \begin{proof}
-直接根据typing derivations
+直接根据typing derivation
 $$
 \infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{T_1 \to T_2}}{\infer{\Gamma \vdash \termtype{\lam{\termtype{x}{S_1}}{s_2}}{S_1 \to T_2}}{\Gamma,\termtype{x}{S_1} \vdash \termtype{s_2}{T_2}} & \infer{\subtyp{S_1 \to T_2}{T_1 \to T_2}}{\subtyp{T_1}{S_1} & \subtyp{T_2}{T_2}}}
 $$
@@ -1497,25 +1497,11 @@ $$
 \rm If $\Gamma \vdash \termtype{\{{(k_j = s_j)}_{j \in 1\ldots m}\}}{\{{(l_i = T_i)}_{i \in 1\ldots n}\}}$, then $\{{(l_i)}_{i \in 1\ldots n}\}\subseteq\{{(k_j)}_{j \in 1\ldots m}\}$ and $\forall l_i = k_j.~ \Gamma \vdash \termtype{s_j}{T_i}$.
 \end{lemma}
 
-\begin{lemma}
+\begin{lemma}\label{subtyp-subs}
 \rm (\redt{substitution}) If $\Gamma, x:S \vdash t:T$ and $\Gamma \vdash s:S$, then $\Gamma \vdash [x \mapsto s]t: T$.
 \end{lemma}
 
-\begin{theorem}
-\rm (\redt{preservation}) If $\Gamma \vdash t:T$ and $t \to t'$, then $\Gamma \vdash t':T$
-\end{theorem}
-
-\begin{proof}
-证明过程是根据typing rules归纳well-typed $t:T$，这里只需要重点关心new typing rules即可. i.e. representative cases. 
-\begin{case}
-$$
-\infer{\Gamma\vdash t:T}{\Gamma \vdash t:S & \subtyp{S}{T}}
-$$
-由归纳假设$\Gamma \vdash t:S$ and $t \to t'$, then $\Gamma \vdash t':S$, 此时在对$t':S$用一下subsumption rule，即有$\Gamma \vdash t':T$. 
-\end{case}
-\end{proof}
-
-\begin{lemma}
+\begin{lemma}\label{subtyp-canf}
 \rm (\redt{canonical forms})
 \begin{itemize}
 	\item If $v$ is closed value of type $T_1 \to T_2$, then $v$ has the form $\lam{x:S_1}{t_2}$.
@@ -1524,8 +1510,34 @@ $$
 \end{lemma}
 
 \begin{theorem}
+\rm (\redt{preservation}) If $\Gamma \vdash t:T$ and $t \to t'$, then $\Gamma \vdash t':T$
+\end{theorem}
+
+\begin{proof}
+证明过程是根据typing rules归纳well-typed $t:T$，这里只需要重点关心new typing rules，和稍微有些区别的canonical forms和substitution. i.e. representative cases. 
+\begin{case}
+$$
+\infer{\Gamma\vdash t:T}{\Gamma \vdash t:S & \subtyp{S}{T}}
+$$
+由归纳假设$\Gamma \vdash t:S$ and $t \to t'$, then $\Gamma \vdash t':S$, 此时在对$t':S$用一下subsumption rule，即有$\Gamma \vdash t':T$. 
+\end{case}
+\begin{case}
+$$
+\infer{\Gamma \vdash t_1~t_2:T_2}{\Gamma \vdash t_1:T_1 \to T_2 & \Gamma \vdash t_2:T_1}
+$$
+evalutaion现在只考虑app-abs，设$t_1 = \lam{x:S_{11}}{t_{12}}$，注意这里用的argument annotation是$S_{11}$，因为这里没有东西可以说明它是$T_1$，然后我们根据Lemma \ref{app-subsum}，才能得到关于$S_{11}$的信息$\subtyp{T_1}{S_{11}}$和$\Gamma,x:S_{11} \vdash t_{12}:T_2$. 于是再对$t_2:T_1$用一下subsumption rule得到$t_2:S_{11}$，最后用Lemma  \ref{subtyp-subs}即可. 
+\end{case}
+\end{proof}
+
+
+
+\begin{theorem}
 \rm (\redt{progress}) If $t$ is closed, well-typed term, then either $t$ is value or else there is some $t'$ with $t \to t'$. 
 \end{theorem}
+
+\begin{proof}
+与在STLC证明类似，此时注意下canonical forms即可. 
+\end{proof}
 
 \newpage
 \subsection{Bottom Type}
