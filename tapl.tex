@@ -1551,12 +1551,22 @@ evalutaion现在只考虑app-abs，设$t_1 = \lam{x:S_{11}}{t_{12}}$，注意这
 \end{lemma}
 
 \begin{proof}
-可以用canonical forms两个情况来说明:若$v$是一个abs $\lam{x:T_1}{t_2}$, 那么对于任意地type $S_1 \to S_2$我们应当有如下的derivation:
-$$
-\infer{\vdash \lam{x:T_1}{t_2}:S_1 \to S_2}{ \infer{\lam{x:T_1}{t_2}:T_1 \to T_2}{x:T_1 \vdash t_2:T_2} & \deduce{\subtyp{T_1\to T_2}{S_1 \to S_2}}{\subtyp{S_1}{T_1} &\subtyp{T_2}{S_2}}}
-$$
-换个思路我们希望找到是没有subtyp的type
+\rm 假设存在$\vdash v:Bot$，你可以用subsumption推出$v$可以是任意的types，例如你如果考虑$v:Top \to Top$和$v:\{\}$，你再用一下它们对应的canonical forms，但是显然一个term不可能有两种形态.
+
+%可以用canonical forms两个情况来说明:若$v$是一个abs $\lam{x:T_1}{t_2}$, 那么对于任意地type $S_1 \to S_2$我们应当有如下的derivation:
+%$$
+%\infer{\vdash \lam{x:T_1}{t_2}:S_1 \to S_2}{ \infer{\lam{x:T_1}{t_2}:T_1 \to T_2}{x:T_1 \vdash t_2:T_2} & \deduce{\subtyp{T_1\to T_2}{S_1 \to S_2}}{\subtyp{S_1}{T_1} &\subtyp{T_2}{S_2}}}
+%$$
+%似乎对所以的func types找到一个common bottom type不太好找，这里显然是需要$\lam{x:T_1}{t_2}:Top \to Bot$. 那么换个思路，我们希望找到是某个type的subtyp只有它自己，那它实际就是bottom type，that is amazing.
 \end{proof}
+
+\begin{annotation}
+\rm 对于top type而言我们非常自然地将它移除或者添加，它并不会对某个type system的properties造成影响，但是bottom type似乎没有那么容易做到，例如当你添加bottom type之前，如果$t_1~t_2$ is well-typed application, 那么我们肯定知道$t_1$是一个arrow type，当你添加完bottom type之后，这里就变成了$t_1$可能是一个arrow type或者bottom type，会将我们typechecker复杂化. 但是它也有两个非常好的性质:
+\begin{enumerate}
+	\item 因为它对应的empty terms，我们可以让它作为某些没有result value的操作，例如某些函数没有return value. 
+	\item 因为它的safety in any contexts，它又可以表示任意的值，这时我们可以让它作为在trigger exceptions的返回值. 
+\end{enumerate}
+\end{annotation}
 
 \newpage
 \subsection{Coercion Semantics}
