@@ -2050,11 +2050,11 @@ $$
 \end{proof}
 
 \begin{annotation}
-\rm 要证明completeness of derivability in G4ip，我们得先证明terminitation of proof searching in G4ip，是什么原因导致我们会担心会不会terminated呢？ 因为$\wedge \supset L$
+\rm 要证明completeness of derivability in G4ip，我们得先证明terminitation of proof searching in G4ip，因为现在没有soundness中的前提条件了. 那是什么原因导致我们会担心会不会terminated呢？ 因为$\wedge \supset L$
 $$
 \infer[\wedge \subset L]{\Gamma, (A_1 \vee A_2) \subset B \to C}{\Gamma, A_1 \supset (A_2 \subset B) \to C}
 $$
-看起来premise和conclusion似乎有相同的规模，这里能否保证termination? 首先能证明它. 
+看起来premise和conclusion似乎有相同的规模，这里能否保证termination? 这里引入weight来证明它，很奇妙的规则，至少我还没有洞悉它. 
 \end{annotation}
 
 \begin{definition}
@@ -2067,9 +2067,35 @@ $$
 \end{itemize}
 \end{definition}
 
+\begin{lemma}\label{amazing-weight}
+\rm For each rule in G4ip, its premises have a strictly lower weight than its conclusion. 
+\end{lemma}
+
+\begin{proof}
+需要每个例子都验证一遍. 这里我只验证一下上面提到的例子. 
+$$
+\begin{aligned}
+w(A_1\supset (A_2 \supset B)) &= 1 + w(A_1)(1+w(A_2)(B)) \\
+&= 1 + w(A_1) + w(A_1)w(A_2)w(B)\\\\
+w((A_1 \wedge A_2) \supset B) &= 1 + w(A_1)(1+w(A_2))w(B) \\
+&=1 + w(A_1)w(B) + w(A_1)w(A_2)w(B)
+\end{aligned}
+$$
+其中$w(A_1) \geq 2$，因此$w(A_1\supset (A_2 \supset B)) \leq w((A_1 \wedge A_2) \supset B)$.
+\end{proof}
+
+\begin{theorem}
+\rm (\redt{Termination}) Proof search in G4ip is terminating
+\end{theorem}
+
+\begin{proof}
+It is straightforward by Lemma \ref{amazing-weight}.
+\end{proof}
+
 \begin{theorem}
 \rm (\redt{Completeness}) If the sequent $\Gamma \to C$ is derivable in sequent calculus, then it is derivable in G4ip.
 \end{theorem}
+
 
 
 
