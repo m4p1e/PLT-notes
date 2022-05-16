@@ -2093,11 +2093,28 @@ It is straightforward by Lemma \ref{amazing-weight}.
 \end{proof}
 
 \begin{theorem}
-\rm (\redt{Completeness}) If the sequent $\Gamma \to C$ is derivable in sequent calculus, then it is derivable in G4ip.
+\rm (\redt{Completeness}) If the sequent $\Gamma \to C$ is provable in sequent calculus, then it is provable in G4ip.
 \end{theorem}
 
 
+\begin{proof}
+\rm 我们需要更细粒度的structure induction来处理$\supset L$，因此我们这里采用\redt{induction on the weight of the sequent}，这是非常重要的一个trick. 对于给定一个sequent，我们得思考sequent bigger than it，同时我们最好以proof searching的视角去看待，这样会让我们讨论的proof更加的具体. 这里记录几个representative cases. 
+\begin{case}
+若$\Gamma = \Gamma', A \wedge B$
 
+根据proof searching中invertibility的策略，可以得到一个provable premise $\Gamma', A, B \to C$，而它的weight小于原sequent，因此这里可以使用induction hypothesis得到它在G4ip也是provable, 接着再使用$\wedge L$ in G4ip即可.
+\end{case}
+\begin{case}
+若$\Gamma = \Gamma', a, a\supset B$
+
+这里你会发现sequent calculus里面没有rules可以用，但是我们可以站在更高的一点地方来看它. 如果$\Gamma', a, a \supset B \to C$ is provable, 那么存在一个derivation $\mathcal{D}$ end with it，若我们可以从这个derivation推出$a \supset L$的premise，我们就可以正常使用$a \supset L$得到我们想要的结果，这实际就是要说明$a \supset L$ is invertible. 
+$$
+\infer[cut]{\Gamma',a, B \to C}{\infer[\supset R]{\Gamma,a,B \to a \supset B}{\infer[id]{\Gamma,a,B,a \to B}{}} & \deduce{\Gamma, a, a\supset B \vdash C}{\mathcal{D}}}
+$$
+\end{case}
+\end{proof}
+
+ 
 
 \newpage
 \begin{thebibliography}{00}
