@@ -2115,6 +2115,30 @@ $$
 \end{proof}
 
  
+\newpage
+\section{Logical Programming}
+
+\subsection{Backward Chaining}
+
+\begin{annotation}
+\rm \redt{Proof searching as computation}
+\end{annotation}
+
+\begin{definition}
+\rm We define \redt{Horn clauses} includes two classes: $G$ denotes goal clauses and $P$ denotes program clauses. They are defined by the following grammer (where $A$ denotes an atom):
+$$
+\begin{aligned}
+&G \coloneqq A~|~ G \wedge G~|~ \exists x.G \\
+&P \coloneqq A~|~ B \supset A~|~ \forall x.P \\
+&B \coloneqq A~|~ B \wedge B 
+\end{aligned}
+$$
+In words: goals are existentially quantified conjunction of atoms. Programs are either atoms or implications where the antecedent is conjunction of atoms and succedent is an atom, both universally quantified. 
+\end{definition}
+
+\begin{definition}
+
+\end{defin}
 
 \newpage
 \begin{thebibliography}{00}
