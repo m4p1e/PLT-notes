@@ -2137,8 +2137,53 @@ In words: goals are existentially quantified conjunction of atoms. Programs are 
 \end{definition}
 
 \begin{definition}
+\rm A \redt{logic program} is a sequent $\mathcal{P} \to G$ where the $\mathcal{P}$ contains only program clauses and $G$ is a goal clause.
+\end{definition}
 
-\end{defin}
+\begin{example}\label{logic-pro-ex1}
+\rm 给定下述logic program:
+$$
+\begin{gathered}
+\forall x.plus(0,x,x), \\
+\forall x. \forall y. \forall z. plus(x,y,z) \supset plus(s(x),y,s(z))
+\end{gathered} ~~~\to
+\exists x.plus(s(0),s(s(0)),x) 
+$$
+其中$plus$是一个predicate symbol, 而$0$和$s$是function symbols. 如果我们希望上述logica program processing(computing) like proof searching in sequent calculus，即以proof searching的方式去构造这个sum. 那么首先我们得思考要构建一个怎样的proof system? 
+\end{example}
+
+\begin{definition}
+\rm (\redt{Representative proof system}) Each clause will be  represented as a rule: atoms are rules  without premises, implications are rules where the premises are the atoms in B and the conclusion is the succdent. The program computing sums we had before will thus become:
+$$
+\begin{aligned}
+\infer[plus_0]{plus(0,X,X)}{} &&&&& \infer[plus_s]{plus(s(X),Y,s(Z))}{plus(X,Y,Z)}
+\end{aligned}
+$$ 
+\end{definition}
+
+\begin{annotation}
+\rm 回到Example \ref{logic-pro-ex1}，我们可以构造一个proof说明$x$可以为$s(s(s(x)))$.
+$$
+\infer[plus_s]{plus(s(0),s(s(0)),s(s(s(x))))}{\infer[plus_0]{plus(0,s(s(0)),s(s(0)))}{}}
+$$
+\end{annotation}
+
+\begin{definition}
+\rm Bottom-up proof search is called \redt{backward chaining}; top-down proof search is called \redt{forward chaining}.
+\end{definition}
+
+\begin{annotation}
+\rm Backward chaining指的就是从conclusion推hypotheses，这个过程包含的几个重要环节为: 
+\begin{enumerate}
+	\item 从conclusion找对应的inference rules，这个过程我们称为\redt{pattern match}.
+	\item 如果某个地方proof searching进行不下去了导致failed，需要回到到某个点重新选择inference rules，或者没有这样点导致整体完全failed. 这个过程我们称为\redt{backtracking}.
+	\item 以Exmaple \ref{logic-pro-ex1}为例，它的conclusion含有一个未知的variable $x$，那这个时候该如何进行第一步呢？ 我们首先用一个symbol $X$来占位，那么此时conclusion为$plus(s(0),s(s(0)), X)$，现在它其实可以叫做我们当前的goal. 此时我们只有第二个program clause可以用，因为第一个program clause require第一个数得是0. 那么问题又来了
+	$$
+	\infer[plus_s]{plus(s(0),s(s(0)), X)}{plus(0,s(s(0)), \bluet{?})}
+	$$
+	这里我们也可以用另外一个symbol $Y$来占位，即$plus(0,s(s(0)), Y)$，此时的goal只有第一个program clause可以对应，同时我必须将$Y$替换为$s(s(0))$，因为此时没有far premises了. 将占位symbols替换为指定的terms过程我们就称为\redt{unification}. 当$Y$替换之后，$X$配合$plus_s$ rule就自然地推出来了. 在最开始$X$这里，我们还不能进行unify操作，因为还不是那么明显，因此我们可以delay it. 后续我们将详细介绍unification操作.    
+\end{enumerate}
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
