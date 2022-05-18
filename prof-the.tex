@@ -2181,7 +2181,8 @@ $$
 	$$
 	\infer[plus_s]{plus(s(0),s(s(0)), X)}{plus(0,s(s(0)), \bluet{?})}
 	$$
-	这里我们也可以用另外一个symbol $Y$来占位，即$plus(0,s(s(0)), Y)$，此时的goal只有第一个program clause可以对应，同时我必须将$Y$替换为$s(s(0))$，因为此时没有far premises了. 将占位symbols替换为指定的terms过程我们就称为\redt{unification}. 当$Y$替换之后，$X$配合$plus_s$ rule就自然地推出来了. 在最开始$X$这里，我们还不能进行unify操作，因为还不是那么明显，因此我们可以delay it. 后续我们将详细介绍unification操作.    
+	这里我们也可以用另外一个symbol $Y$来占位，即$plus(0,s(s(0)), Y)$，此时的goal只有第一个program clause可以对应，同时我必须将$Y$替换为$s(s(0))$，因为此时没有far premises了. 将占位symbols替换为指定的terms过程我们就称为\redt{unification}. 当$Y$替换之后，$X$配合$plus_s$ rule就自然地推出来了. 在最开始$X$这里，我们还不能进行unify操作，因为还不是那么明显，因此我们可以delay it. 后续我们将详细介绍unification操作. 
+	\item 如果apply某个inference rule得到了多个premises，这样我们可能有多个goal需要去resolve，这里采用\redt{depth-first}的手法.    
 \end{enumerate}
 \end{annotation}
 
