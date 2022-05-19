@@ -2202,7 +2202,7 @@ $$
 	mother(li, maple). \\
 	father(hu, maple).
 	\end{tabular}\newline\newline
-	Each of those is an atom and they are interpreted as a logical formula: e.g., the first fact is $mother(li, maple) \supset \top$, \bluet{but why?} 
+	Each of those is an atom and they are interpreted as a logical formula: e.g., the first fact is $mother(li, maple) \supset \top$, \bluet{but why?}
 	\item A clause may be a rule in the shape:\newline\newline
 	\begin{tabular}{l}
 	head :- body
@@ -2212,8 +2212,10 @@ $$
 	parent(X,Y) :- mother(X, Y). \\
 	parent(X,Y) :- father(X, Y). \\
 	sibling(X,Y) :- parent(Z,X), parent(Z,X). \\
-	\end{tabular}
+	\end{tabular}\newline\newline
+	It also has a representation as logical formulas, for example, the last clause is \newline $\forall x.\forall y.\forall z. (parent(z,x) \wedge parent(z,y) \supset sibling(x,y))$.
 \end{enumerate}
+当我们有了上面这些clauses之后，我们就可以来做一些querys, 例如parent(X, maggie)表示谁是maggie的parent，prolog以它作为current goal，开始搜索head是parent的那些caluses，找到对应的body里面的subgoals，接着周而复始，直到最后facts，这过程充斥着我们提到的backtracking和unification. 
 \end{example}
 
 \newpage
