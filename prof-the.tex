@@ -2195,7 +2195,7 @@ $$
 \end{definition}
 
 \begin{example}
-\rm 一段prolog程序实际上就是一堆clauses, 这些clauses可以分为两类:
+\rm 一段Prolog程序实际上就是一堆clauses, 这些clauses可以分为两类:
 \begin{enumerate}
 	\item A clause may be a fact we know about the world. For example: \newline\newline
 	\begin{tabular}{l}
@@ -2215,7 +2215,65 @@ $$
 	\end{tabular}\newline\newline
 	It also has a representation as logical formulas, for example, the last clause is \newline $\forall x.\forall y.\forall z. (parent(z,x) \wedge parent(z,y) \supset sibling(x,y))$.
 \end{enumerate}
-当我们有了上面这些clauses之后，我们就可以来做一些querys, 例如parent(X, maggie)表示谁是maggie的parent，prolog以它作为current goal，开始搜索head是parent的那些caluses，找到对应的body里面的subgoals，接着周而复始，直到最后facts，这过程充斥着我们提到的backtracking和unification. 
+当我们有了上面这些clauses之后，我们就可以来做一些querys, 例"maggie的parent是谁?", parent(X, maggie). Prolog以它作为current goal，开始搜索head是parent的那些clauses，找到对应的body里面的subgoals，接着周而复始，直到最后facts，这过程充斥着我们提到的backtracking和unification. 
+\end{example}
+
+\newpage
+\begin{example}
+\rm 一个非常神奇的例子: quicksort.
+\begin{lstlisting}[basicstyle={\normalsize\ttfamily}]
+quicksort([], []).
+quicksort([X|Xs], Ys) :- partition(Xs, X, Ls, Gs),
+			 quicksort(Ls, Sl),
+			 quicksort(Gs, Sr),
+			 append(Sl, [X|Sr], Ys).
+						
+partition([], _, [], []).
+partition([X|L], P, [X|Ls], Gs) :- X < P,
+	partition(L, P, Ls, Gs).
+partition([X|L], P, Ls, [X|Gs]) :- X >= P,
+	partition(L, P, Ls, Gs).
+\end{lstlisting}
+配合trace理解它:
+\begin{lstlisting}[basicstyle={\small\ttfamily}]
+      1    1  Call: quicksort([2,3,1],_29) ? 
+      2    2  Call: partition([3,1],2,_100,_101) ? 
+      3    3  Call: 3<2 ? 
+      3    3  Fail: 3<2 ? 
+      3    3  Call: 3>=2 ? 
+      3    3  Exit: 3>=2 ? 
+      4    3  Call: partition([1],2,_153,_87) ? 
+      5    4  Call: 1<2 ? 
+      5    4  Exit: 1<2 ? 
+      6    4  Call: partition([],2,_140,_87) ? 
+      6    4  Exit: partition([],2,[],[]) ? 
+      4    3  Exit: partition([1],2,[1],[]) ? 
+      2    2  Exit: partition([3,1],2,[1],[3]) ? 
+      7    2  Call: quicksort([1],_233) ? 
+      8    3  Call: partition([],1,_259,_260) ? 
+      8    3  Exit: partition([],1,[],[]) ? 
+      9    3  Call: quicksort([],_284) ? 
+      9    3  Exit: quicksort([],[]) ? 
+     10    3  Call: quicksort([],_309) ? 
+     10    3  Exit: quicksort([],[]) ? 
+     11    3  Call: append([],[1],_337) ? 
+     11    3  Exit: append([],[1],[1]) ? 
+      7    2  Exit: quicksort([1],[1]) ? 
+     12    2  Call: quicksort([3],_363) ? 
+     13    3  Call: partition([],3,_389,_390) ? 
+     13    3  Exit: partition([],3,[],[]) ? 
+     14    3  Call: quicksort([],_414) ? 
+     14    3  Exit: quicksort([],[]) ? 
+     15    3  Call: quicksort([],_439) ? 
+     15    3  Exit: quicksort([],[]) ? 
+     16    3  Call: append([],[3],_467) ? 
+     16    3  Exit: append([],[3],[3]) ? 
+     12    2  Exit: quicksort([3],[3]) ? 
+     17    2  Call: append([1],[2,3],_29) ? 
+     17    2  Exit: append([1],[2,3],[1,2,3]) ? 
+      1    1  Exit: quicksort([2,3,1],[1,2,3]) ?
+\end{lstlisting}
+其中第一列数字表示具体哪个call，第二列数字表示the depth of goal，其中带下划线的数字表示占位的variable，等待被unified. 可以看到第8次call的时候第一次unify.
 \end{example}
 
 \newpage
