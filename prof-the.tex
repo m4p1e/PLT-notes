@@ -153,6 +153,10 @@
 \rm Implementations of meta logics to represent and reason about  object logics are called \redt{logical frameworks}.
 \end{definition}
 
+\begin{annotation}
+\rm 上面提到的implementations实际上就是languages，例如Prolog是这样的一个language，它以Horn clause作为meta logic. 你要实现的object logic可以通过这个language来进行encoding，也就是所谓的representating，同时还可以在encoding基础上进行reasoning.  
+\end{annotation}
+
 \newpage
 \subsection{First Order Logic}
 
@@ -2241,6 +2245,14 @@ $$
 	\item 如果apply某个inference rule得到了多个premises，这样我们可能有多个goal需要去resolve，这里采用\redt{depth-first}的手法.    
 \end{enumerate}
 \end{annotation}
+
+\begin{example}
+\rm 为什么disjunction没有出现在上面的Horn clauses里面呢？ 我们可以来看一个derivable sequent:
+$$
+p(a) \vee p(b) \to \exists x.p(x)
+$$
+这里我们显然是无法找到$x$满足$p(x)$，那么我们的unify操作在这里是行不通的. 
+\end{example}
 
 
 \newpage
