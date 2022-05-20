@@ -136,6 +136,62 @@
 \newpage
 \section{Basic Logic}
 
+\subsection{Logical Framework}
+
+%meta logic
+%object logic
+
+\begin{definition}
+\rm \redt{Meta logic} is the logic that used to formalize anthor logic
+\end{definition}
+
+\begin{definition}
+\rm \redt{Object logic} is the logic that formalized from meta logic.  
+\end{definition}
+
+\begin{definition}
+\rm Implementations of meta logics to represent and reason about  object logics are called \redt{logical frameworks}.
+\end{definition}
+
+\newpage
+\subsection{First Order Logic}
+
+\begin{example}
+\rm 给定一个statement:
+
+"Every natural number is even or odd, but not both."
+
+如果我们想要构造一个system去accept这个statement，我们需要说明natural number是什么？ even和odd又是什么？ 如何描述even和odd是冲突的？ 这里引出这个system需要描述的三个重要部分: \redt{objects, their properties, and relations between them}. 同时如何描述every natural number? 这里又涉及到了quantifiter.  
+\end{example}
+
+\begin{annotation}
+\rm 我遵循描述一个logical system, 首先定义里面的terms, 再描述由这些terms构成的formulas.
+\end{annotation}
+
+\begin{definition}
+\rm A signature $\sigma$ consist of \emph{constant symbols}, \emph{function symbols} and \emph{predicate symbols}.  
+\end{definition}
+
+\begin{definition}
+\rm Let $\sigma\text{-}terms$ be a set of terms in first order logic, it defined by the follow inductive process:
+\begin{enumerate}
+	\item Each variable $x \in \sigma\text{-}terms$.
+	\item Each constant symbol $a \in \sigma$, then $a \in \sigma\text{-}terms$.
+	\item If $t_1,\cdots,t_2 \in \sigma\text{-}terms$ and $f$ is $k$-ary function symbol in $\sigma$, then $f(t_1,\cdots,t_k)\in \sigma\text{-}terms$. 
+\end{enumerate}
+Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logic defined by follow inductive process:
+\begin{enumerate}
+	\item Given terms $t_1, \cdots, t_k \in \sigma\text{-}terms$ and $k$-ary predicate symbol $P$ then $P(t_1,\cdots,t_k)$ is a term. 
+	\item All formulas relate to logical connective in propositional logic.
+	\item If $F \in \mathcal{F}_{\sigma\text{-}terms}$ and $x$ is a variable, then $\forall x. F$ and $\exists x. F$ are both in $\mathcal{F}_{\sigma\text{-}terms}$. 
+\end{enumerate}
+\end{definition}
+
+\begin{annotation}
+\rm 在理解propositional logic的基础上，只要记住几个关键词\emph{function}, \emph{predicate}, and \emph{quantifier}就足以刻画first order logic. 
+\end{annotation}
+
+\newpage
 \subsection{Satisfiability of Sets of Formulas}
 
 \begin{definition}
