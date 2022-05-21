@@ -721,7 +721,7 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm local soundness告诉你通过elimination压缩得到的东西不会比你已经知道的东西强(not strong)，而local completeness告诉你合并通过elimination压缩得到的东西会得到全部你知道的信息. 
+\rm local soundness告诉你通过elimination得到的东西不会比你已经知道的东西强(not strong)，而local completeness告诉你可以利用通过elimination得到的东西来构造你原本你已经知道的东西(not weak). 
 \end{annotation}
 
 
@@ -1173,14 +1173,78 @@ $$
 \end{example}
 
 \begin{annotation}
-\rm Curry-Howard isomorphism建立在ND和STLC之间似乎看起来局限性很强，但是它是非常重要的第一步，是我们以另外一种视角来看待问题的方法，例如well-type term is normalizing，那么也意味well-formed formula is derivable. 之后researcher渐渐发现了其他的logics也可以找到与之对应的programming language, 这仍然是一个active research field.
+\rm Curry-Howard isomorphism建立在ND和STLC之间似乎看起来局限性很强，但是它是非常重要的第一步，是我们以另外一种视角来看待问题的方法，例如well-type term is normalizing，那么也意味well-formed formula is derivable. 之后researcher渐渐地发现了其他的logics也可以找到与之对应的programming language, 直到现在这仍然是一个active research field.
 \end{annotation}
 
 \newpage
 \subsection{Quantifier}
 
+\begin{annotation}
+\rm natural deduction很自然地建立在propositional logic上，现在要把quantifier加到里面，我们就得面向first order logic了，这里需要引入terms和variables来为后面construction做准备. 另外还得必要引入关于term的properties，这里我们给它一个合适的名字叫做type, 即type of term, 为什么要引入这个它呢？ 因为你可以想象我们经常在谈及quantified statement的时候，例如"every natural number is even or odd", 这里谈论的对象是natural number，那么这个natural number实际上就是这里term的type. 
+\end{annotation}
 
 
+\begin{definition}
+\rm A formula $\forall x. A$ hold if and only if for every term $a$ chosen, the proposition $A[a/x]$ hold, where the proposition means all occurrences of $x$ in $A$ replaced by $a$. 
+\end{definition}
+
+
+\begin{definition}
+\rm The introduction rule of universal quantifier is defined as follow:
+$$
+\infer[\forall I^a]{\forall x. A~true}{\deduce{A[a/x]~true}{\deduce{\vdots}{\infer{a:\tau}{}}}}
+$$
+where term $a$ is called an \emph{eigenvariable} and its shoule be fresh, meaning that it has not occurred anywhere else in the proof.
+\end{definition}
+
+\begin{definition}
+\rm The emilination rule of universal quantifier is defined as follow:
+$$
+\infer[\forall E]{A[t/x]~true}{\forall x.A~true & t:\tau}
+$$
+where term $t$ should not be any bound variables in $A$.
+\end{definition}
+
+\begin{definition}
+\rm A formula $\exists x.A$ holds if and only if for some term $t$, $A[t/x]$ holds.
+\end{definition}
+
+\begin{definition}
+\rm The introduction rule of existential quantifier is defined as follow:
+$$
+\infer[\exists I]{\exists x. A~true}{A[t/x]~true & t:\tau}
+$$
+where term $t$ should not be any bound varaibles in $A$. 
+\end{definition}
+
+\begin{definition}
+\rm The emilination rule of existential quantifier is defined as follow:
+$$
+\infer[\exists E^{a,u}]{C~true}{\exists x.A~true & \deduce{C~true}{\deduce{\vdots}{\infer{a:\tau}{} & \infer{A[a/x]~true}{}}}}
+$$
+where varaible $a$ should be fresh. 
+\end{definition}
+
+\begin{theorem}
+\rm The rules for quantifier is local soundness and completeness
+\end{theorem}
+
+\begin{proof}
+\rm The local reduction and local expansion of universal quantifier as follow:
+$$
+\begin{gathered}
+\infer[\forall E]{A[t/x]~true}{\infer[\forall I^a]{\forall x. A~true}{\deduce{A[a/x]~true}{\deduce{\mathcal{D}}{\infer{a:\tau}{}}}} & \deduce{t:\tau}{\mathcal{E}}} ~~~~ \Rightarrow_R~~~~ \deduce{A[t/x]~true}{\deduce{\mathcal{D}[t/a]}{\deduce{t:\tau}{\mathcal{E}}}} \\ \\
+\deduce{\forall x. A~true}{\mathcal{D}} ~~~~ \Rightarrow_E ~~~~\infer[\forall I^a]{\forall x. A~true}{\infer{A[a/x]~true}{\deduce{\forall x. A~true}{\mathcal{D}} & \infer{ a: \tau}{}}}
+\end{gathered}
+$$
+The local reduction and local expansion of existential quantifier as follow:
+$$
+\begin{gathered}
+\infer[\exists E^{a,u}]{C~true}{\infer[\exists I]{\exists x. A~true}{\deduce{A[t/x]~true}{\mathcal{D}} & \deduce{t:\tau}{\mathcal{E}}} & \deduce{C~true}{\deduce{\mathcal{F}}{\infer{a:\tau}{} & \infer[u]{A[a/x]~true}{}}}} ~~~~ \Rightarrow_R ~~~~ \deduce{C~true}{\deduce{\mathcal{F}[t/a]}{\deduce{t:\tau}{\mathcal{E}} & \deduce{A[a/x]~true}{\mathcal{D}}}} \\ \\
+\deduce{\exists x.A~true}{\mathcal{D}}~~~~\Rightarrow_E ~~~~\infer[\exists E^{a,u}]{\exists x. A~true}{\deduce{\exists x.A~true}{\mathcal{D}} & \infer[\exists I]{\exists x.A~true}{\infer{a:\tau}{} & \infer[u]{A[a/x]~true}{}}}
+\end{gathered}
+$$
+\end{proof}
 
 \newpage
 \section{More Delicate}
