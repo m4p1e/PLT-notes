@@ -1246,6 +1246,14 @@ $$
 $$
 \end{proof}
 
+\begin{annotation}
+\rm 注意到local expansion of existential quantifier并不是以一个introduction rule结尾的，这和我预想的有些不太一样. 
+\end{annotation}
+
+\begin{annotation}
+\rm \redt{Quantifiers corresponse dependent types}.
+\end{annotation}
+
 \newpage
 \section{More Delicate}
 
@@ -2416,6 +2424,10 @@ partition([X|L], P, Ls, [X|Gs]) :- X >= P,
 \end{lstlisting}
 其中第一列数字表示具体哪个call，第二列数字表示the depth of goal，其中带下划线的数字表示占位的variable，等待被unified. 可以看到第8次call的时候第一次unify.
 \end{example}
+
+
+\newpage
+\subsection{Focusing}
 
 \newpage
 \begin{thebibliography}{00}
