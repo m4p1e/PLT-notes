@@ -2425,7 +2425,6 @@ partition([X|L], P, Ls, [X|Gs]) :- X >= P,
 其中第一列数字表示具体哪个call，第二列数字表示the depth of goal，其中带下划线的数字表示占位的variable，等待被unified. 可以看到第8次call的时候第一次unify.
 \end{example}
 
-
 \newpage
 \subsection{Focusing}
 
@@ -2437,11 +2436,18 @@ Right invertible rules & $\infer[\forall R]{\Gamma^-;\Omega \xrightarrow{R} \for
 \hline Side change & $\infer[LR_\exists]{\Gamma^-;\Omega \xrightarrow{R} \exists x.A}{\Gamma^-;\Omega \xrightarrow{L} \exists x.A}$ \\
 \hline Left invertible rules & $\infer[L \exists]{\Gamma^-,\Omega,\exists x. A \xrightarrow{L} C^+}{\Gamma^-,\Omega,A[c/x] \xrightarrow{L} C^+}$ where $c$ is fresh variable \\
 \hline Shift rules & $\infer[\textsl{shift}_\forall]{\Gamma^-; \Omega, \forall x. A \xrightarrow{L} C^+}{\Gamma^-,\forall x. A; \Omega \xrightarrow{L} C^+}$ \\
-\hline Noninvertible rules & $\infer{\Gamma^-; \cdot \xrightarrow{L} \exists x.A}{\Gamma^-; \cdot \xrightarrow{L} A[t/x]} \quad\quad \infer{\Gamma, \forall x. A;\cdot \to C^+}{\Gamma, \forall x. A; A[t/x] \to C^+}$ where $t$ is term
+\hline Noninvertible rules & $\infer[R \exists]{\Gamma^-; \cdot \xrightarrow{L} \exists x.A}{\Gamma^-; \cdot \xrightarrow{L} A[t/x]} \quad\quad \infer[L \forall]{\Gamma, \forall x. A;\cdot \to C^+}{\Gamma, \forall x. A; A[t/x] \to C^+}$ where $t$ is term
 \end{tabular}
 \end{center}
-
+这里有两个感觉很奇怪的rules $L \exists$和$L \forall$，首先这和我们直觉上关于$\exists$和$\forall$的introduction rule不太一样，而$R \exists$和$R \forall$是符合我们直觉的. 我们从“怎么用这两个条件”来解释:
+\begin{itemize}
+	\item 在一般情况下，如果我们有一个存在性命题，那么通常我们会假设其存在用某个symbol来表示，让prove过程进行下去，$L \exists$就是采用的这种直觉.
+	\item 而当存在一个全称命题的时候，那么我们会取一个任意满足$\tau$的term，来让prove过程进行下，同时keep这个全称命题，万一取错了，我们还可以再取. 
+\end{itemize}
+上面是我个人觉得比较合理的解释. 
 \end{annotation}
+
+
 
 \newpage
 \begin{thebibliography}{00}
