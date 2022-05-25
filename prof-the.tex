@@ -39,8 +39,8 @@
 
 \usepackage{xcolor}
 \usepackage{titlesec}
-\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
-\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{\thesection}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{\thesubsection}{1em}{}
 %\setcounter{secnumdepth}{1} %section 序号
 
 
@@ -1924,7 +1924,7 @@ $$
 
 
 \newpage
-\subsection{Invertibility}
+\subsection{Invertibility}\label{invertible calculus}	
 
 \begin{annotation}
  \rm \redt{Why Invertibility?} \cite{15-317-inv} 我们想构造一个automation for proof searching，可能会面临一些问题. 假设我们想要找$\Gamma \vdash C$的verification， 其中$\Gamma$包含$n-1$个formuals，这意味我们要从$n$个formuals(加上$C$)，挑一个出来作为main formual，对其apply对应的rules. 如果我们挑到正确的那个rule，将会导致都后续一定会出错，因此我们要考虑backtrack. 例如证明$B \to A \vee B$时，我们对right side挑$\vee R_1$ rule
@@ -2050,7 +2050,7 @@ $$
 		\infer[\top L]{\Gamma^-; \Omega, \top \xrightarrow{L} C^+}{\Gamma^-; \Omega  \xrightarrow{L} C^+}
 		\end{gathered}
 		$$
-		\item If we encounter an atom, we can close the branch if it is equal to the right side or we can move it. and only case left is an implication, we also move it to $\Gamma^-$. 
+		\item If we encounter an atom, we can close the branch if it is equal to the right side or we can move it. and only case left is an implication, we also can move it to $\Gamma^-$. 
 		$$
 		\begin{gathered}
 		\infer[init]{\Gamma^-; \Omega,P \xrightarrow{L} P}{} \\
@@ -2428,6 +2428,20 @@ partition([X|L], P, Ls, [X|Gs]) :- X >= P,
 
 \newpage
 \subsection{Focusing}
+
+\begin{annotation}
+\rm 首先扩充一下 \ref{invertible calculus}小节提到的invertible calculus到first order logic. 这里我们只记录新引入的inference:
+\begin{center}
+\begin{tabular}{c|c}
+Right invertible rules & $\infer[\forall R]{\Gamma^-;\Omega \xrightarrow{R} \forall x.A}{\Gamma^-;\Omega \xrightarrow{R} A[c/x]}$ where $c$ is fresh variable \\
+\hline Side change & $\infer[LR_\exists]{\Gamma^-;\Omega \xrightarrow{R} \exists x.A}{\Gamma^-;\Omega \xrightarrow{L} \exists x.A}$ \\
+\hline Left invertible rules & $\infer[L \exists]{\Gamma^-,\Omega,\exists x. A \xrightarrow{L} C^+}{\Gamma^-,\Omega,A[c/x] \xrightarrow{L} C^+}$ where $c$ is fresh variable \\
+\hline Shift rules & $\infer[\textsl{shift}_\forall]{\Gamma^-; \Omega, \forall x. A \xrightarrow{L} C^+}{\Gamma^-,\forall x. A; \Omega \xrightarrow{L} C^+}$ \\
+\hline Noninvertible rules & $\infer{\Gamma^-; \cdot \xrightarrow{L} \exists x.A}{\Gamma^-; \cdot \xrightarrow{L} A[t/x]} \quad\quad \infer{\Gamma, \forall x. A;\cdot \to C^+}{\Gamma, \forall x. A; A[t/x] \to C^+}$ where $t$ is term
+\end{tabular}
+\end{center}
+
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
