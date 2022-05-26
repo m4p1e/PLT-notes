@@ -2480,7 +2480,7 @@ where $[F]$ donates which non-invertible formula in focus, $P$ is positive formu
 \end{definition}
 
 \begin{definition}
-\rm We define \emph{synchronous} rule as follow
+\rm We define \emph{synchronous} rule as follow:
 \[
 \begin{gathered}
 \infer[\exists R_1]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R}[A]} \quad\quad
@@ -2492,8 +2492,37 @@ where $[F]$ donates which non-invertible formula in focus, $P$ is positive formu
 \]
 \end{definition}
 
+\begin{definition}
+\rm We define \textsl{blur} rules to remove focus as follow:
+\[
+\infer[\textsl{blur}_r]{\Gamma^-;\cdot \xrightarrow{R} [N]}{\Gamma^-;\cdot \xrightarrow{R} N} \quad\quad 
+\infer[\textsl{blur}_r]{\Gamma^-;[P] \xrightarrow{L} C_a^+}{\Gamma^-; P \xrightarrow{L} C_a^+}
+\]
+where $N$ is negative formula and $P$ is positive formula.
+\end{definition}
+
+\begin{definition}\label{init-of-invertible-calculus}
+\rm We define new \emph{init} rules under focus as follow: 
+\[
+\infer[init_L]{\Gamma^-;[a^-] \xrightarrow{L} a^-}{} \quad\quad
+\infer[init_R]{\Gamma^-; \cdot \xrightarrow{R} [a^+]}{a^+ \in \Gamma^-}
+\]
+\end{definition}
+
 \begin{annotation}
-\rm 这里引入的\textsl{focus} rule是针对non-invertible formula，这就
+\rm 注意在\ref{init-of-invertible-calculus}中给atoms也添加上了polarity，本质上atoms可以是positive，也可以是negative. 在\emph{init} rules为了确保focus $[F]$保持原本的含义，因此对应的atom的polarity也要保持一致. 	
+\end{annotation}
+
+
+\begin{definition}
+\rm The system with all above rules called \redt{first logic focused calculus}.
+\end{definition}
+
+
+\begin{annotation}
+\rm 引入\textsl{focus} rules会造成整体的the shape proof searching发生变化，当你made a choice之后选择某个non-invertible formula，focus操作会强制使得这个non-invertible formula直到被分解成了invertible subformula才会去掉focus. 同时\emph{init} rule只有在atom在focused的时候才会被applied. 对比\ref{invertible calculus}节的proof searching algorithm，我们可以在make a choice之后，如果遇到subformula is atom on left, 我们可以做一下\textsl{shift}操作把它放到$\Gamma^-$里面去，转而处理其他的formula. 但是在这里不行你如果碰到了无法处理的focused atom，你就得backtracking了，这就是最大的区别.
+
+%试想如果这个non-invertible formula is negative on the left, and all of its subformulas are only negative or atoms，
 \end{annotation}
 
 
