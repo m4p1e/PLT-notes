@@ -2441,12 +2441,60 @@ Right invertible rules & $\infer[\forall R]{\Gamma^-;\Omega \xrightarrow{R} \for
 \end{center}
 这里有两个感觉很奇怪的rules $L \exists$和$L \forall$，首先这和我们直觉上关于$\exists$和$\forall$的introduction rule不太一样，而$R \exists$和$R \forall$是符合我们直觉的. 我们从“怎么用这两个条件”来解释:
 \begin{itemize}
-	\item 在一般情况下，如果我们有一个存在性命题，那么通常我们会假设其存在用某个symbol来表示，让prove过程进行下去，$L \exists$就是采用的这种直觉.
-	\item 而当存在一个全称命题的时候，那么我们会取一个任意满足$\tau$的term，来让prove过程进行下，同时keep这个全称命题，万一取错了，我们还可以再取. 
+	\item 在一般情况下，如果我们有一个关于type $\tau$存在性命题，那么通常我们会假设其存在用某个symbol满足$\tau$同时满足当前命题，让prove过程进行下去，$L \exists$就是采用的这种直觉.
+	\item 而当存在一个关于type $\tau$全称命题的时候，那么我们会取一个任意满足$\tau$的term，来让prove过程进行下，同时keep这个全称命题，万一取错了，我们还可以再取. 
 \end{itemize}
 上面是我个人觉得比较合理的解释. 
 \end{annotation}
 
+\begin{definition}
+\rm \redt{Positive} connectives are those that have invertible left rules and non-invertible right rules. 
+\end{definition}
+
+\begin{definition}
+\rm \redt{Negative} connectives are those that have non-invertible left rules and invertible right rules.
+\end{definition}
+
+\begin{annotation}
+\rm 那么$\vee, \perp, \exists$都是positive，而$\supset, \forall$都是negative. 至于$\wedge$和$\top$它们是both positive and negative，我们称其为\redt{neutral}.
+\end{annotation}
+
+
+\begin{annotation}
+\rm 利用polarity的defintion，我们可以做一些generalization. 将$LR_P, LR_\vee, LR_\perp, LR_\exists$可以统一为
+\[
+\infer[LR]{\Gamma^-;\Omega \xrightarrow{R} C_a^+}{\Gamma^-;\Omega \xrightarrow{L} C_a^+}
+\]
+类似地，可以将$\textsl{shitf}_P, \textsl{shitf}_\supset, \textsl{shitf}_\forall$统一为
+$$
+\infer[\textsl{shift}]{\Gamma^-;\Omega, C_a^- \xrightarrow{L} C_a^+}{\Gamma^-,C_a^-;\Omega \xrightarrow{L} C_a^+}
+$$
+\end{annotation}
+
+\begin{definition}
+\rm we define \textsl{focus} rule for deciding which formula to focus on , after exhausting all invertible rule on the rule and on the right. 
+\[
+\infer[\textsl{focus}_r]{\Gamma^-;\cdot \xrightarrow{L} P}{\Gamma^-;\cdot \xrightarrow{R} [P]} \quad \quad  \infer[\textsl{focus}_r]{\Gamma^-, N;\cdot \xrightarrow{L} C_a^+}{\Gamma^-, N; [N] \xrightarrow{R} C_a^+}
+\]
+where $[F]$ donates which non-invertible formula in focus, $P$ is positive formula and $N$ is negative formula. 
+\end{definition}
+
+\begin{definition}
+\rm We define \emph{synchronous} rule as follow
+\[
+\begin{gathered}
+\infer[\exists R_1]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R}[A]} \quad\quad
+\infer[\exists R_2]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R} [A]} \quad\quad
+\infer[\exists R_1]{\Gamma^-;\cdot \xrightarrow{R} [\exists x.A]}{\Gamma^-;\cdot \xrightarrow{R} [A[t/x]]} \\
+\infer[\supset L]{\Gamma^-;[A\supset B] \xrightarrow{L} C_a^+}{\Gamma^-;\cdot \xrightarrow{R} [A] & \Gamma^-;[B] \xrightarrow{L} C_a^+} \quad\quad
+\infer[\forall L]{\Gamma^-;[\forall x.A] \xrightarrow{L} C_a^+ }{\Gamma^-;[A[t/x]] \xrightarrow{L} C_a^+ }
+\end{gathered}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 这里引入的\textsl{focus} rule是针对non-invertible formula，这就
+\end{annotation}
 
 
 \newpage
