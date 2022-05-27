@@ -126,6 +126,20 @@
 \newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
 \newcommand{\dbracket}[1]{\ensuremath{\left\llbracket\,\vcenter{\hbox{$#1$}}\,\right\rrbracket}}
 
+%variable name
+\ExplSyntaxOn 
+\NewDocumentCommand{\vn}{m}
+ {
+   \seq_set_split:Nnn \l_tmpa_seq { ~ } { #1 }
+   \int_compare:nTF { \seq_count:N \l_tmpa_seq > 1 }
+    {
+     \seq_set_map:NNn \l_tmpb_seq \l_tmpa_seq { \exp_not:N \mathit { ##1 } }
+     (\seq_use:Nn \l_tmpb_seq { \  })
+    }
+    { \mathop{}\!\mathit{#1} }
+ }
+\ExplSyntaxOff
+
 \begin{document}
 \title{Proof Theory}
 \author{枫聆}
@@ -2479,7 +2493,7 @@ $$
 where $[F]$ donates which non-invertible formula in focus, $P$ is positive formula and $N$ is negative formula. 
 \end{definition}
 
-\begin{definition}
+\begin{definition}\label{synchronous-rule-in-focus-calculus}
 \rm We define \emph{synchronous} rule as follow:
 \[
 \begin{gathered}
@@ -2520,11 +2534,65 @@ where $N$ is negative formula and $P$ is positive formula.
 
 
 \begin{annotation}
-\rm 引入\textsl{focus} rules会造成整体的the shape proof searching发生变化，当你made a choice之后选择某个non-invertible formula，focus操作会强制使得这个non-invertible formula直到被分解成了invertible subformula才会去掉focus. 同时\emph{init} rule只有在atom在focused的时候才会被applied. 对比\ref{invertible calculus}节的proof searching algorithm，我们可以在make a choice之后，如果遇到subformula is atom on left, 我们可以做一下\textsl{shift}操作把它放到$\Gamma^-$里面去，转而处理其他的formula. 但是在这里不行你如果碰到了无法处理的focused atom，你就得backtracking了，这就是最大的区别.
-
+\rm 引入\textsl{focus} rules会造成整体的the shape proof searching发生变化，当你made a choice之后选择了某个non-invertible formula，focus操作会强制使得这个non-invertible formula直到被分解成了invertible subformula才会去掉focus. 同时\emph{init} rule只有在atom在focused的时候才有可能被applied. 对比\ref{invertible calculus}节的proof searching algorithm，我们可以在make a choice之后，如果遇到无法处理的subformula is atom on left, 我们可以做一下\textsl{shift}操作把它放到$\Gamma^-$里面去，转而处理其他的formula. 但是在这里不行你如果碰到了无法处
+理的focused atom，你就得backtracking了，这就是最大的区别. 然而backtracking也是技术的，我们需要恢复到上述最早focused non-inverible formula，然后换个non-invertible来继续focus. 
 %试想如果这个non-invertible formula is negative on the left, and all of its subformulas are only negative or atoms，
 \end{annotation}
 
+
+\begin{annotation}
+\rm 这里我们想来解释一下definition \ref{synchronous-rule-in-focus-calculus}里面的\redt{synchronous}的含义. 字面意思同步处理，从另外一个方式思考那么对invertible formula的处理就叫asynchronous rules，即异步处理. 试想如果现在拿掉side change rules，两个都各自有一个invertible formula，实际上谁先谁后实际并没有太本质的区别，这就是asynchronous的含义. 而对non-invertible formula的处理，我们需要来一个一个的做选择，一个不行就换下一个，这就是synchronous的含义. 
+\end{annotation}
+
+
+\begin{definition}
+\rm (\redt{Simpifiled focus calculus}) The system gather all inveritible rules to asynchronous rules and removes side change rule based on first logic focus calculus is called \redt{LJF}
+\end{definition}
+
+\newpage
+\subsection{Uniform Proofs}
+
+\begin{definition}
+\rm A \redt{uniform proof} is a proof in which each occurrence of a sequent $\Gamma \to C$, where $C$ is a composed formula, is the conclusion of a rule introduing $C's$ \emph{topmost} connective. 
+\end{definition}
+
+\begin{annotation}
+\rm 一个uniform proof就是尽可能先地decompose right formula, 即apply right rule，或者换句话来说它只对right invertible rules感兴趣 i.e. the negative and neutral ones. 
+\end{annotation}
+
+\begin{definition}
+\rm An \emph{abstract logic programming language} is a logic in which every provable sequent $\Gamma \to C$ has a uniform proof. 
+\end{definition}
+
+\begin{annotation}
+\rm 这里可以解释为什么没有类似$\vee$的connectives出现在logic programming里面，因为$\vee$是positive的. 这里还缺点解释todo.
+\end{annotation}
+
+
+\newpage
+\subsection{Polarities}
+
+\begin{annotation}
+\rm 这小节将通过一个例子解释how uniform proof works和为什么赋予atoms不同的polarity将导致shape of proof searching.
+\end{annotation}
+
+\begin{example}
+\rm 给定一个non-standard(inlined arithmetic op) prolog program of Fibonacci:
+\begin{lstlisting}[basicstyle={\normalsize\ttfamily}]
+fib(0, 0).
+fib(1, 1).
+fib(n+2, f2 + f2) :- fib(n + 1, f1), fib(n, f2).
+\end{lstlisting}
+然后我们需要想要证明\texttt{fib(5, 5)}，在逻辑上等价于证明下述sequent
+\[
+\begin{gathered}
+\vn{fib}(0,0), \vn{fib}(1,1), \\
+\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1),\vn{fib}(n,f_2) \supset \vn{fib}(n+1,f_1+f_2)) 
+\end{gathered}
+\longrightarrow \vn{fib}(5,5)
+\]
+
+\end{example}
 
 \newpage
 \begin{thebibliography}{00}
