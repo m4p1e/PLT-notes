@@ -2545,7 +2545,7 @@ where $N$ is negative formula and $P$ is positive formula.
 \end{annotation}
 
 
-\begin{definition}
+\begin{definition}\label{LJF}
 \rm (\redt{Simpifiled focus calculus}) The system gather all inveritible rules to asynchronous rules and removes side change rule based on first logic focus calculus is called \redt{LJF}
 \end{definition}
 
@@ -2587,11 +2587,42 @@ fib(n+2, f2 + f2) :- fib(n + 1, f1), fib(n, f2).
 \[
 \begin{gathered}
 \vn{fib}(0,0), \vn{fib}(1,1), \\
-\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1),\vn{fib}(n,f_2) \supset \vn{fib}(n+1,f_1+f_2)) 
+\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1) \wedge \vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2)) 
 \end{gathered}
 \longrightarrow \vn{fib}(5,5)
 \]
-
+这里我们将其放到LJF\ref{LJF}中来证明. 
+\begin{itemize}
+	\item 首先以
+	\[
+		\cdot;\Gamma \to \vn{fib}(5,5)
+	\]
+	作为end-sequent. 这里只能首先apply $\vn{shift}$ rule把$\Gamma$放到$\Gamma^-$，因为两边都没有办法使用synchronous and asynchronous rules. 这里需要连续使用3次$\vn{shift}$，得到
+	\[
+		\deduce{\cdot;\Gamma \to \vn{fib}(5,5)}{\deduce{\vn{shift} \times 3}{\Gamma;\cdot \to \vn{fib}(5,5)}}
+	\]
+	\item 此时我们如果对atoms assign different polarity将会使得从不同的方向继续进行证明:
+	\begin{enumerate}
+		\item 假设\bluet{atoms are negative}，那么显然right atom $\vn{fib}(5,5)$是无法被focused，只能依次focus $\Gamma^-$里面的formulas. 对于$\vn{fib}(0,1)$和$\vn{fib}(1,1)$，这里$\vn{init}_l$显然是用不了，因为它们并没有在right side出现. 那么只能选择最后的universal quantified formula了.
+		\item 假设\bluet{atoms are positive formula}，那么这里right atom就可以被focus了，但是这里对应的$\vn{init}_r$还是用不了. 因此最后也能选择left side's universal quantified formula. 
+	\end{enumerate}
+	\item 此时我们focus left side's universal quantified formula并且apply 3 times $\forall L$，则有
+	$$
+	\deduce{\cdot;\Gamma \to \vn{fib}(5,5)}{\deduce{\vn{shift} \times 3}{\infer[\vn{focus}_l]{\Gamma;\cdot \to \vn{fib}(5,5)}{\deduce{\Gamma;[\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\deduce{\forall L \times 3}{\Gamma;[(\vn{fib}(n+1,f_1),\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}}}}}
+	$$
+	\item 此时依然处于focus当中，继续apply $\supset L$，则有
+	$$
+	\deduce{\cdot;\Gamma \to \vn{fib}(5,5)}{\deduce{\vn{shift} \times 3}{\infer[\vn{focus}_l]{\Gamma;\cdot \to \vn{fib}(5,5)}{\deduce{\Gamma;[\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\deduce{\forall L \times 3}{\infer[\supset L]{\Gamma;[(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\Gamma;\cdot \to [\vn{fib}(n+1,f_1) \wedge \vn{fib}(n, f_2)]  &  \Gamma; [\vn{fib}(n+2, f_1 + f_2)] \to \vn{fib}(5,5)  }}}}}}
+	$$
+	\item 其中left branch现在可以使用$\vn{blur}_r$去掉focus了，则有
+	$$
+	\deduce{\cdot;\Gamma \to \vn{fib}(5,5)}{\deduce{\vn{shift} \times 3}{\infer[\vn{focus}_l]{\Gamma;\cdot \to \vn{fib}(5,5)}{\deduce{\Gamma;[\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\deduce{\forall L \times 3}{\infer[\supset L]{\Gamma;[(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\infer[blur_r]{\Gamma;\cdot \to [\vn{fib}(n+1,f_1) \wedge \vn{fib}(n, f_2)]}{\infer[\wedge R]{\Gamma;\cdot \to \vn{fib}(n+1,f_1) \wedge \vn{fib}(n, f_2)}{\Gamma;\cdot \to \bluet{\vn{fib}(n+1,f_1)} & \Gamma;\cdot \to  \bluet{\vn{fib}(n, f_2)}}}  &  \Gamma; \bluet{[\vn{fib}(n+2, f_1 + f_2)]} \to \vn{fib}(5,5)  }}}}}}
+	$$
+	\item 从这里开始就可以变得有趣了，注意三个标蓝色的formula现在都是atoms同时它们都是被variables包裹了，我们就可以对其做unify了，但是不同polarity of atoms将构造完全的不同的proof searching. 
+	\begin{enumerate}
+		\item 如果atoms are negative，那么最终只能用$\vn{init}_l$来close掉proof. 你仔细观察最左边，这里似乎可以用$\vn{init}_l$，为了用它我们得尽可能给其中variables assign对应的值. 这里必有$n = 3$. 
+	\end{enumerate}
+\end{itemize}
 \end{example}
 
 \newpage
