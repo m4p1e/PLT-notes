@@ -2620,7 +2620,10 @@ fib(n+2, f2 + f2) :- fib(n + 1, f1), fib(n, f2).
 	$$
 	\item 从这里开始就可以变得有趣了，注意三个标蓝色的formula现在都是atoms同时它们都是被variables包裹了，我们就可以对其做unify了，但是不同polarity of atoms将构造完全的不同的proof searching. 
 	\begin{enumerate}
-		\item 如果atoms are negative，那么最终只能用$\vn{init}_l$来close掉proof. 你仔细观察最左边，这里似乎可以用$\vn{init}_l$，为了用它我们得尽可能给其中variables assign对应的值. 这里必有$n = 3$. 
+		\item 如果atoms are negative，那么最终只能用$\vn{init}_l$来close掉proof. 你仔细观察最左边，这里似乎可以用$\vn{init}_l$，为了用它我们得尽可能给其中variables assign对应的值. 这里必有$n = 3$，但是$f_1$和$f_2$还是确定不了，但是这里还是可以减少它们search space，即
+		\[
+			\Gamma;\cdot \to \vn{fib}(3, 5-x)~\text{and}~\Gamma;\cdot \to \vn{fib}(4,x)
+		\]
 	\end{enumerate}
 \end{itemize}
 \end{example}
