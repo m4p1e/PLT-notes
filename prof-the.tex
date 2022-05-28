@@ -2618,15 +2618,45 @@ fib(n+2, f2 + f2) :- fib(n + 1, f1), fib(n, f2).
 	$$
 	\deduce{\cdot;\Gamma \to \vn{fib}(5,5)}{\deduce{\vn{shift} \times 3}{\infer[\vn{focus}_l]{\Gamma;\cdot \to \vn{fib}(5,5)}{\deduce{\Gamma;[\forall n.\forall f_1.\forall f_2.(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\deduce{\forall L \times 3}{\infer[\supset L]{\Gamma;[(\vn{fib}(n+1,f_1)\wedge\vn{fib}(n,f_2) \supset \vn{fib}(n+2,f_1+f_2))] \to \vn{fib}(5,5)}{\infer[blur_r]{\Gamma;\cdot \to [\vn{fib}(n+1,f_1) \wedge \vn{fib}(n, f_2)]}{\infer[\wedge R]{\Gamma;\cdot \to \vn{fib}(n+1,f_1) \wedge \vn{fib}(n, f_2)}{\Gamma;\cdot \to \bluet{\vn{fib}(n+1,f_1)} & \Gamma;\cdot \to  \bluet{\vn{fib}(n, f_2)}}}  &  \Gamma; \bluet{[\vn{fib}(n+2, f_1 + f_2)]} \to \vn{fib}(5,5)  }}}}}}
 	$$
-	\item 从这里开始就可以变得有趣了，注意三个标蓝色的formula现在都是atoms同时它们都是被variables包裹了，我们就可以对其做unify了，但是不同polarity of atoms将构造完全的不同的proof searching. 
+	\item 从这里开始就可以变得有趣了，注意三个标蓝色的\bluet{formulas}现在都是atoms同时它们都是被variables包裹了，我们就可以对其做unify了，但是不同polarity of atoms将构造完全的不同的proof searching. 
 	\begin{enumerate}
-		\item 如果atoms are negative，那么最终只能用$\vn{init}_l$来close掉proof. 你仔细观察最左边，这里似乎可以用$\vn{init}_l$，为了用它我们得尽可能给其中variables assign对应的值. 这里必有$n = 3$，但是$f_1$和$f_2$还是确定不了，但是这里还是可以减少它们search space，即
+		\item 如果\bluet{atoms are negative}，那么最终只能用$\vn{init}_l$来close掉proof. 你仔细观察最左边的branch，这里是可以用$\vn{init}_l$将其close掉，因为其中variables assign都是unified. 这里必有$n = 3$，可$f_1$和$f_2$还是确定不了，但是依然可以减少它们searching space，即$f_1 = x, f_2 = 5-x$，那么最右边branch也因此被close了. 此时最上面两个branches就变成了
 		\[
-			\Gamma;\cdot \to \vn{fib}(3, 5-x)~\text{and}~\Gamma;\cdot \to \vn{fib}(4,x)
+			\Gamma;\cdot \to \vn{fib}(4, x)~\text{and}~\Gamma;\cdot \to \vn{fib}(3,5-x)~~~~~~\text{iter-con}
 		\]
+		它们和我们end-sequent是非常像的，我们可以用前面的步骤分别在对它们再做一次derivation，对于$\vn{fib}(4,x)$，利用iter-con显然我们可以得到
+		\[
+			\Gamma;\cdot \to \vn{fib}(3,y)~\text{and}~\Gamma;\cdot \to \vn{fib}(2,x-y)	
+		\]
+		对于$\vn{fib}(3, 5-x)$同理有
+		\[
+			\Gamma;\cdot \to \vn{fib}(2,z)~\text{and}~\Gamma;\cdot \to \bluet{\vn{fib}(1, 5-x-z)}
+		\]
+		可以看到直到$\vn{fib}(1,0)$或者$\vn{fib}(0,0)$才会停止. 这背后本质就是如果我要计算第5个Fabonacci number, 那么我得先计算第4个Fabonacci number和第3个Fabonacci number.
+		\item 如果\bluet{atoms are positive}，那么最终只能用$\vn{init}_r$来close掉proof. 那么此时我们是可以focus最上面两个branch的right side atom，这两个atom里面的variables也都是unified，同时我们可以再利用$\vn{init}_r$来close掉这两个branch，此时得到$n = 0$, $f_1 = 1, f_2 = 0$. 此时只剩下了最右边的branch，即
+		\[
+			\Gamma;\vn{fib}(2,1) \to \vn{fib}(5,5) 
+		\]
+		相比于end-sequent，我们多了一个knowledge $\vn{fib}(2,1)$. 按照这种思路我们可以继续得到$\vn{fib}(3,2)$，依次往后类推.
 	\end{enumerate}
 \end{itemize}
 \end{example}
+
+
+\begin{annotation}
+\rm 想象一下我们正常计算第$n+2$个Fabonacci number的思路，无非两种:(1) 先计算第$n+1$和第$n$个，它们之和就是第$n+2$个; (2) 从第$0$个开始计算起，依次往后计算$1,2,3,\cdots$直到$n+2$个. 它们正好就对应了atoms are negative和atoms are positive的情况. Prolog实际上就应用了第一种思路，这种思路叫\redt{goal-oriented strategy}. 
+
+在Prolog world里面我们的query with head of clause and continue with the body as the new goal，在proof world里面它就对应了close the right branch after $\supset L$ and continuing with the left. 这好像看起来在上面的例子中没那么显然，那是因为用了不正规的Prolog，即inlined arithmetical express，正常来说我们得这样写
+$$
+fib(M,N) :\text{-}~ \vn{fib}(X_1, Y_1), X_2 = X_1 + 1, \vn{fib}(X_2, Y_2), M =X_1 + 2, N = Y_1 + Y_2 
+$$
+
+与思路2对应的就是前面我们提到的forward chaining，在这种情况left branch of $\supset L$ must be closed来产生新的knowledge. 
+\end{annotation}
+
+\begin{annotation}
+\rm 前面例子里面有一个小细节就是，里面用的variables都是暗含了universal quantifier. 这一点需要注意，同时unification是具有传递过程的，比如在某个地方确定了某个variable的值，那么在它前面的，也就是从shape of proof向下含有$x$的地方，也要具有相同的值. 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
