@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=simple] (0) at (-6.5, 1.5) {b};
+		\node [style=simple] (1) at (-1.5, 1.5) {c};
+		\node [style=simple] (2) at (-6.5, -2.5) {a};
+		\node [style=simple] (3) at (-1.5, -2.5) {d};
+		\node [style=none] (4) at (1.75, 0.75) {\texttt{edge(a,b).} };
+		\node [style=none] (5) at (1.75, 0) {\texttt{edge(b,c).} };
+		\node [style=none] (6) at (1.75, -0.75) {\texttt{edge(c,d).} };
+		\node [style=none] (7) at (1.75, -1.5) {\texttt{edge(d,a).} };
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style={simple_arrow}, in=180, out=0] (0) to (1);
+		\draw [style={simple_arrow}, in=90, out=-90] (1) to (3);
+		\draw [style={simple_arrow}] (3) to (2);
+		\draw [style={simple_arrow}] (2) to (0);
+	\end{pgfonlayer}
+\end{tikzpicture}

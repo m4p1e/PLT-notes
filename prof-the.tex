@@ -3,6 +3,9 @@
 \usepackage{ctex}
 \usepackage{tikz}
 \usetikzlibrary{cd}
+%tikzit
+\usepackage{tikzit}
+\input{common.tikzstyles}
 
 %冲突nthm
 %\usepackage{amsthm}
@@ -2655,8 +2658,51 @@ $$
 \end{annotation}
 
 \begin{annotation}
-\rm 前面例子里面有一个小细节就是，里面用的variables都是暗含了universal quantifier. 这一点需要注意，同时unification是具有传递过程的，比如在某个地方确定了某个variable的值，那么在它前面的，也就是从shape of proof向下含有$x$的地方，也要具有相同的值. 
+\rm 前面例子里面有一个小细节就是，里面用的variables都是暗含了universal quantifier. 这一点需要注意，同时unification是具有传递过程的，比如在某个地方确定了某个variable的值，那么在它前面的，也就是从shape of proof向下含有$x$的地方，也要具有相同的值.
 \end{annotation}
+
+
+\newpage
+\subsection{Foward Chaining}
+
+\begin{definition}
+\rm The state that no new facts can be generated from the sef of known facts is called \redt{saturation}.
+\end{definition}
+
+
+\begin{example}
+\rm 假设我们下面的一个小program snippet:
+\begin{lstlisting}[basicstyle={\normalsize\ttfamily}]
+path(X,Y) :- edge(X,Y). 
+path(X,Z) :- edge(X,Z), path(Z,Y).
+
+cycle :- path(X,X).
+\end{lstlisting}
+同时给定一个graph: \ctikzfig{simple_circle_graph} 那么一个正常的forward chaining engine就会根据上面的logic program产生新关于path的knowledges，后续以此产生cycle. 
+\end{example}
+
+\begin{definition}
+\rm The set of known facts is called \redt{database}.
+\end{definition}
+
+\begin{annotation}
+\rm 有两个比较在forward chaining里面比较重要的概念:
+\begin{itemize}
+	\item Facts are always ground atoms, meaning that there no free variable lingering around. 因为在forward logic programming里面head里面出现的变量一定都是在body里面的，因此这样你新产生的fact也是不带free variables的. 
+	\item The database is consiedered as a set, so there is no duplication of facts in it. 
+\end{itemize}
+\end{annotation}
+
+\begin{example}
+\rm 接下来我们看一个有趣的应用，我们可以把forward chaining应用到programming language的parser上. 以context-free grammar为例， 一个context-free grammar可以表示为一个tuple $G = (V, \Sigma, \mathcal{P}, S)$，其中$V$表示各种non-terminal symbols集合，$\Sigma$表示各种terminators，$\mathcal{P}$表示各种production rules of the form $X \Rightarrow \gamma$($X \in V$ and $\gamma$ is a string with other non-terminal symbols or terminator)，最后$S$表示start symbol. 
+
+对于一个只包含terminator的string $w$，它在$G$中一个derivation可以表示为$S \Rightarrow \gamma_1 \cdots \Rightarrow \gamma_n \Rightarrow w$，其中每一步可以看做从$\gamma_i$中挑一个non-terminal symbol $X$出来，和$X$对应的一个production rule $X \Rightarrow \alpha$，将$\gamma_i$里面所有$X$出现的地方都换成$\alpha$，那么就得到了$\gamma_{i+1}$. 有一个很自然的问题就是如何把这样的derivation写成proof的形式呢? 
+
+首先我们得构造类似的inference rules，我们用$\gamma \Rightarrow^* w$表示$w$可以由$\gamma$推导得来. 这里给分别给出三种inference rules:
+\[
+\infer[conc]{\gamma_1 \gamma_2 \Rightarrow^* w_1w_2}{\gamma_1 \Rightarrow^* w_1 & \gamma_2 \Rightarrow^* w_2} \quad\quad
+\]
+\end{example}
 
 \newpage
 \begin{thebibliography}{00}
