@@ -2700,8 +2700,39 @@ cycle :- path(X,X).
 
 首先我们得构造类似的inference rules，我们用$\gamma \Rightarrow^* w$表示$w$可以由$\gamma$推导得来. 这里给分别给出三种inference rules:
 \[
-\infer[conc]{\gamma_1 \gamma_2 \Rightarrow^* w_1w_2}{\gamma_1 \Rightarrow^* w_1 & \gamma_2 \Rightarrow^* w_2} \quad\quad
+\infer[\vn{conc}]{\gamma_1 \gamma_2 \Rightarrow^* w_1w_2}{\gamma_1 \Rightarrow^* w_1 & \gamma_2 \Rightarrow^* w_2} \quad\quad
+\infer[\vn{id}]{a \Rightarrow^* a}{} \quad\quad
+\infer[(r)X \Rightarrow \gamma]{X \Rightarrow^* w}{\gamma \Rightarrow^* w}
 \]
+其中$a$是terminator. Rule $\vn{conc}$提供了split string的方法，rule $\vn{id}$适配terminator，最后rule $(r)$实际上一组rules，对应每一个production rules生成. 
+
+例如我们给定一个context-free grammar:
+\[
+\begin{aligned}
+T \Rightarrow &  -T && [\vn{neg}]\\
+  &|~T+T && [\vn{plus}]\\
+  &|~(T) && [\vn{pars}]\\
+  &|~var && [\vn{var}]\\
+  &|~1 && [\vn{one}]\\
+  &|~0 && [\vn{zero}]
+\end{aligned}
+\]
+我们来看一下关于$-(x+1)$的derivation，即我们要找到关于$T \Rightarrow^* -(x+1)$的proof，这里的$S$就是$T$. 
+\[
+	\infer[\vn{neg}]{T \Rightarrow^* -(x+1)}{\infer[\vn{conc}]{-T \Rightarrow^* -(x+1)}{\infer[\vn{id}]{- \Rightarrow^* -}{} & \infer[\vn{pairs}]{T \Rightarrow^* (x+1)}{\infer[\vn{conc}]{(T) \Rightarrow^* (x+1)}{\infer[id]{( \Rightarrow^* (}{} &  \infer[\vn{conc}]{T)\Rightarrow^* x+1)}{\infer[\vn{plus}]{T \Rightarrow^* x+1}{\infer[\vn{conc}]{T+T \Rightarrow^* x+1}{\infer[\vn{var}]{T \Rightarrow^* x}{\infer[\vn{id}]{x \Rightarrow^* x}{}} & \infer[\vn{conc}]{+T \Rightarrow^* +1}{\infer[id]{+ \Rightarrow +}{} & \infer[one]{T \Rightarrow^* 1}{1 \Rightarrow^* 1} }}} & \infer[id]{) \Rightarrow^* )}{}}}}}}
+\]
+你应该可以隐约的感受到如何选择substring应用$\vn{conc}$是关键中的关键的.
+
+接下来我们可以想想如何应用forward chaining呢？ 首先我们要给出一些basic facts，那么它们应该是什么呢？ 同时我们应当如何利用这些basic facts生成更多我们感兴趣的facts呢？ 你要知道利用上述gammar是可以生成infinite string matched that gammar. 如果我们想要query $T \Rightarrow^* w_0$，这里的做法是
+\begin{enumerate}
+	\item 把$w_0$中的terminator作为basic facts($a \Rightarrow^* a$ for every terminator $a$ in $w_0$)
+	\item 我们只apply满足下述条件$\gamma \Rightarrow w$ ($\gamma$ is head and $w$ is body):
+	\begin{enumerate}
+		\item $\gamma$ is the substring of gammar
+		\item $w$ is the substring of $w_0$ 
+	\end{enumerate}
+	第一个条件是为了避免我们生成语法之外的gammer snippets; 第二个条件显然是为了goal-orient. 你可能会想只要第二个不行吗? 显然是不行的，因为从$w_0$里面取的substring可能并不符合gammar.  
+\end{enumerate} 
 \end{example}
 
 \newpage
