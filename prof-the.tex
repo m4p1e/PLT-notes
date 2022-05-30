@@ -2728,11 +2728,45 @@ T \Rightarrow &  -T && [\vn{neg}]\\
 	\item 把$w_0$中的terminator作为basic facts($a \Rightarrow^* a$ for every terminator $a$ in $w_0$)
 	\item 我们只apply满足下述条件$\gamma \Rightarrow w$ ($\gamma$ is head and $w$ is body):
 	\begin{enumerate}
-		\item $\gamma$ is the substring of gammar
+		\item $\gamma$ is the substring of the right-side of gammar rules(i.e.,  terminator, $T$, $T+T$, $-T$ and $(T)$)
 		\item $w$ is the substring of $w_0$ 
 	\end{enumerate}
-	第一个条件是为了避免我们生成语法之外的gammer snippets; 第二个条件显然是为了goal-orient. 你可能会想只要第二个不行吗? 显然是不行的，因为从$w_0$里面取的substring可能并不符合gammar.  
-\end{enumerate} 
+	第一个条件是为了避免我们生成语法之外的gammer snippets; 第二个条件显然是为了goal-orient. 你可能会想只要第二个不行吗? 肯定是不行的，因为从$w_0$里面取的substring可能并不符合gammar，例如你从$-(x+1)$取$-( \Rightarrow^* -($，你对它只能继续apply $\vn{conc}$，但是这没有任何意义，你后续可能无法apply $(r)$ rules把left side变成$T$，我们的目标是$T \Rightarrow^* w_0$. 使用这种方法对$-(x+1)$做forward chaining为
+	\[
+		\begin{aligned}
+		1 &&&  - && \Rightarrow^* && - \\
+		2 &&&  ( && \Rightarrow^* && ( \\
+		3 &&&  x && \Rightarrow^* && x \\
+		4 &&&  + && \Rightarrow^* && + \\
+		5 &&&  1 && \Rightarrow^* && 1 \\
+		6 &&&  ) && \Rightarrow^* && ) \\
+		\hline 
+		7 &&&  T && \Rightarrow^* && 1 && \vn{one}(5) \\
+		8 &&&  T && \Rightarrow^* && x && \vn{var}(3)\\
+		\hline
+		9 &&&  T+T && \Rightarrow^* && x+1 && \vn{conc}(7,8) \\
+		10 &&&  T && \Rightarrow^* && x+1 && \vn{plus}(9)\\
+		11 &&&  (T) && \Rightarrow^* && (x+1) && \vn{conc} \times 2(2,10,6)\\
+		12 &&&  T && \Rightarrow^* && (x+1) && \vn{pars}(11) \\
+		13 &&&  -T && \Rightarrow^* && -(x+1) && \vn{conc}(1,12) \\
+		14 &&&  T && \Rightarrow^* && -(x+1) && \vn{neg}(13)\\
+		\end{aligned}
+	\]
+\end{enumerate}
+你发现这种手法和我们常见的programming language前端的lexer和parser非常的像，lexer拿到token交给parser，parser尝试生成的abstract syntax，amazing! 
+
+最后想一个问题为什么在最前面我们已经推出了一个backward chaining的方法，还会想把forward chaining应用到parser上呢？这是一个好问题，当然是复杂度啊！ forward chaining method会更加的cheap. 我们来分别计算一下不同方法下的复杂度，首先给定一个一般地$S \Rightarrow^* w$，其中$|w| = n$.
+
+其中backward chaining的复杂度，你观察它的derivation实际上近似一个full binary tree，其叶子树就是terminators的个数$n$，这样一棵tree那么就有$2^n - 1$个结点. 同时这样$n$个叶子结点的full binary tree可能会有很多种，这是因为apply $\vn{conc}$产生的结果，这样full binary tree一共有$\frac{2n!}{(n+1)!n!}$种. 这样我们可以考虑worst-case，即尝试了所有的split思路最后还是失败了，那么这样就产生了所有full binary tree都会涉及到.
+
+
+最后来看看forward chaining的复杂度，它的复杂度取决于saturated database中的facts的个数，以及在searching过程中apply rules的个数. 首先来看saturated database中的facts的个数: 每个fact形如$\gamma \Rightarrow^* w'$满足$\gamma$ is substring of the right side of grammer rules and $w'$ is the substring of $w$，设当前context-free gammar里面longest right side of all grammar rules的长度为$k$. 同时$w$有$\frac{(1+n)(n)}{2}$个substring，简单想一下这是显然的，同理某个right side of gammar rule也最多有$\frac{(1+k)(k)}{2}$个substring，这里感觉还要考虑一下有多少个production rule，我们设为$m$. 那么最多就有$m \cdot \frac{(1+n)(n)}{2} \cdot \frac{(1+k)(k)}{2} \in O(mk^2n^2)$个facts. 任意地一个facts，我们可以对其apply $\vn{conc}$或者$(r)$. 对于$(r)$ rules它只有一个premise，因此我们最多apply $O(mk^2n^2)$次，而对于$\vn{conc}$ rule有两个premise，但是这里是有限制是，因为$\gamma_1 \gamma_2$必须还是一个substring of the right side of gammar rules，同时$w_1 w_2$也是substring of $w$, 因此当$\gamma_1 \Rightarrow^* w_1$确定之后，$\gamma_2 \Rightarrow^* w_2$最多只有$O(kn)$个选择，那么最多可以apply $O(mk^3n^3)$次. 而$m$和$k$都是finite的，因此最终为$O(n^3)$. 
+
+当然还有办法优化，如果$k$比较大，可以将我们context-free gammar转化成Chomsky normal form:
+\[
+	X \Rightarrow Y Z \quad\text{or}\quad X \Rightarrow a.
+\]
+这样$k$就被严格限制为2. 
 \end{example}
 
 \newpage
