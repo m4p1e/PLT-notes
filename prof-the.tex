@@ -68,7 +68,7 @@
 \theoremstyle{nonumberplain}
 \theoremheaderfont{\scshape}
 \theorembodyfont{\upshape}
-\theoremsymbol{\scshape Q. E. D.}
+\theoremsymbol{\newline\raggedleft\scshape Q. E. D.\par}
 \theorempostwork{\setcounter{case}{0}}
 \newtheorem{proof}{Proof}
 
@@ -2501,7 +2501,7 @@ where $[F]$ donates which non-invertible formula in focus, $P$ is positive formu
 \[
 \begin{gathered}
 \infer[\exists R_1]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R}[A]} \quad\quad
-\infer[\exists R_2]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R} [A]} \quad\quad
+-\infer[\exists R_2]{\Gamma^-;\cdot \xrightarrow{R} [A \vee B]}{\Gamma^-;\cdot \xrightarrow{R} [A]} \quad\quad
 \infer[\exists R_1]{\Gamma^-;\cdot \xrightarrow{R} [\exists x.A]}{\Gamma^-;\cdot \xrightarrow{R} [A[t/x]]} \\
 \infer[\supset L]{\Gamma^-;[A\supset B] \xrightarrow{L} C_a^+}{\Gamma^-;\cdot \xrightarrow{R} [A] & \Gamma^-;[B] \xrightarrow{L} C_a^+} \quad\quad
 \infer[\forall L]{\Gamma^-;[\forall x.A] \xrightarrow{L} C_a^+ }{\Gamma^-;[A[t/x]] \xrightarrow{L} C_a^+ }
@@ -2551,25 +2551,6 @@ where $N$ is negative formula and $P$ is positive formula.
 \begin{definition}\label{LJF}
 \rm (\redt{Simpifiled focus calculus}) The system gather all inveritible rules to asynchronous rules and removes side change rule based on first logic focus calculus is called \redt{LJF}
 \end{definition}
-
-\newpage
-\subsection{Uniform Proofs}
-
-\begin{definition}
-\rm A \redt{uniform proof} is a proof in which each occurrence of a sequent $\Gamma \to C$, where $C$ is a composed formula, is the conclusion of a rule introduing $C's$ \emph{topmost} connective. 
-\end{definition}
-
-\begin{annotation}
-\rm 一个uniform proof就是尽可能先地decompose right formula, 即apply right rule，或者换句话来说它只对right invertible rules感兴趣 i.e. the negative and neutral ones. 
-\end{annotation}
-
-\begin{definition}
-\rm An \emph{abstract logic programming language} is a logic in which every provable sequent $\Gamma \to C$ has a uniform proof. 
-\end{definition}
-
-\begin{annotation}
-\rm 这里可以解释为什么没有类似$\vee$的connectives出现在logic programming里面，因为$\vee$是positive的. 这里还缺点解释todo.
-\end{annotation}
 
 
 \newpage
@@ -2660,7 +2641,6 @@ $$
 \begin{annotation}
 \rm 前面例子里面有一个小细节就是，里面用的variables都是暗含了universal quantifier. 这一点需要注意，同时unification是具有传递过程的，比如在某个地方确定了某个variable的值，那么在它前面的，也就是从shape of proof向下含有$x$的地方，也要具有相同的值.
 \end{annotation}
-
 
 \newpage
 \subsection{Foward Chaining}
@@ -2768,6 +2748,84 @@ T \Rightarrow &  -T && [\vn{neg}]\\
 \]
 这样$k$就被严格限制为2. 
 \end{example}
+
+\newpage
+\subsection{Uniform Proofs}
+
+\begin{definition}
+\rm A \redt{uniform proof} is a proof in which each occurrence of a sequent $\Gamma \to C$, where $C$ is a composed formula, is the conclusion of a rule introduing $C's$ \emph{topmost} connective. 
+\end{definition}
+
+\begin{annotation}
+\rm 一个uniform proof就是尽可能先地decompose right formula, 即apply right rule，或者换句话来说它只对right invertible rules感兴趣 i.e. the negative and neutral ones. 
+\end{annotation}
+
+\begin{definition}
+\rm An \emph{abstract logic programming language} is a logic in which every provable sequent $\Gamma \to C$ has a uniform proof. 
+\end{definition}
+
+\begin{annotation}
+\rm 这里可以解释为什么没有类似$\vee$的connectives出现在logic programming里面，因为$\vee$是positive的. 这里还缺点解释todo.
+\end{annotation}
+
+\begin{annotation}
+\rm 关于unification algorithm实际上我们已经在type checking什么的时候见识过了，这里概念上没什么区别. 但是这里我们会将其变成inference rule的形式，最终构建一个完整的deductive system.  
+\end{annotation}
+
+\begin{definition}
+\rm we use the notation $t \doteq s$ to denote the judgment $t$ and $s$ are unifiable.
+\end{definition}
+
+\begin{definition}
+\rm Given two substitutions $\sigma_1$ and $\sigma_2$, we define their composition as follow:
+\[
+	\sigma_1\sigma_2 = \sigma_2 \circ \sigma_1
+\]
+\end{definition}
+
+\begin{lemma}
+\rm (\redt{uniqueness of most general unifier}) If $\sigma_1$ and $\sigma_2$ are both the most general unifier, then $\sigma_2$ is essentially a variable renaming of $\sigma_1$.
+\end{lemma}
+
+\begin{proof}
+\rm 这里我们将most general unifier简写成mgu, 根据mgu的definition，我们知道分别存在$\delta_1$和$\delta_2$使得
+\[
+	\begin{gathered}
+		\sigma_1  = \sigma_2\delta_1\\
+		\sigma_2  = \sigma_1\delta_2		
+	\end{gathered}
+\]
+于是$\sigma_1 = (\sigma_1\delta_2)\delta_1$，这意味着$\delta_2$改变的东西，都被$\delta_1$还原了. 并且$\delta_2$就只能改变做一些variables maps to variables的转换，是不能将variables map to constants，因为$\delta_2$是没法还原constants map to varaibles. 同理$\sigma_2 = (\sigma_2\delta_2)\delta_1$，其实$\delta_1$和$\delta_2$互为inverse. 
+\end{proof}
+
+%\sigma_1  = \sigma_2\delta_1\\
+%\sigma_2  = \sigma_1\delta_2
+
+\begin{definition}
+\rm we define jugement $t$ and $s$ are unifiable under most general unifier $\sigma$ as
+\[
+	t \doteq s ~|~ \sigma
+\]
+\end{definition}
+
+\begin{definition}
+\rm We define unification calculus as follow
+\[
+	\begin{gathered}
+	\infer[]{x \doteq x~|~\{\}}{} \quad\quad \infer[]{x \doteq t~|~\{x \to t\}}{x \in \vn{FV}(t)} \quad\quad \infer[]{t \doteq x~|~\{x \to t\}}{t = f(\overline{t}) & x \in \vn{FV}(t)} \\
+	\infer[]{f(\overline{t}) \doteq f(\overline{s}) ~|~ \sigma}{\overline{t} \doteq \overline{s}~|~\sigma} \quad\quad \infer[]{(\cdot) \doteq (\cdot)~|~\{\}}{} \quad\quad \infer[]{(t,\overline{t}) \doteq (s,\overline{s})~|~\sigma_1\sigma_2}{t \doteq s ~|~\sigma_1 & \overline{t}\sigma_1 \doteq \overline{s}\sigma_1~ | ~\sigma_2}
+	\end{gathered}
+\]
+where $x$ is a variable, $t$ is a term, $\overline{t}$ and $\overline{s}$ are sequence of terms, $(\cdot)$ is empty sequence of terms, ${}$ is empty substitution, $f$ is function, and $\overline{t}\sigma_1 = \sigma_1(\overline{t})$. 
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{soundness}) If $t \doteq s ~|~ \sigma$ then $t\sigma = s\sigma$.
+\end{theorem}
+
+\begin{theorem}
+\rm (\redt{completeness}) If $t\sigma' = s\sigma'$, then $t \doteq s ~|~\sigma$ and $\sigma' = \sigma\delta$.
+\end{theorem}
 
 \newpage
 \begin{thebibliography}{00}
