@@ -61,15 +61,28 @@
 \newtheorem{exercise}{Exercise}[section]
 \newtheorem{annotation}[theorem]{Annotation}
 
+\usepackage{enumitem}
+\newlist{pcases}{enumerate}{3}
+\setlist[pcases]{label=\textit{Case \arabic*},leftmargin=*}
+\setlist[pcases,2]{label=\textit{\thepcasesi.\arabic*}}
+
+\newlist{psubcases}{enumerate}{3}
+\setlist[psubcases]{label=\textit{Subcase \arabic*},leftmargin=*}
+\setlist[psubcases,2]{label=\textit{\thepcasesi.\arabic*}}
+
+\newcounter{case}
+\newcounter{subcase}[case]
 \theoremheaderfont{\itshape}
 \theorembodyfont{\upshape}
 \newtheorem{case}{Case}
+\newtheorem{subcase}{Subcase}
 
 \theoremstyle{nonumberplain}
 \theoremheaderfont{\scshape}
 \theorembodyfont{\upshape}
 \theoremsymbol{\newline\raggedleft\scshape Q. E. D.\par}
 \theorempostwork{\setcounter{case}{0}}
+%\theorempostwork{\setcounter{subcase}{case}}
 \newtheorem{proof}{Proof}
 
 %\newtheorem{theorem}{Theorem}[section]
@@ -2812,7 +2825,7 @@ T \Rightarrow &  -T && [\vn{neg}]\\
 \rm We define unification calculus as follow
 \[
 	\begin{gathered}
-	\infer[]{x \doteq x~|~\{\}}{} \quad\quad \infer[]{x \doteq t~|~\{x \to t\}}{x \in \vn{FV}(t)} \quad\quad \infer[]{t \doteq x~|~\{x \to t\}}{t = f(\overline{t}) & x \in \vn{FV}(t)} \\
+	\infer[]{x \doteq x~|~\{\}}{} \quad\quad \infer[]{x \doteq t~|~\{x \to t\}}{x \notin \vn{FV}(t)} \quad\quad \infer[]{t \doteq x~|~\{x \to t\}}{t = f(\overline{t}) & x \notin \vn{FV}(t)} \\
 	\infer[]{f(\overline{t}) \doteq f(\overline{s}) ~|~ \sigma}{\overline{t} \doteq \overline{s}~|~\sigma} \quad\quad \infer[]{(\cdot) \doteq (\cdot)~|~\{\}}{} \quad\quad \infer[]{(t,\overline{t}) \doteq (s,\overline{s})~|~\sigma_1\sigma_2}{t \doteq s ~|~\sigma_1 & \overline{t}\sigma_1 \doteq \overline{s}\sigma_1~ | ~\sigma_2}
 	\end{gathered}
 \]
@@ -2826,6 +2839,56 @@ where $x$ is a variable, $t$ is a term, $\overline{t}$ and $\overline{s}$ are se
 \begin{theorem}
 \rm (\redt{completeness}) If $t\sigma' = s\sigma'$, then $t \doteq s ~|~\sigma$ and $\sigma' = \sigma\delta$.
 \end{theorem}
+
+\begin{proof}
+completeness的证明咋一想还是不是那么显然，这里记录一下. 还是使用induction hypothesis，但是这里要对$t\sigma'$做induction，而不是$t$，后面我们会看到为什么.
+\begin{itemize}
+	\item \textsc{Base cases}:
+	\begin{itemize}
+		\item $t\sigma'$ is a variable.
+		
+		那么这种情况下$t$也只能是variable $x$，并且$\sigma'$只能是$\{x \to z\}$，其中$z$也是variable. 考虑assumption $t \doteq s$，设$s = y$，那么这里的$\sigma' = \{x \to z, y \to z\}$. 根据unification calculus，若$x = y$则$\sigma = \{\}$, 那么$\sigma' = \sigma\{x \to z\}$; 若$x \neq y$，则$\sigma = \{x \to y\}$，那么$\sigma' = \sigma\{y \to z\}$.
+		
+		\item $t\sigma'$ is a empty sequence.
+		
+		那么这种情况下$t$也只能是一个emptys equence，此时$\sigma'$为任意的substitution，同理$s$也只能是一个empty sequence. 此时$\sigma = \{\}$，因此$\sigma' = \sigma\sigma'$. 
+	\end{itemize}
+	
+	\item \textsc{Induction hypotheses}:
+	这里有两个induction hypotheses:
+	\begin{enumerate}
+		\item If $t\sigma' = s\sigma'$, then $t \doteq s ~|~\sigma$ and $\sigma' = \sigma\delta$.
+		\item If $\overline{t}\sigma' = \overline{s}\sigma'$, then $t \doteq s ~|~\sigma$ and $\sigma' = \sigma\delta$.
+	\end{enumerate}
+	
+	\item \textsc{Inductive steps}: 
+	\begin{itemize}
+		\item $t\sigma'$ is a term $r$ that is not a variable. 
+		这里我们分析$t$可能的结构
+		\begin{pcases} 
+			\item $t = x$ 
+			\begin{psubcases}
+				\item $s = y$
+					\[
+						\begin{aligned}
+							&x\sigma' = y\sigma' && \text{assumption}\\
+							&\sigma' = \{x \to r, y \to r\} && \text{by  defintion of substitution}\\							
+							&t \doteq s ~|~ \{x \to y\} && \text{by unification calculus(这里实际还需要cover一下$x = y$的情况)} \\							 					&\sigma' = \{x \to y\}\{y \to r\} && \text{substitution composition}		
+						\end{aligned}
+					\]
+				\item $s = f(\overline{s})$
+					\[
+					
+					\]
+			\end{psubcases}
+			
+			\item $t = f(\overline{t})$
+		\end{pcases}
+	\end{itemize}
+\end{itemize}
+\end{proof}
+
+
 
 \newpage
 \begin{thebibliography}{00}
