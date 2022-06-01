@@ -2931,7 +2931,21 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{itemize}
 \end{proof}
 
+\newpage
+\subsection{Resolution}
 
+\begin{annotation}
+\rm 关于DPM的临时想法: 若我们想证明$F = \forall x_1 \cdots \forall x_n~C_1 \wedge C_2 \cdots C_k$ is unsat, 记$F' =C_1 \wedge C_2 \cdots C_k $我们可以采取以下步骤:
+\begin{enumerate}
+	\item 首先取一个terms sequence $\overline{t}_1$实例化$F'$得到$F'[\overline{t}_1/\overline{x}]$，此时会遇到下面几种情况:
+	\begin{enumerate}
+		\item 如果存在某个$C_i[\overline{t}_1/\overline{x}]$ is false，那么$F'[\overline{t}_1/\overline{x}]$ is false, 显然在universal quantifier的限定下$F$ is unsat.
+		\item 其他情况: 按照正常情况我们现在应当取新的$\overline{t}_2$来继续做上述操作，丢掉$F'[\overline{t}_1/\overline{x}]$. 但是Herbrand's the告诉我们如果$F$ is unsat, 那么它存在一个finite $\overline{t}_1'\cdots \overline{t}_m'$ 使得$F'[\overline{t}_1'/\overline{x}] \wedge \cdots \wedge F'[\overline{t}_m'/\overline{x}]$ is unsat. 
+		
+		那么此时我们应该可以继续保留$F'[\overline{t}_1/\overline{x}]$，额外考虑一下$F'[\overline{t}_1/\overline{x}] \wedge F'[\overline{t}_2/\overline{x}]$是否unsat，同时Hthe最终可以保证我们过程是会terminate，因为最终我们遇到一个上述形式的formula，而它是unsat的. 
+	\end{enumerate}
+\end{enumerate}
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
