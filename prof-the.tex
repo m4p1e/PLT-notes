@@ -80,7 +80,8 @@
 \theoremstyle{nonumberplain}
 \theoremheaderfont{\scshape}
 \theorembodyfont{\upshape}
-\theoremsymbol{\newline\raggedleft\scshape Q. E. D.\par}
+%\theoremsymbol{\newline\raggedleft\scshape Q. E. D.\par}
+\theoremsymbol{\ensuremath{\square}}
 \theorempostwork{\setcounter{case}{0}}
 %\theorempostwork{\setcounter{subcase}{case}}
 \newtheorem{proof}{Proof}
@@ -2863,12 +2864,13 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 	
 	\item \textsc{Inductive steps}: 
 	\begin{itemize}
-		\item $t\sigma'$ is a term $r$ that is not a variable. 
+		\item \bluet{$t\sigma'$ is a term $r$ that is not a variable.} 
 		这里我们分析$t$可能的结构
 		\begin{pcases} 
 			\item $t = x$ 
 			\begin{psubcases}
 				\item $s = y$
+				
 					\[
 						\begin{aligned}
 							&x\sigma' = y\sigma' && \text{assumption}\\
@@ -2877,13 +2879,54 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 						\end{aligned}
 					\]
 				\item $s = f(\overline{s})$
+				
 					\[
-					
+						\begin{aligned}
+						&x\sigma' = f(\overline{s})\sigma' && \text{assumption}\\
+						&\sigma' = \{x \to f(\overline{s})\sigma'\} \cup \sigma'_1 && \text{def of sub and $\sigma_1'$ is $\sigma/x$} \\
+						& x \notin \vn{FV}(f(\overline{s})) && \text{otherwise unifiable} \\
+						& \sigma' = \{x \to f(\overline{s})\sigma'_1\} \cup \sigma'_1 && f(\overline{s})\sigma' = f(\overline{s})\sigma'_1 \\
+						& \sigma' =  \{x \to f(\overline{s})\}\sigma'_1 && \text{def of sub comp}
+						\end{aligned}					
 					\]
 			\end{psubcases}
-			
 			\item $t = f(\overline{t})$
+			\begin{psubcases}
+				\item $s = y$  
+				same as \textit{subcase} 1.2.
+				\item $s = f(\overline{s})$
+				
+				\[
+					\begin{aligned}
+					& f(\overline{t})\sigma' = f(\overline{s})\sigma' && \text{assumption} \\
+					& \overline{t}\sigma' = \overline{s}\sigma' && \text{def of sub} \\
+					& \sigma' = \sigma\delta && \text{$\overline{t}\sigma'$在规模上严格小于$f(\overline{t})\sigma'$, 因此这里可以用IH 2}\\
+					& \overline{t} \doteq \overline{s} ~|~ \sigma && \text{by unification calculus} \\
+					& f(\overline{t}) \doteq f(\overline{s})~|~\sigma && \text{by unification calculus} \\
+					 & \sigma' = \sigma\delta && \text{final} 
+					\end{aligned}
+				\]
+			\end{psubcases}
 		\end{pcases}
+	\item \bluet{$t\sigma'$ is non-empty sequence of terms}. 
+	\begin{pcases}
+		\item $t = (t_1, \overline{t}_2)$
+		\begin{psubcases}
+			\item $s = (s_1, \overline{s}_2)$
+			\[
+				\begin{aligned}
+					&(t_1,\overline{t}_2)\sigma' = (s_1,\overline{s}_2)\sigma' && \text{assumption} \\
+					&(t_1\sigma',\overline{t}_2\sigma') = (s_1\sigma',\overline{s}_2\sigma') && \text{def of sub} \\
+					& t_1 \doteq s_1 ~|~ \sigma~\text{and}~\sigma' = \sigma\delta_1 && \text{$|t_1\sigma'| < |t\sigma'|$ IH 1} \\
+					& \overline{t}_2(\sigma\delta_1) = \overline{s}_2(\sigma\delta_1) && \text{def of sub} \\
+					& (\overline{t}_2\sigma)\delta_1 = (\overline{s}_2\sigma)\delta_1 && \text{comp of sub} \\
+					& \overline{t}_2\sigma \doteq \overline{s}_2\sigma ~ |~ \sigma_2~\text{and}~\delta_1 = \sigma_2\delta_2 && \text{\bluet{$|(\overline{t}_2\sigma)\delta_1| < |t\sigma'|$ IH 2}} \\
+					& \sigma' = \sigma\sigma_2\delta_2 && \text{def of sub}
+				\end{aligned} 
+			\]
+			如果这里我们不是对$t\sigma'$做induction，而是对$t$做induction，那么这里的induction hypothesis就变成了$|\overline{t}_2\sigma|$，但是这里我们是无法确保它是严格小于$|t|$的. 
+		\end{psubcases}	
+	\end{pcases}	
 	\end{itemize}
 \end{itemize}
 \end{proof}
