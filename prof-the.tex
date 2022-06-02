@@ -2934,6 +2934,19 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \newpage
 \subsection{Resolution}
 
+
+\begin{annotation}
+\rm 证明的Hthe的sketch:
+\begin{enumerate}
+	\item 首先把它放到cut-free sequent calculus里面，根据cfsc的completeness得到一个proof:
+	\[
+	\infer[\vn{contraction}]{\exists x_1. \cdots \exists x_n. F(x_1,		\cdots,x_n)}{\infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,	\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n')}{\mathcal{D}}} & \infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n'')}{\mathcal{E}}}}
+	\]
+	\item 下一步就是从上往下把existential quantifier，即去掉$R \exists$ rule，直接把primise换成conclusion，相当于就是一个$\vn{id}$ rule. 这里你会发现有些关于existential quantifier的$\vn{contraction}$也是用不了，因此也要去掉. 最终我们就得到了Hthe的结论. 
+\end{enumerate} 
+
+\end{annotation}
+
 \begin{annotation}
 \rm 关于DPM的临时想法: 若我们想证明$F = \forall x_1 \cdots \forall x_n~C_1 \wedge C_2 \cdots C_k$ is unsat, 记$F' =C_1 \wedge C_2 \cdots C_k $我们可以采取以下步骤:
 \begin{enumerate}
@@ -2943,6 +2956,11 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 		\item 其他情况: 按照正常情况我们现在应当取新的$\overline{t}_2$来继续做上述操作，丢掉$F'[\overline{t}_1/\overline{x}]$. 但是Herbrand's the告诉我们如果$F$ is unsat, 那么它存在一个finite $\overline{t}_1'\cdots \overline{t}_m'$ 使得$F'[\overline{t}_1'/\overline{x}] \wedge \cdots \wedge F'[\overline{t}_m'/\overline{x}]$ is unsat. 
 		
 		那么此时我们应该可以继续保留$F'[\overline{t}_1/\overline{x}]$，额外考虑一下$F'[\overline{t}_1/\overline{x}] \wedge F'[\overline{t}_2/\overline{x}]$是否unsat，同时Hthe最终可以保证我们过程是会terminate，因为最终我们遇到一个上述形式的formula，而它是unsat的. 
+		
+		考虑这个额外的formula，也许能给我们带来更多的惊喜. 我们如何做simplify来catch Hthe带来的注定unsat性质呢？ 这是一个非常好的问题:
+		\begin{itemize}
+			\item 
+		\end{itemize}
 	\end{enumerate}
 \end{enumerate}
 \end{annotation}
