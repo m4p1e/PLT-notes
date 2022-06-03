@@ -101,7 +101,7 @@ $$
 \begin{annotation}\label{the-def-of-control-dependence}
 \rm 控制依赖更加严格的定义应该是这样: 给定CFG上两个不同的结点$x,y$，若满足下述条件\cite{cdg}: 
 \begin{itemize}
-	\item 在CFG存在一条从$x$到$y$的nonempty path $p$满足对任意的$v \in p$且$v \neq x$都有$y~\text{!pdom}~v$，其中$\text{pdom}$表示postdominate;  
+	\item 在CFG上存在一条从$x$到$y$的nonempty path $p$满足对任意的$v \in p$且$v \neq x$都有$y~\text{pdom}~v$，其中$\text{pdom}$表示postdominate;  
 	\item $y~\text{!pdom}~x$. 
 \end{itemize}
 则称$y$控制依赖于$x$. 简而言之\bluet{存在某个$x$的后继$x.{\text{succ}_i}$使得$y~\text{pdom}~x.{\text{succ}_i}$，但$y~\text{!pdom}~x$}. 
@@ -140,8 +140,12 @@ $$
 即对$P$上每一个statements都应用上述规则. 根据算法\ref{control-dependence}构造$E_c$.
 \end{definition}
 
+\begin{lemma}
+\rm If $y~\text{pdom}~x$ iff there is path $p: x \to^* y$ such that $y~\text{pdom}~v$ for every node $v \in p$. 
+\end{lemma}
+
 \begin{annotation}
-\rm 算法\ref{control-dependence}用到了一个lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 
+\rm 算法\ref{control-dependence}用到了一个lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 在此的基础上，我们可以check一下$x$ successor $z$，如果$y~\text{!dom}~z$，那么$y$ is control dependent on $z$. 那么根据dominance frontier的定义，实际上$z$就在$DF(y)$里面.
 \end{annotation}
 
 \begin{algorithm}
@@ -153,7 +157,7 @@ $$
 \SetKwInOut{Output}{output}
 \DontPrintSemicolon
 \Input{The reverse control flow graph $\text{RCFG}$ and the dominance frontier $\text{RDF}$ of every every node in $\text{RCFG}$.} 
-\Output{The set $\text{CD}(X)$ of every node $X$ that are control dependent on $X$.}
+\Output{The set $\text{CD}(X)$ of nodes that are control dependent on $X$.}
 
 \Begin{
 	\For{\rm each node $X \in \text{RCFG}$}{
@@ -161,8 +165,8 @@ $$
 	}
 
 	\For{\rm each node $X \in \text{RCFG}$ }{
-		\For{\rm each node $Y \in \text{RCFG}$}{
-			Insert $Y$ into $\text{CD}(X)$ \;
+		\For{\rm each node $Y \in \text{RDF}(X)$}{
+			Insert $X$ into $\text{CD}(Y)$ \;
 		}
 	}
 }

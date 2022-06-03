@@ -7,6 +7,8 @@
 \usepackage{tikzit}
 \input{common.tikzstyles}
 
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
 %冲突nthm
 %\usepackage{amsthm}
 \usepackage{amsmath}
@@ -225,6 +227,78 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \begin{annotation}
 \rm 在理解propositional logic的基础上，只要记住几个关键词\emph{function}, \emph{predicate}, and \emph{quantifier}就足以刻画first order logic. 
 \end{annotation}
+
+\newpage
+\subsection{Logical Formulas Means}
+
+\begin{definition}
+\rm An \redt{interpretation} of a logic formula $F$ is the assignment of meanings to the symbols of $F$.
+\end{definition}
+
+
+\begin{definition}
+\rm If $F$ is true under an interpretation $\mathcal{I}$, then $\mathcal{I}$ is called a \redt{model} of $F$
+\end{definition}
+
+\begin{definition}
+\rm A formula $F$ is \redt{satifiable} if it has a model. It is \redt{unsatisfiable} if it has no model.
+\end{definition}
+
+\begin{definition}
+\rm A formula $F$ is \redt{valid} if it is true under every interpretation.
+\end{definition}
+
+\begin{theorem}\label{vaild-and-unsat}
+\rm In classical logic:
+\[
+	F~\text{vaild} \leftrightarrow \neg F ~\text{unsatisfiable}.
+\]
+\end{theorem}
+
+
+\newpage
+\subsection{Logical Formula Transformations}
+
+\begin{definition}
+\rm A formula $F$ is in \redt{prenex normal form} if $F$ is composed by a sequence of quantifier followed by a quantifier-free part(called the matrix)
+\end{definition}
+
+\begin{example}
+\rm 例如$\forall x.\forall y. F(x,y)$，其中$F$ is quantifier-free，那么这个就是一个prenex normal form.
+\end{example}
+
+\begin{definition}
+\rm A formula $F$ is in \redt{negation normal form} if all its negation are applied to atoms.
+\end{definition}
+
+\begin{definition}
+\rm A formula $F$ is in \redt{conjunctive normal form} (CNF) if it is a conjunction $C_1 \wedge \cdots \wedge C_n$, where $C_1 \wedge \cdots \wedge C_n$, where each $C_i$ is disjunction of literals (i.e., atoms or negated atoms). Each $C_i$ is called a \redt{clause}.
+\end{definition}
+
+\begin{definition}
+\rm Let $F$ be a formula in prenex normal form. The \redt{skolemization} of $F$ consists on replacing every existentially  quantifered varible $y$ by a fresh function symbol $f(x_1,\cdots,x_n)$, where $x_1, \cdots, x_n$ are the universally quantified varaibles occurring before $y$ in the prefix of $F$. Additionally the existential quantification on $y$ is removed. When there are no more existential quantifiers left the formula is \redt{skolemized}.
+\end{definition}
+
+\begin{example}
+\rm 例如给定$\exists x. \forall y. \exists z. p(x,y,z)$，它对应的skolemization为$\forall y. p(c,x,f(y))$.
+\end{example}
+
+
+\newpage
+\subsection{Satisfiabitity of Logic Formulas}
+
+\begin{annotation}
+\rm 现在只记录一下当下我自己的思考，未来会系统补充. 
+\begin{itemize}
+	\item 关于connectives对sat的影响:
+		\begin{itemize}
+			\item 若$F = F_1 \vee F_2$ and $F$ is unsat, 那么需要$F_1$ is unsat和$F_2$ is unsat. 
+			\item 若$F = F_1 \wedge F_2$ and $F$ is unsat，那么需要$F_1$ is unsat或者$F_2$ is unsat. 
+		\end{itemize}
+		可以看到它和connectives的关系好像是反过来了. 		 
+\end{itemize}
+\end{annotation}
+
 
 \newpage
 \subsection{Satisfiability of Sets of Formulas}
@@ -2934,18 +3008,77 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \newpage
 \subsection{Resolution}
 
+\begin{remark}
+\rm 这章的目的是证明某个classical first-logical formula $F$ is unsat. 从Theorem \ref{vaild-and-unsat}的视角，我们可以借此来证明$\neg F$ is vaild.
+\end{remark}
+
+\begin{annotation}
+\rm 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it. 拿个一个$F$我们经历这样的几个过程:
+\begin{enumerate}
+	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $F = \cdots\exists. x_1 \cdots \forall y_i. \cdots F'(\cdots, x_1,\cdots,y_i,\cdots)$，其中$F'(\cdots,x_1,\cdots,y_i,\cdots)$是quantifier-free的.
+	\item 再把$F'(\cdots,x_1,\cdots,y_i,\cdots)$里面所有的$\neg$放到atoms(也总是可以做到的)，得到对应的negation form $F''(\cdots, x_1,\cdots,y_i,\cdots)$.
+	\item 接着把$F''(\cdots, x_1,\cdots,y_i,\cdots)$变成CNF形式，得到$F'''(\cdots, x_1,\cdots,y_i,\cdots)$
+	\item 最后去掉所有的$\exists$，得到对应的skolemization $F = \cdots \forall y_i. \cdots F'''(\cdots,f(y_j,\cdots,y_m),\cdots,y_i,\cdots)$  
+\end{enumerate}
+最后我们generalize一下
+\[
+	F = \forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k}).
+\]
+对应的$\neq F$为
+\begin{equation} \label{eq:1}
+	\begin{aligned}
+	\neg F &= \neg(\forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k})) \\
+	&\equiv \exists x_1. \cdots \exists x_n. \neg((L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k})) &  
+	\end{aligned}	
+\end{equation}
+\end{annotation}
+
+\begin{theorem}
+\rm (\redt{Herbrand's theorem}) Given a formula $\exists x_1. \cdots \exists x_n. F(x_1,\cdots,x_n)$, where $F$ is quantifier-free, is valid if and only if there exists a finite set of term $t_{ij}, 1 \leq i \leq k$ and $1 \leq j \leq n$ such that the disjunction:
+\[
+F(t_{11},\cdots,t_{1n}) \vee \cdots \vee F(t_{1k},\cdots,t_{nk})
+\]
+is valid. 
+\end{theorem}
 
 \begin{annotation}
 \rm 证明的Hthe的sketch:
 \begin{enumerate}
-	\item 首先把它放到cut-free sequent calculus里面，根据cfsc的completeness得到一个proof:
+	\item 首先把它放到cut-free sequent calculus里面，根据cfsc的completeness得到一个proof(稍显不那么formal，因为没有sequent calculus里面带$\vdash$vaild形式):
 	\[
-	\infer[\vn{contraction}]{\exists x_1. \cdots \exists x_n. F(x_1,		\cdots,x_n)}{\infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,	\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n')}{\mathcal{D}}} & \infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n'')}{\mathcal{E}}}}
+	\infer[\vn{contraction}]{ \exists x_1. \cdots \exists x_n. F(x_1,		\cdots,x_n)}{\infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,	\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n')}{\mathcal{D}}} & \infer[R \exists]{\exists x_1. \cdots \exists x_n. F(x_1,\cdots,x_n)}{\deduce{\exists x_1. \cdots \exists x_{n-1}. F(x_1,\cdots,x_{n-1},t_n'')}{\mathcal{E}}}}
 	\]
-	\item 下一步就是从上往下把existential quantifier，即去掉$R \exists$ rule，直接把primise换成conclusion，相当于就是一个$\vn{id}$ rule. 这里你会发现有些关于existential quantifier的$\vn{contraction}$也是用不了，因此也要去掉. 最终我们就得到了Hthe的结论. 
+	\item 下一步就是从上往下把existential quantifier，即去掉$R \exists$ rule，直接把primise换成conclusion，相当于就是一个$\vn{id}$ rule. 这里你会发现有些关于existential quantifier的$\vn{contraction}$ rules也是用不了，因此也要去掉. 最终我们就得到了Hthe的结论. 
 \end{enumerate} 
-
 \end{annotation}
+
+
+\begin{annotation}
+\rm 这里设$C_i$表示$(L_{i1} \vee \cdots \vee L_{in_i})$，对(\ref{eq:1}) $\neg F$可以apply Hthe得到$\neq F$ is vaild iff 
+\[
+\neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_1/\overline{x}] \vee \cdots \vee \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_m/\overline{x}]
+\]
+is vaild for a finite sequence of term sequences $\overline{t}_1,\cdots,\overline{t}_m$. 比较trick是我们需要把它再转回来，证明$\neg \neg F$ is unsat，此时
+\begin{equation}
+\begin{aligned}
+&\neg\left(\neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_1/\overline{x}] \vee \cdots \vee \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_m/\overline{x}]\right) \\
+\equiv & \left((C_i \wedge \cdots \wedge C_k)[\overline{t}_1/\overline{x}] \wedge \cdots \wedge (C_i \wedge \cdots \wedge C_k)[\overline{t}_m/\overline{x}]\right)
+\end{aligned}
+\end{equation}
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{Davis-Putnam method}) 
+\begin{algorithm}
+%\label{}
+\caption{Davis-Putnam method}
+%\SetKwFunction{ForwardTabulateSLRPs}{ForwardTabulateSLRPs}
+%\SetKwFunction{Propagate}{Propagate}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\DontPrintSemicolon
+\end{algorithm}
+\end{definition}
 
 \begin{annotation}
 \rm 关于DPM的临时想法: 若我们想证明$F = \forall x_1 \cdots \forall x_n~C_1 \wedge C_2 \cdots C_k$ is unsat, 记$F' =C_1 \wedge C_2 \cdots C_k $我们可以采取以下步骤:
