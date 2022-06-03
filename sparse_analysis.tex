@@ -145,7 +145,7 @@ $$
 \end{lemma}
 
 \begin{annotation}
-\rm 算法\ref{control-dependence}用到了一个lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 在此的基础上，我们可以check一下$x$ successor $z$，如果$y~\text{!dom}~z$，那么$y$ is control dependent on $z$. 那么根据dominance frontier的定义，实际上$z$就在$DF(y)$里面.
+\rm 算法\ref{control-dependence}用到了一个衍之上面lemma的new lemma: \redt{给定CFG上两个结点$x,y$，若$y~\text{pdom}~x$，则在RCFG上有$y~\text{dom}~x$}. 在此的基础上，我们再可以check一下$x$ successor $z$，如果$y~\text{!dom}~z$，那么$y$ is control dependent on $z$. 根据dominance frontier的定义，实际上$z$就在$DF(y)$里面.
 \end{annotation}
 
 \begin{algorithm}

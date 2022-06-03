@@ -3074,10 +3074,35 @@ is vaild for a finite sequence of term sequences $\overline{t}_1,\cdots,\overlin
 \caption{Davis-Putnam method}
 %\SetKwFunction{ForwardTabulateSLRPs}{ForwardTabulateSLRPs}
 %\SetKwFunction{Propagate}{Propagate}
-\SetKwInOut{Input}{input}
-\SetKwInOut{Output}{output}
+%\SetKwInOut{Input}{input}
+%\SetKwInOut{Output}{output}
+\SetKwComment{Comment}{$\triangleright$ }{}
 \DontPrintSemicolon
+\Begin{
+	$F \leftarrow \forall \overline{x}. F'(\overline{x})$ \quad\Comment*[h]{$F'$ is CNF and $\overline{x} = (x_1,\cdots,x_n)$}\; 
+	$\vn{terms} \rightarrow [\overline{t}_1,\overline{t}_2,\cdots]$ \quad \Comment*[h]{$\vn{terms}$ is an infinite stream of sequences of terms used for $\overline{x}$ in lexicographic order}\;
+	$i \leftarrow 1$ \;
+	$G \leftarrow F'[\overline{t}_i/\overline{x}]$\;
+	$G \leftarrow \vn{simplify}(G)$\;
+	\Comment*[h]{empty clause means that $C_i$ was evaluated to false}\;
+	\While(){$G$ does not contain an empty clause}{
+		$i \leftarrow i + 1$\;
+		$G' \leftarrow F'[\overline{t}_i/\overline{x}]$\;
+		$G \leftarrow G \wedge G'$ \;
+		$G \leftarrow \vn{simplify}(G)$\;
+	}
+}
 \end{algorithm}
+
+The $\vn{simplify}$ method applies the following simplications to the formula:
+\begin{itemize}
+	\item \textbf{Rule for elimination of single-literal clause}
+	\begin{enumerate}
+		\item If $G$ contains a clause $\{p\}$ and other clause $\{\overline{p}\}$, then we are done. They cannot both be  true at same time, so the formula is unsatifiable.
+		\item If $G$ contains a clause $\{p\}$. we can give a interpretation makes $p$ is false then $G$ is false, but $G$ needs to be false for every interpretation, thats is not a problem. If given $p$ is true under some interpretations, in the case, we can remove the clause $\{p\}$, every clause that contains $p$(a disjunction with a true literal is true),  and every clause that contains $\overline{p}$($\overline{p}$ is the negation of $p$, that is a false literal in a disjunction is good for nothing).  
+		\item If $G$ contains a clause $\{\overline{p}\}$, its similar as the case $\{p\}$.
+	\end{enumerate}
+\end{itemize}
 \end{definition}
 
 \begin{annotation}
