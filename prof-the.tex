@@ -3119,10 +3119,11 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 	\item \bluet{为什么$G = G \wedge G'$}？ 主要这里的$F$是限定在unversal quantifers下的，如果$F$想要在unsat，那么对于任意的substitution instances在任意的interpretations下都应该是unsat. 同时根据Hthe，我们知道$F$ is unsat当且仅当存在conjunction of finite substitution instantces is unsat. 这样当$F$ is unsat的时候，能保证我们process可以停止，如果$F$ is not unsat，那么这个过程会一直运行下去. 
 	\item \bluet{simplify详解}: simplify本质就是在不影响原公式unsatisfiable的情况下，尽可能的简化current formula. 同时DPM的最重要的思想就是如果你想证明一串conjunction $C_1 \wedge C_n$ is unsat, 你只要去保证其中一个conjunct $C_1$ is always false就行了，换句话说我们将忽略某些其他的conjuncts. 
 	\begin{enumerate}
-		\item 对于single-literal clause的讲解已经比较清楚: 如果存在$\{p\}$和$\{\overline{p}\}$冲突，这种情况很容易想明白; 而对于没有冲突的$\{p\}$，因为总存在使得$p$ is true的interpretation，那么有$p$存在的clauses也都是true 在这种情况下$F$整体是否为false与它们没有关系，因此去掉它们并不会影响$F$ is unsatifiable. 注意此时$\overline{p}$ is false，对于它所在的clause是否false和它也没有关系，除非这个clause只含有$\overline{p}$，那又回到第一种情况了. 其余使得$p$ is false的interpretations，直接就让$F$变成false，因此这种情况不用考虑了. 仔细体会其中的奥义，我们在渐渐的逼近那个always false的clause，prune掉所有不会影响$F$ is unsat的clause.
+		\item 对于single-literal clause的讲解已经比较清楚: 如果存在$\{p\}$和$\{\overline{p}\}$冲突，这种情况很容易想明白; 而对于没有冲突的$\{p\}$，因为总存在使得$p$ is true的interpretation，那么有$p$存在的clauses也都是true 在这种情况下$F$整体是否为false与它们没有关系，因此去掉它们并不会影响$F$ is unsatifiable. 注意此时$\overline{p}$ is false，对于它所在的clause是否false和它也没有关系，除非这个clause只含有$\overline{p}$，那又回到第一种情况了，因此可以去掉这样的$\overline{p}$. 其余使得$p$ is false的interpretations，直接就让$F$变成false，因此这种情况不用考虑了. 仔细体会其中的奥义，我们在渐渐的逼近那个always false的clause，prune掉所有不会影响$F$ is unsat的clause.
 		在这种情况下它们与$F$整体是否为false与$p$没有关系. 
 		\item 例如假设只有$p$存在(没有$\neg p$存在)，因为总存在使得$p$ is true的interpretations，使得$p$所在clauses也是都是true，在这种情况下整体$F$是否为false，实际上与它没有关系. 同理只存在$\neg p$的情况也是一样的. 
-	\end{enumerate}
+		\item 这里的$\cup$应该是$\vee$，当$p$ is true，the conjunction of clause is false取决于$C_j$; 当$\overline{p}$ is false, the conjunction clause is false取决于$C_j$. 因此最终the conjunction of clause is unsat，取决于$C_i \vee C_j$ is unsat，这些你需要回顾一下connective对sat的影响.
+	\end{enumerate}	
 \end{itemize}
 \end{annotation}
 
