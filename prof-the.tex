@@ -3012,6 +3012,10 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \rm 这章的目的是证明某个classical first-logical formula $F$ is unsat. 从Theorem \ref{vaild-and-unsat}的视角，我们可以借此来证明$\neg F$ is vaild.
 \end{remark}
 
+\begin{definition}
+\rm The proof of a formula's unsatifiability is called a \redt{refutation}.
+\end{definition}
+
 \begin{annotation}
 \rm 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it. 拿个一个$F$我们经历这样的几个过程:
 \begin{enumerate}
@@ -3042,7 +3046,7 @@ is valid.
 \end{theorem}
 
 \begin{annotation}
-\rm 证明的Hthe的sketch:
+\rm \bluet{Hthe最关键的作用就是把first-order logic转换到propositional logic}. 证明的Hthe的sketch:
 \begin{enumerate}
 	\item 首先把它放到cut-free sequent calculus里面，根据cfsc的completeness得到一个proof(稍显不那么formal，因为没有sequent calculus里面带$\vdash$vaild形式):
 	\[
@@ -3054,7 +3058,7 @@ is valid.
 
 
 \begin{annotation}
-\rm 这里设$C_i$表示$(L_{i1} \vee \cdots \vee L_{in_i})$，对(\ref{eq:1}) $\neg F$可以apply Hthe得到$\neq F$ is vaild iff 
+\rm 这里设$C_i$表示$(L_{i1} \vee \cdots \vee L_{in_i})$，对(\ref{eq:1}) $\neg F$可以apply Hthe得到$\neg F$ is vaild iff 
 \[
 \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_1/\overline{x}] \vee \cdots \vee \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_m/\overline{x}]
 \]
@@ -3099,11 +3103,28 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 	\item \textbf{Rule for elimination of single-literal clause}
 	\begin{enumerate}
 		\item If $G$ contains a clause $\{p\}$ and other clause $\{\overline{p}\}$, then we are done. They cannot both be  true at same time, so the formula is unsatifiable.
-		\item If $G$ contains a clause $\{p\}$. we can give a interpretation makes $p$ is false then $G$ is false, but $G$ needs to be false for every interpretation, thats is not a problem. If given $p$ is true under some interpretations, in the case, we can remove the clause $\{p\}$, every clause that contains $p$(a disjunction with a true literal is true),  and every clause that contains $\overline{p}$($\overline{p}$ is the negation of $p$, that is a false literal in a disjunction is good for nothing).  
+		\item If $G$ contains a clause $\{p\}$. we can give a interpretation makes $p$ is false then $G$ is false, but $G$ needs to be false for every interpretation, thats is not a problem. If given $p$ is true under some interpretations, in the case, we can remove the clause $\{p\}$, every clause that contains $p$ (a disjunction with a true literal is true),  and remove $\overline{p}$ from every clause that contains it ($\overline{p}$ is the negation of $p$, that is a false literal in a disjunction is good for nothing).  
 		\item If $G$ contains a clause $\{\overline{p}\}$, its similar as the case $\{p\}$.
 	\end{enumerate}
+	\item \textbf{Affirmative-Negative rule}\newline
+	If $p$ occurs only positively or only negatively in $G$, then we can delete all clauses containing $p$ without loosing unsatisfiability. 
+	\item \textbf{Rule for eliminating atomic formulas}\newline
+	If $G$ contains a clause $\{p\} \cup C_i$ and another clause $\{\overline{p}\} \cup C_j$, then we can replace both of them by the clause $C_i \cup C_j$. 
 \end{itemize}
 \end{definition}
+
+\begin{annotation}
+\rm 关于DPM的解释: 
+\begin{itemize}
+	\item \bluet{为什么$G = G \wedge G'$}？ 主要这里的$F$是限定在unversal quantifers下的，如果$F$想要在unsat，那么对于任意的substitution instances在任意的interpretations下都应该是unsat. 同时根据Hthe，我们知道$F$ is unsat当且仅当存在conjunction of finite substitution instantces is unsat. 这样当$F$ is unsat的时候，能保证我们process可以停止，如果$F$ is not unsat，那么这个过程会一直运行下去. 
+	\item \bluet{simplify详解}: simplify本质就是在不影响原公式unsatisfiable的情况下，尽可能的简化current formula. 同时DPM的最重要的思想就是如果你想证明一串conjunction $C_1 \wedge C_n$ is unsat, 你只要去保证其中一个conjunct $C_1$ is always false就行了，换句话说我们将忽略某些其他的conjuncts. 
+	\begin{enumerate}
+		\item 对于single-literal clause的讲解已经比较清楚: 如果存在$\{p\}$和$\{\overline{p}\}$冲突，这种情况很容易想明白; 而对于没有冲突的$\{p\}$，因为总存在使得$p$ is true的interpretation，那么有$p$存在的clauses也都是true 在这种情况下$F$整体是否为false与它们没有关系，因此去掉它们并不会影响$F$ is unsatifiable. 注意此时$\overline{p}$ is false，对于它所在的clause是否false和它也没有关系，除非这个clause只含有$\overline{p}$，那又回到第一种情况了. 其余使得$p$ is false的interpretations，直接就让$F$变成false，因此这种情况不用考虑了. 仔细体会其中的奥义，我们在渐渐的逼近那个always false的clause，prune掉所有不会影响$F$ is unsat的clause.
+		在这种情况下它们与$F$整体是否为false与$p$没有关系. 
+		\item 例如假设只有$p$存在(没有$\neg p$存在)，因为总存在使得$p$ is true的interpretations，使得$p$所在clauses也是都是true，在这种情况下整体$F$是否为false，实际上与它没有关系. 同理只存在$\neg p$的情况也是一样的. 
+	\end{enumerate}
+\end{itemize}
+\end{annotation}
 
 \begin{annotation}
 \rm 关于DPM的临时想法: 若我们想证明$F = \forall x_1 \cdots \forall x_n~C_1 \wedge C_2 \cdots C_k$ is unsat, 记$F' =C_1 \wedge C_2 \cdots C_k $我们可以采取以下步骤:
