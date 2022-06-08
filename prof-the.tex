@@ -3009,7 +3009,7 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \subsection{Resolution}
 
 \begin{remark}
-\rm 这章的目的是证明某个classical first-logical formula $F$ is unsat. 从Theorem \ref{vaild-and-unsat}的视角，我们可以借此来证明$\neg F$ is vaild.
+\rm 这章的目的是证明某个classical first-logical formula \redt{$F$ is unsatisfiable}.
 \end{remark}
 
 \begin{definition}
@@ -3017,7 +3017,7 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{definition}
 
 \begin{annotation}
-\rm 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it. 拿个一个$F$我们经历这样的几个过程:
+\rm (\redt{formula transformations}) 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it. 拿个一个$F$我们经历这样的几个过程:
 \begin{enumerate}
 	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $F = \cdots\exists. x_1 \cdots \forall y_i. \cdots F'(\cdots, x_1,\cdots,y_i,\cdots)$，其中$F'(\cdots,x_1,\cdots,y_i,\cdots)$是quantifier-free的.
 	\item 再把$F'(\cdots,x_1,\cdots,y_i,\cdots)$里面所有的$\neg$放到atoms(也总是可以做到的)，得到对应的negation form $F''(\cdots, x_1,\cdots,y_i,\cdots)$.
@@ -3058,7 +3058,7 @@ is valid.
 
 
 \begin{annotation}
-\rm 这里设$C_i$表示$(L_{i1} \vee \cdots \vee L_{in_i})$，对(\ref{eq:1}) $\neg F$可以apply Hthe得到$\neg F$ is vaild iff 
+\rm (\redt{from $\neg F$ back to $F$}) 这里设$C_i$表示$(L_{i1} \vee \cdots \vee L_{in_i})$，对(\ref{eq:1}) $\neg F$可以apply Hthe得到$\neg F$ is vaild iff 
 \[
 \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_1/\overline{x}] \vee \cdots \vee \neg(C_i \wedge \cdots \wedge C_k)[\overline{t}_m/\overline{x}]
 \]
