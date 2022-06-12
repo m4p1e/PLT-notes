@@ -245,10 +245,12 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \end{definition}
 
 \begin{annotation}
-\rm 一个clause用什么connective取决于context. 
+\rm \bluet{一个clause用什么connective取决于context}. 注意在connective为disjunction下的empty clause的真值可以总是被解释为false，这是因为当你考虑clause $\square \vee C$的时候，其中$C$是一个任意的clause，那么$\square \vee C$的真值实际上就是$C$的真值，这正好对应了monoid $(\{true,false\}, \vee)$，在它里面$false$ is the neutral element, 所谓neutral element就是说对这个monoid里面任意一个元素$a$都有$false ~\vee a = a$. 当connective为conjunction的时候，此时empty clause的真值总是可以被解释为true，同理. 
 \end{annotation}
 
-
+\begin{definition}
+\rm A literal which contains no variables os called a \redt{ground literal}.
+\end{definition}
 
 \newpage
 \subsection{Logical Formulas Means}
