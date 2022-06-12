@@ -241,7 +241,7 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \end{definition}
 
 \begin{definition}
-\rm A finite set (possibly empty) of literals is called a clause and logical connectives. The empty clause is denoted by $\square$.
+\rm A finite set (possibly empty) of literals and logical connectives is called a \redt{clause}. The \redt{empty clause} is denoted by $\square$.
 \end{definition}
 
 \begin{annotation}
@@ -250,6 +250,10 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 
 \begin{definition}
 \rm A literal which contains no variables os called a \redt{ground literal}.
+\end{definition}
+
+\begin{definition}
+\rm A clause, each member of which is a \redt{ground literal}, is called a ground clause. In particular $\square$ is ground clause.
 \end{definition}
 
 \newpage
@@ -263,6 +267,10 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \begin{definition}
 \rm If $F$ is true under an interpretation $\mathcal{I}$, then $\mathcal{I}$ is called a \redt{model} of $F$
 \end{definition}
+
+\begin{annotation}
+\rm 关于model的另一种解释是: a set of ground literals which does not include a complementary pair $(a, \neg a)$. 
+\end{annotation}
 
 \begin{definition}
 \rm A formula $F$ is \redt{satifiable} if it has a model. It is \redt{unsatisfiable} if it has no model.
@@ -300,16 +308,31 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \end{definition}
 
 \begin{definition}
-\rm Let $F$ be a formula in prenex normal form. The \redt{skolemization} of $F$ consists on replacing every existentially  quantifered varible $y$ by a fresh function symbol $f(x_1,\cdots,x_n)$, where $x_1, \cdots, x_n$ are the universally quantified varaibles occurring before $y$ in the prefix of $F$. Additionally the existential quantification on $y$ is removed. When there are no more existential quantifiers left the formula is \redt{skolemized}.
+\rm Let $F$ be a formula in prenex normal form. The \redt{skolemization} of $F$ consists on replacing every existentially  quantifered varible $y$ by a fresh function symbol $f(x_1,\cdots,x_n)$, where $x_1, \cdots, x_n$ are the universally quantified varaibles occurring before $y$ in the prefix of $F$. Additionally the existential quantification on $y$ is removed. When there are no more existential quantifiers left the formula is \redt{skolemized}. The $f$ is called \redt{Skolem function} (or \redt{Skolem constant} if it is of zero arity) and the term $f(x_1,\cdots,x_n)$ is called \redt{Skolem term}.
 \end{definition}
 
 \begin{example}
-\rm 例如给定$\exists x. \forall y. \exists z. p(x,y,z)$，它对应的skolemization为$\forall y. p(c,x,f(y))$.
+\rm 例如给定$\exists x. \forall y. \exists z. P(x,y,z)$，它对应的skolemization为$\forall y. P(c,x,f(y))$.
 \end{example}
 
+\begin{theorem}
+\rm (\redt{Skolemization does not change sat}) The satisfiability of $F$ under skolemization is equivalent.   
+\end{theorem}
+
+\begin{proof}
+\rm 考虑任意的formula $F = \forall x_1. \cdots \forall x_n. \exists y P(x_1, \cdots, x_n, y)$. 这里我们要定义一个$M$, which contains evalutions for every function $f$ in $F$. 如果$F$ is satified under $M$ if and only if，for each possible terms for $x_1,\cdots, x_n$ (actually are strings that contains $x_i$) under the domain of functions in $M$, there exists a term for $y$ under the domain of functions in $M$ that makes $P(x_1,\cdots,x_n,y)$ is true. 因此根据axiom of choice, there exists a function $f$ such that $y = f(x_1,\cdots,x_n)$，然后我们把这个$f$再加到$M$上，这样$= \forall x_1. \cdots \forall x_n. P(x_1, \cdots, x_n, f(x_1,\cdots,x_n))$ is also satified under $M \cup f$. 
+\end{proof}
+
+\begin{annotation}
+\rm  
+\end{annotation}
 
 \newpage
 \subsection{Satisfiabitity of Logic Formulas}
+
+\begin{annotation}
+\rm 如果考虑logic formulas $F = C_1 \wedge \cdots \wedge C_n$，其中$C_i$ is clause with disjunction, 注意$F$里面的出现的variables都是被universal quantified，这是只是implicitly化了. 可以想想一旦$F$里面存在某个empty clause，那么显然$F$ is unsat, 因为empty clause is always false. 
+\end{annotation}
 
 \begin{annotation}
 \rm 现在只记录一下当下我自己的思考，未来会系统补充. 
@@ -3041,12 +3064,12 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{definition}
 
 \begin{annotation}
-\rm (\redt{formula transformations}) 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it. 拿个一个$F$我们经历这样的几个过程:
+\rm (\redt{formula transformations}) 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it得到一个normalization form. 拿个一个$F$我们经历这样的几个过程:
 \begin{enumerate}
-	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $F = \cdots\exists. x_1 \cdots \forall y_i. \cdots F'(\cdots, x_1,\cdots,y_i,\cdots)$，其中$F'(\cdots,x_1,\cdots,y_i,\cdots)$是quantifier-free的.
-	\item 再把$F'(\cdots,x_1,\cdots,y_i,\cdots)$里面所有的$\neg$放到atoms(也总是可以做到的)，得到对应的negation form $F''(\cdots, x_1,\cdots,y_i,\cdots)$.
-	\item 接着把$F''(\cdots, x_1,\cdots,y_i,\cdots)$变成CNF形式，得到$F'''(\cdots, x_1,\cdots,y_i,\cdots)$
-	\item 最后去掉所有的$\exists$，得到对应的skolemization $F = \cdots \forall y_i. \cdots F'''(\cdots,f(y_j,\cdots,y_m),\cdots,y_i,\cdots)$  
+	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $F = \cdots\exists. x_1 \cdots \forall y_i. \cdots F'(\cdots, x_1,\cdots,y_i,\cdots)$，其中$F'(\cdots,x_1,\cdots,y_i,\cdots)$是\bluet{quantifier-free}的.
+	\item 再把$F'(\cdots,x_1,\cdots,y_i,\cdots)$里面所有的$\neg$放到atoms(也总是可以做到的)，得到对应的\bluet{negation form} $F''(\cdots, x_1,\cdots,y_i,\cdots)$.
+	\item 接着把$F''(\cdots, x_1,\cdots,y_i,\cdots)$变成\redt{CNF}形式，得到$F'''(\cdots, x_1,\cdots,y_i,\cdots)$
+	\item 最后去掉所有的$\exists$，得到对应的\redt{skolemization} $F = \cdots \forall y_i. \cdots F'''(\cdots,f(y_j,\cdots,y_m),\cdots,y_i,\cdots)$  
 \end{enumerate}
 最后我们generalize一下
 \[
@@ -3154,7 +3177,16 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \end{annotation}
 
 
+\begin{example}
+\rm 如果给定下面的formula
+\[
+	F = \forall
+\]
+\end{example}
 
+\begin{annotation}
+\rm (\redt{Why resolution}?) DPM里面有一个存在一个 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
