@@ -268,7 +268,7 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \rm If $F$ is true under an interpretation $\mathcal{I}$, then $\mathcal{I}$ is called a \redt{model} of $F$
 \end{definition}
 
-\begin{annotation}
+\begin{annotation}\label{model-2nd-def}
 \rm 关于model的另一种解释是: a set of ground literals which does not include a complementary pair $(a, \neg a)$. 
 \end{annotation}
 
@@ -320,11 +320,15 @@ Let $\mathcal{F}_{\sigma\text{-}terms}$ be a set of formulas in first order logi
 \end{theorem}
 
 \begin{proof}
-\rm 考虑任意的formula $F = \forall x_1. \cdots \forall x_n. \exists y P(x_1, \cdots, x_n, y)$. 这里我们要定义一个$M$, which contains evalutions for every function $f$ in $F$. 如果$F$ is satified under $M$ if and only if，for each possible terms for $x_1,\cdots, x_n$ (actually are strings that contains $x_i$) under the domain of functions in $M$, there exists a term for $y$ under the domain of functions in $M$ that makes $P(x_1,\cdots,x_n,y)$ is true. 因此根据axiom of choice, there exists a function $f$ such that $y = f(x_1,\cdots,x_n)$，然后我们把这个$f$再加到$M$上，这样$= \forall x_1. \cdots \forall x_n. P(x_1, \cdots, x_n, f(x_1,\cdots,x_n))$ is also satified under $M \cup f$. 
+\rm 考虑任意的formula $F = \forall x_1. \cdots \forall x_n. \exists y R(x_1, \cdots, x_n, y)$. 这里我们可以拆解一下model, 定义一个$M$, which contains evalutions for every function $f$ in $F$. 如果$F$ is satified under $M$ if and only if，for each possible terms for $x_1,\cdots, x_n$ (actually are strings that contains $x_i$) under the domain of functions in $M$, there exists a term for $y$ under the domain of functions in $M$ that makes $R(x_1,\cdots,x_n,y)$ is true. 因此根据axiom of choice, there exists a function $f$ such that $y = f(x_1,\cdots,x_n)$，然后我们把这个$f$再加到$M$上，这样$ \forall x_1. \cdots \forall x_n. R(x_1, \cdots, x_n, f(x_1,\cdots,x_n))$ is also satified under $M \cup f$. 
 \end{proof}
 
 \begin{annotation}
-\rm  
+\rm Skolemization里面实际使用了second-order logical equivalence:
+\[
+	\forall x. \exists y. R(x,y) \iff \exists f. \forall x. R(x,f(x))
+\]
+
 \end{annotation}
 
 \newpage
@@ -1982,6 +1986,9 @@ $$
 \rm And $\square A$ is necessity modality. 
 \end{definition}
 
+\subsection{Tableaux Calculus}
+
+%https://en.wikipedia.org/wiki/Method_of_analytic_tableaux
 
 \newpage
 \subsection{Possibility}
@@ -3064,18 +3071,18 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{definition}
 
 \begin{annotation}
-\rm (\redt{formula transformations}) 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it得到一个normalization form. 拿个一个$F$我们经历这样的几个过程:
+\rm (\redt{formula transformations}) 任意一个$F$它的结构可能是多种多样的，我们肯定首先要format it得到一个normalization form. 我们将经历这样的几个过程:
 \begin{enumerate}
-	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $F = \cdots\exists. x_1 \cdots \forall y_i. \cdots F'(\cdots, x_1,\cdots,y_i,\cdots)$，其中$F'(\cdots,x_1,\cdots,y_i,\cdots)$是\bluet{quantifier-free}的.
-	\item 再把$F'(\cdots,x_1,\cdots,y_i,\cdots)$里面所有的$\neg$放到atoms(也总是可以做到的)，得到对应的\bluet{negation form} $F''(\cdots, x_1,\cdots,y_i,\cdots)$.
-	\item 接着把$F''(\cdots, x_1,\cdots,y_i,\cdots)$变成\redt{CNF}形式，得到$F'''(\cdots, x_1,\cdots,y_i,\cdots)$
-	\item 最后去掉所有的$\exists$，得到对应的\redt{skolemization} $F = \cdots \forall y_i. \cdots F'''(\cdots,f(y_j,\cdots,y_m),\cdots,y_i,\cdots)$  
+	\item 首先把所有的quantifier提到最前面(总是可以做到的)，得到prenex form $\cdots\exists x_i. \cdots \forall y_j. \cdots F'(\cdots, x_i,\cdots,y_j,\cdots)$，其中$F'(\cdots,x_i,\cdots,y_j,\cdots)$是\bluet{quantifier-free}的.
+	\item 再把$F'(\cdots,x_i,\cdots,y_j,\cdots)$里面所有的$\neg$放到atom前面(也总是可以做到的)，得到对应的\bluet{negation form} $F''(\cdots, x_i,\cdots,y_j,\cdots)$.
+	\item 接着把$F''(\cdots, x_i,\cdots,y_j,\cdots)$变成\bluet{CNF}形式，得到$F'''(\cdots, x_i,\cdots,y_j,\cdots)$
+	\item 最后去掉所有的$\exists$得到对应的\bluet{skolemization} $\cdots \forall y_j. \cdots F'''(\cdots,f(y_k,\cdots,y_m),\cdots,y_j,\cdots)$  
 \end{enumerate}
 最后我们generalize一下
 \[
 	F = \forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k}).
 \]
-对应的$\neq F$为
+其中$L_{ij}$为一个literal. 对应的$\neg F$为
 \begin{equation} \label{eq:1}
 	\begin{aligned}
 	\neg F &= \neg(\forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k})) \\
@@ -3117,6 +3124,23 @@ is vaild for a finite sequence of term sequences $\overline{t}_1,\cdots,\overlin
 \end{aligned}
 \end{equation}
 \end{annotation}
+
+
+\begin{annotation}
+\rm (\redt{the context of clauses}) 这里给定一下准确的clause的定义，后面提到的clause的时候都遵循这个定义. clause里面literals使用到的connective是disjunction $\vee$，同时我们说a set of clauses的时候，这些clauses实际是用conjunction连接在一起的. 可以看到前面关于$F$的normalization form也是符合这个定义的. 
+\end{annotation}
+
+\begin{annotation}
+\rm (\redt{another perspective of sat}) 在开始讨论后面内容之前，有必要补充一些 extra knowledge, 或者另外一种视角，如果缺失这些东西的时候，会让后面的过程变得有那么一点僵硬? 亦或者你能懂每一步是合理的，但是所有步骤合起来看你会不知道它究竟在干啥. 值得注意是此时我们开始讨论的目标quantifer-free a set of clause的satisfiability，更准确说应该是unsat，这得力于Hthe带来的巨大优势. 那么这里我们可以很自然地从model的另外一种定义\ref{model-2nd-def}，给出关于satisfiable的第二种definition \ref{sat-2nd-def}. 其中的Herbrand universer实际上和universal algebra里面的$Sg(X)$是一样的. 
+
+那么接下来就是谈谈如何理解这个特殊的definition，在classic logic下的satisfiable是说我们总能找到一种interpretation让$F$ is true，也就是给$F$里面的所有symbols都给定一个对应的evaluation，因此当我们对$F$做evaluation的时候，最后就可以得到一个result为true. 
+
+而此时satisfiability变得更加具体了. 对于一个complementary atoms pair $a\wedge \overline{a}$，这里我们用$\overline{•}$表示complementary，它显然是unsat，这就是我们对于unsat已经有的basic ground fact. 如果把atoms换成ground clauses, 同时它也是unsat，那就意味着无论我们怎样从每个clause挑一个literal构成的$a_1 \wedge \cdots \wedge a_n$，总存在$a_i$和$a_j$是complementary. 当我们考虑所有clauses的时候，这时候里面可能就存在variables，首先需要将它们替换成可能的terms，得到对应的所有可能的ground clauses $H(S)$，再考虑利用前面提到的步骤来考虑unsat. 如果你理解了这里的unsat是怎样processing的，再看后面DPM算法就比较清晰了. 
+\end{annotation}
+
+\begin{definition}\label{sat-2nd-def}
+\rm If $M$ is \redt{model} and $S$ is a set of \redt{ground clauses}, then $M$ is a model of $S$ if, for all $C$ in $S$, $C$ contains a member of $M$. In general, if $S$ is any set of clauses, and $H$ is the Herbrand universe of $S$, we say that $M$ is a model of $S$ just in case that $M$ is a model of $H(s)$
+\end{definition}
 
 \begin{definition}
 \rm (\redt{Davis-Putnam method}) 
@@ -3169,7 +3193,7 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 		\item 对于single-literal clause的讲解已经比较清楚: 如果存在$\{p\}$和$\{\overline{p}\}$冲突，这种情况很容易想明白; 而对于没有冲突的$\{p\}$，因为总存在使得$p$ is true的interpretation，那么有$p$存在的clauses也都是true 在这种情况下$F$整体是否为false与它们没有关系，因此去掉它们并不会影响$F$ is unsatifiable. 注意此时$\overline{p}$ is false，对于它所在的clause是否false和它也没有关系，除非这个clause只含有$\overline{p}$，那又回到第一种情况了，因此可以去掉这样的$\overline{p}$. 其余使得$p$ is false的interpretations，直接就让$F$变成false，因此这种情况不用考虑了. 仔细体会其中的奥义，我们在渐渐的逼近那个always false的clause，prune掉所有不会影响$F$ is unsat的clause.
 		在这种情况下它们与$F$整体是否为false与$p$没有关系. 
 		\item 例如假设只有$p$存在(没有$\neg p$存在)，因为总存在使得$p$ is true的interpretations，使得$p$所在clauses也是都是true，在这种情况下整体$F$是否为false，实际上与它没有关系. 同理只存在$\neg p$的情况也是一样的. 
-		\item 这里的$\cup$应该是$\vee$，当$p$ is true，the conjunction of clause is false取决于$C_j$; 当$\overline{p}$ is false, the conjunction clause is false取决于$C_j$. 因此最终the conjunction of clause is unsat，取决于$C_i \vee C_j$ is unsat，这些你需要回顾一下connective对sat的影响.
+		\item 对于任意的interpretation都可以分成两种情况: 当$p$ is true，the conjunction of clause is false取决于$C_j$，如果$C_j$ is empty clause，那么整体就是false; 当$p$ is false, the conjunction clause is false取决于$C_i$，如果$C_i$ is empty clause. 那么只有$C_1 \cup C_2$是empty clause的情况下整体才是false，因此我们可以safely replace both of them with $C_1 \cup C_2$. 
 	\end{enumerate}
 	\item \bluet{为什么while的循环条件是不包含\emph{empty clause}}? 从simplify methods中你可以看到clauses and literals those not affect unsat will be removed，显然出现empty clause就是已经unsat了.
 \end{itemize}
@@ -3177,16 +3201,54 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \end{annotation}
 
 
-\begin{example}
+\begin{example}\label{DPM-shortage}
 \rm 如果给定下面的formula
 \[
-	F = \forall
+	F = \forall x. \forall y. (P(x) \wedge \neg P(f^{100}(y)))
 \]
+显然是unsat，例如当$x = f^{100}(a), y = a$时，$F$ is false. 但是应用DPM可以就会进入漫长的tests，例如terms will be $[(a,a), (f(a), a), \cdots]$. 
 \end{example}
 
 \begin{annotation}
-\rm (\redt{Why resolution}?) DPM里面有一个存在一个 
+\rm (\redt{Why resolution ?}) Example \ref{DPM-shortage}指出DPM存在的一个显著的问题或者遗留的问题，就是how to generate terms systematiclly?， 此外我们也希望terms is efficient for our tests! 由此Resolution就提出来了.  
 \end{annotation}
+
+\begin{definition}\label{ground-resolvent}
+\rm If $C_1$ and $C_2$ are two ground clauses, and $L_1 \subseteq C_1, L_2 \subseteq C_2$ are single literal whose respective members form a complementary pair, then the ground clause $(C_1 - L_1) \cup (C_2 - L_2)$ is called a \redt{ground resolvent} of $C_1$ and $C_2$.
+\end{definition}
+
+\begin{annotation}\label{sat-without-lost-under-res}
+\rm 在definition \ref{ground-resolvent}下，显然\redt{任意的model of $\{C_1  ,C_2\}$也是model of $\{C_1 ,C_2, R\}$, 其中$R$为$(C_1 - L_1) \cup (C_2 - L_2)$}. 这是因为根据model定义，设$M$是$\{C_1,C_2\}$的一个model, 那么$M$一定不会是$\{L_1,L_2\}$，因此一定存在$L \in M$ such that $R$ contains it，同时$M$也不会存在complementary pair，因此$M$也是$R$的model. 前面这个结论反过来，显然也是正确的. 上面结论是比较重要的，由此我们可以给出ground resolution theorem.
+\end{annotation}
+
+\begin{definition}
+\rm If $S$ is any set of ground clauses, the \redt{ground resolution} of $S$ ,denoted by $\mathcal{R}(S)$, is the set of ground clauses consisting of the ground literals of $S$ together with all ground reslovents of all possible pairs of ground literals of $S$.  Then we can define \redt{$n$th ground resolution} of $S$, denoted by $\mathcal{R}^n(S)$, is defined for each $n \geq 0$ as follows: $\mathcal{R}^0(S) = S$; and for $n \geq 0$,  $\mathcal{R}^{n+1} = \mathcal{R}(\mathcal{R}^n(S))$.
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{ground resolution theorem}) If $S$ is any finite set of ground clauses, then $S$ is unsatisfiable if and only if $\mathcal{R}^n(S)$ containts $\square$, for some $n \geq 0$. 
+\end{theorem}
+
+\begin{proof}
+\rm $\Rightarrow$这个方向还是比较明显的，通过\ref{sat-without-lost-under-res}里面的提到结论就可以证明. 对于$\Leftarrow$方向我们可以证明当$\mathcal{R}^n$不含有$\square$的时候，$S$是satisfiable的，相当于原命题的逆否命题. 这里原论文中用了一个巧妙的构造model的方法，我会尽可能将其描述的更详细一些. 由于$S$ is finite, 那么关于$\mathcal{R}^n$的构造一定会terminate在某个地方，我们设为$\mathcal{R}^k$，记它为$T$. 接着我们设$T$所有的distinct atoms为$L_1, \cdots, L_m$, 注意这里描述的distinct atoms并不是指得是$T$里面的distinct literals，也就是说如果$a$和$\overline{a}$同时在$T$里面或者只有$\{a\}$在$T$里面，那么只有$a$作为atom出现在前面的sequence里面，是没有它的complementary的. 
+
+我们构造model $M$如下:
+\begin{itemize}
+	\item $M_0 = \emptyset$.
+	\item 如果存在$C \in T$满足$C$ consists of some complements of literals in $M_{j-1} \cup L_j$，那么$M_j = M_{j-1} \cup \overline{L_j}$; otherwise $M_j = M_{j-1} \cup L_j$.
+\end{itemize}
+最终$M = M_k$. 接下来我们需要说明在$T$不含$\square$的情况下, $M$ is model of $T$. 
+
+假设$M$不是$T$的model，那么即在某个$j$时刻，$T$里面同时存在$C_1$和$C_2$分别满足$C_1$ consists of some complements of literals in $M_{j-1} \cup L_j$和$C_2$ consists of some complements of literals in $M_{j-1} \cup \overline{L_j}$，可以想象如果一旦出现这种情况，
+\end{proof}
+
+\begin{definition}
+\rm A \redt{resolvent} of the two clauses $C_1$ and $C_2$ is any clause of the form $((C_1 - L) \cup (C_2-M))\sigma$ such that satisfies following conditions:
+\begin{itemize}
+	\item $L$ and $M$ are nonempty, and $L \subseteq C_1, M \subseteq C_2$.
+	\item 
+\end{itemize}
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
