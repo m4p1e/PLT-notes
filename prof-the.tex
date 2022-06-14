@@ -3235,9 +3235,13 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 我们构造model $M$如下:
 \begin{itemize}
 	\item $M_0 = \emptyset$.
-	\item 如果存在$C \in T$满足$C$ consists of some complements of literals in $M_{j-1} \cup L_j$，那么$M_j = M_{j-1} \cup \overline{L_j}$; otherwise $M_j = M_{j-1} \cup L_j$.
+	\item 对于$j \geq 1$, \bluet{(1)}如果存在$C \in T$满足$C$ consists of some complements of literals in $M_{j-1} \cup \{L_j\}$，那么$M_j = M_{j-1} \cup \overline{L_j}$; \bluet{(2)} otherwise $M_j = M_{j-1} \cup L_j$.
 \end{itemize}
-最终$M = M_k$. 接下来我们需要说明在$T$不含$\square$的情况下, $M$ is model of $T$. 
+最后使得$M = M_k$. 接下来我们需要说明在$T$不含$\square$的情况下, $M$ is model of $T$.
+
+这个构造方式中条件关系，感觉非常不符合直觉，就是if $A$, then $B$, 但是$A$和$B$之间好像没什么联系??? 这是理解这个构造方式最难的地方. 当我们手推$M_k$时，就可以抓住这里面微妙的东西. 当$j = 1$时，$M_0 \cup \{L_1\} = \{L_1\}$，我们需要check一下$T$里面有没有clause $\{\overline{L_1}\}$，如果有，那么$M_1 = \{\overline{L_1}\}$, otherwise $M_1 = \{L_1\}$. 接着当$j = 2,3,\cdots$依次构造，我们可以发现因为$L_1,\cdots,L_k$ are distinct atoms, 直觉上意味着命中条件\bluet{(1)}的时候，$\overline{L_j}$总是在$C$中，但是并不正确. 存在一种情况当$M_{i} = M_{i_1} \cup \{\overline{L_i}\}$, 同时存在clause $D$ contains $\overline{L_i}$, 并且$D$里面其他的literals也都是$M_{i_1}$里面literals的complement. 这样在进行$i+1$构造的时候，$\overline{L_{i+1}} \notin D$，那么问题来了，一旦出现这样的情况，我们的构造或许就broken了，因为$D$总是满足条件\bluet{(1)}, 因此后面所有构造都会把complement放到里面去？ 这依然没有给出我们想要的东西，还是什么都说明不了，但是这些思考让我们对此的理解更深了一些. 
+
+换个思路假设这样$M$ is not model for $T$, 那么只有在$M$没有完全cover到$T$或者出现complementary literals的时候. 显然这样构造出来$M$是不会出现complementary literals的，因为每次加进去的都是distinct atoms. 因此我们只需要考虑第一种情况
 
 假设$M$不是$T$的model，那么即在某个$j$时刻，$T$里面同时存在$C_1$和$C_2$分别满足$C_1$ consists of some complements of literals in $M_{j-1} \cup L_j$和$C_2$ consists of some complements of literals in $M_{j-1} \cup \overline{L_j}$，可以想象如果一旦出现这种情况，
 \end{proof}
