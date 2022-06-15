@@ -3239,11 +3239,13 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \end{itemize}
 最后使得$M = M_k$. 接下来我们需要说明在$T$不含$\square$的情况下, $M$ is model of $T$.
 
-这个构造方式中条件关系，感觉非常不符合直觉，就是if $A$, then $B$, 但是$A$和$B$之间好像没什么联系??? 这是理解这个构造方式最难的地方. 当我们手推$M_k$时，就可以抓住这里面微妙的东西. 当$j = 1$时，$M_0 \cup \{L_1\} = \{L_1\}$，我们需要check一下$T$里面有没有clause $\{\overline{L_1}\}$，如果有，那么$M_1 = \{\overline{L_1}\}$, otherwise $M_1 = \{L_1\}$. 接着当$j = 2,3,\cdots$依次构造，我们可以发现因为$L_1,\cdots,L_k$ are distinct atoms, 直觉上意味着命中条件\bluet{(1)}的时候，$\overline{L_j}$总是在$C$中，但是并不正确. 存在一种情况当$M_{i} = M_{i_1} \cup \{\overline{L_i}\}$, 同时存在clause $D$ contains $\overline{L_i}$, 并且$D$里面其他的literals也都是$M_{i_1}$里面literals的complement. 这样在进行$i+1$构造的时候，$\overline{L_{i+1}} \notin D$，那么问题来了，一旦出现这样的情况，我们的构造或许就broken了，因为$D$总是满足条件\bluet{(1)}, 因此后面所有构造都会把complement放到里面去？ 这依然没有给出我们想要的东西，还是什么都说明不了，但是这些思考让我们对此的理解更深了一些. 
+这个构造方式中条件关系，感觉非常不符合直觉，就是if $A$, then $B$, 但是$A$和$B$之间好像没什么联系??? 这是理解这个构造方式最难的地方. 当我们手推$M_k$时，就可以抓住这里面微妙的东西. 当$j = 1$时，$M_0 \cup \{L_1\} = \{L_1\}$，我们需要check一下$T$里面有没有clause $\{\overline{L_1}\}$，如果有，那么$M_1 = \{\overline{L_1}\}$, otherwise $M_1 = \{L_1\}$. 接着当$j = 2,3,\cdots$依次构造，我们可以发现因为$L_1,\cdots,L_k$ are distinct atoms, 直觉上意味着命中条件\bluet{(1)}的时候，$\overline{L_j}$总是在$C$中，但是并不正确. 存在一种情况当$M_{j} = M_{j-1} \cup \{\overline{L_i}\}$, 同时存在clause $D$ contains $L_i$, 并且$D$里面其他的literals也都是$M_{j-1}$里面literals的complement. 这样在进行$j+1$构造的时候，$D$可以命中条件\bluet{(1)}，但是$\overline{L_{j+1}} \notin D$，那么问题来了，一旦出现这样的情况，$D$中所有literals的complements都在$M$里面，那就意味$M$无法cover住$D$，并且$j+1$之后所有构造$D$都会命中条件\bluet{(1)}.
 
-换个思路假设这样$M$ is not model for $T$, 那么只有在$M$没有完全cover到$T$或者出现complementary literals的时候. 显然这样构造出来$M$是不会出现complementary literals的，因为每次加进去的都是distinct atoms. 因此我们只需要考虑第一种情况
-
-假设$M$不是$T$的model，那么即在某个$j$时刻，$T$里面同时存在$C_1$和$C_2$分别满足$C_1$ consists of some complements of literals in $M_{j-1} \cup L_j$和$C_2$ consists of some complements of literals in $M_{j-1} \cup \overline{L_j}$，可以想象如果一旦出现这种情况，
+回到问题的核心，假设这样的$M$ is not model for $T$, 那么只有在$M$没有完全cover到$T$或者出现complementary literals的时候. 显然这样构造出来$M$是不会出现complementary literals的，因为每次加进去的都是distinct atoms. 因此我们只需要考虑第一种情况，设$M$没有cover某个clause $C'$, 由于$M$cover到了所有的distinct atoms了，其中也包括$C'$中的atoms，那就意味着$C'$的complements全在$M$中，那意味着$C'$会在某个时刻命中条件\bluet{(1)}. 经过上述分析，命中条件\bluet{(1)}有两种情况分别对应了$C$和$D$，显然不会是$C$，因为$M$包含了$C$里面的一个元素，那么只能是$D$. 前面提到一旦出现情况$D$，后面会总是命中，我们前面描述是$D$第一次命中的时候. 现在everything is clear now, 我们开始正式来证明$M$ is model of $T$: 假设$M$ is not model for $T$, 则存在上述提到clause $D$. 我们设第一次命中$D$的时刻为$i+1$, 我们来考虑时刻$i$，那么$C$和$D$的ground resolvent 
+\[
+	R = (C - \overline{L}_i) \cup (D - L_i)
+\]
+显然$R \in T$，并且$\square \notin T$， 那么$R \neq \square$. 注意$R$中的所有literals的complements都在$M_{i-1}$中，显然$R$可以作为$D$在$i$时刻就命中，这和我们的假设是矛盾的，因此不存在这样的$D$. 最终$M$ is model of $T$，而$S \subseteq T$，所以$M$ is model of $S$. 
 \end{proof}
 
 \begin{definition}
