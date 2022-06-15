@@ -3131,7 +3131,7 @@ is vaild for a finite sequence of term sequences $\overline{t}_1,\cdots,\overlin
 \end{annotation}
 
 \begin{annotation}
-\rm (\redt{another perspective of sat}) 在开始讨论后面内容之前，有必要补充一些 extra knowledge, 或者另外一种视角，如果缺失这些东西的时候，会让后面的过程变得有那么一点僵硬? 亦或者你能懂每一步是合理的，但是所有步骤合起来看你会不知道它究竟在干啥. 值得注意是此时我们开始讨论的目标quantifer-free a set of clause的satisfiability，更准确说应该是unsat，这得力于Hthe带来的巨大优势. 那么这里我们可以很自然地从model的另外一种定义\ref{model-2nd-def}，给出关于satisfiable的第二种definition \ref{sat-2nd-def}. 其中的Herbrand universer实际上和universal algebra里面的$Sg(X)$是一样的. 
+\rm (\redt{another perspective of sat}) 在开始讨论后面内容之前，有必要补充一些 extra knowledge, 或者另外一种视角，如果缺失这些东西的时候，会让后面的过程变得有那么一点僵硬? 亦或者你能懂每一步是合理的，但是所有步骤合起来看你会不知道它究竟在干啥. 值得注意是此时我们开始讨论的目标quantifer-free a set of clause的satisfiability，更准确说应该是unsat，这得力于Hthe带来的巨大优势. 那么这里我们可以很自然地从model的另外一种定义\ref{model-2nd-def}，给出关于satisfiable的第二种definition \ref{sat-2nd-def}. 其中的Herbrand universe实际上和universal algebra里面的$Sg(X)$是一样的. 
 
 那么接下来就是谈谈如何理解这个特殊的definition，在classic logic下的satisfiable是说我们总能找到一种interpretation让$F$ is true，也就是给$F$里面的所有symbols都给定一个对应的evaluation，因此当我们对$F$做evaluation的时候，最后就可以得到一个result为true. 
 
@@ -3218,15 +3218,15 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \end{definition}
 
 \begin{annotation}\label{sat-without-lost-under-res}
-\rm 在definition \ref{ground-resolvent}下，显然\redt{任意的model of $\{C_1  ,C_2\}$也是model of $\{C_1 ,C_2, R\}$, 其中$R$为$(C_1 - L_1) \cup (C_2 - L_2)$}. 这是因为根据model定义，设$M$是$\{C_1,C_2\}$的一个model, 那么$M$一定不会是$\{L_1,L_2\}$，因此一定存在$L \in M$ such that $R$ contains it，同时$M$也不会存在complementary pair，因此$M$也是$R$的model. 前面这个结论反过来，显然也是正确的. 上面结论是比较重要的，由此我们可以给出ground resolution theorem.
+\rm 在definition \ref{ground-resolvent}下，显然\redt{任意的model of $\{C_1  ,C_2\}$也是model of $\{C_1 ,C_2, R\}$, 其中$R$为$(C_1 - L_1) \cup (C_2 - L_2)$}. 这是因为根据model定义，设$M$是$\{C_1,C_2\}$的一个model, 那么$M$一定不会是$\{L_1,L_2\}$，因此一定存在$L \in M$ such that $R$ contains it，同时$M$也不会存在complementary pair，因此$M$也是$R$的model. 前面这个结论反过来，显然也是正确的. 上面结论是比较重要的，按照下述关于$\mathcal{R}(S)$的定义，我们可以给出它generalization: \redt{任意的model of the set of ground clauses $S$也是model of $\mathcal{R}^n(S)$}
 \end{annotation}
 
 \begin{definition}
-\rm If $S$ is any set of ground clauses, the \redt{ground resolution} of $S$ ,denoted by $\mathcal{R}(S)$, is the set of ground clauses consisting of the ground literals of $S$ together with all ground reslovents of all possible pairs of ground literals of $S$.  Then we can define \redt{$n$th ground resolution} of $S$, denoted by $\mathcal{R}^n(S)$, is defined for each $n \geq 0$ as follows: $\mathcal{R}^0(S) = S$; and for $n \geq 0$,  $\mathcal{R}^{n+1} = \mathcal{R}(\mathcal{R}^n(S))$.
+\rm If $S$ is any set of ground clauses, the \redt{ground resolution} of $S$ ,denoted by $\redt{\mathcal{R}(S)}$, is the set of ground clauses consisting of the ground literals of $S$ together with all ground reslovents of all possible pairs of ground literals of $S$.  Then we can define \redt{$n$th ground resolution} of $S$, denoted by $\redt{\mathcal{R}^n(S)}$, is defined for each $n \geq 0$ as follows: $\mathcal{R}^0(S) = S$; and for $n \geq 0$,  $\mathcal{R}^{n+1} = \mathcal{R}(\mathcal{R}^n(S))$.
 \end{definition}
 
 \begin{theorem}
-\rm (\redt{ground resolution theorem}) If $S$ is any finite set of ground clauses, then $S$ is unsatisfiable if and only if $\mathcal{R}^n(S)$ containts $\square$, for some $n \geq 0$. 
+\rm \cite{resolution-principle} (\redt{ground resolution theorem}) If $S$ is any finite set of ground clauses, then $S$ is unsatisfiable if and only if $\mathcal{R}^n(S)$ containts $\square$, for some $n \geq 0$. 
 \end{theorem}
 
 \begin{proof}
@@ -3241,20 +3241,75 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 
 这个构造方式中条件关系，感觉非常不符合直觉，就是if $A$, then $B$, 但是$A$和$B$之间好像没什么联系??? 这是理解这个构造方式最难的地方. 当我们手推$M_k$时，就可以抓住这里面微妙的东西. 当$j = 1$时，$M_0 \cup \{L_1\} = \{L_1\}$，我们需要check一下$T$里面有没有clause $\{\overline{L_1}\}$，如果有，那么$M_1 = \{\overline{L_1}\}$, otherwise $M_1 = \{L_1\}$. 接着当$j = 2,3,\cdots$依次构造，我们可以发现因为$L_1,\cdots,L_k$ are distinct atoms, 直觉上意味着命中条件\bluet{(1)}的时候，$\overline{L_j}$总是在$C$中，但是并不正确. 存在一种情况当$M_{j} = M_{j-1} \cup \{\overline{L_i}\}$, 同时存在clause $D$ contains $L_i$, 并且$D$里面其他的literals也都是$M_{j-1}$里面literals的complement. 这样在进行$j+1$构造的时候，$D$可以命中条件\bluet{(1)}，但是$\overline{L_{j+1}} \notin D$，那么问题来了，一旦出现这样的情况，$D$中所有literals的complements都在$M$里面，那就意味$M$无法cover住$D$，并且$j+1$之后所有构造$D$都会命中条件\bluet{(1)}.
 
-回到问题的核心，假设这样的$M$ is not model for $T$, 那么只有在$M$没有完全cover到$T$或者出现complementary literals的时候. 显然这样构造出来$M$是不会出现complementary literals的，因为每次加进去的都是distinct atoms. 因此我们只需要考虑第一种情况，设$M$没有cover某个clause $C'$, 由于$M$cover到了所有的distinct atoms了，其中也包括$C'$中的atoms，那就意味着$C'$的complements全在$M$中，那意味着$C'$会在某个时刻命中条件\bluet{(1)}. 经过上述分析，命中条件\bluet{(1)}有两种情况分别对应了$C$和$D$，显然不会是$C$，因为$M$包含了$C$里面的一个元素，那么只能是$D$. 前面提到一旦出现情况$D$，后面会总是命中，我们前面描述是$D$第一次命中的时候. 现在everything is clear now, 我们开始正式来证明$M$ is model of $T$: 假设$M$ is not model for $T$, 则存在上述提到clause $D$. 我们设第一次命中$D$的时刻为$i+1$, 我们来考虑时刻$i$，那么$C$和$D$的ground resolvent 
+回到问题的核心，假设这样的$M$ is not model for $T$, 那么只有在$M$没有完全cover到$T$或者出现complementary literals的时候. 显然这样构造出来$M$是不会出现complementary literals的，因为每次加进去的都是distinct atoms. 因此我们只需要考虑第一种情况，设$M$没有cover某个clause $C'$, 由于$M$ cover到了所有的distinct atoms了，其中也包括$C'$中的atoms，那就意味着$C'$的complements全在$M$中，那意味着$C'$会在某个时刻命中条件\bluet{(1)}. 经过上述分析，命中条件\bluet{(1)}有两种情况分别对应了$C$和$D$，显然不会是$C$，因为$M$包含了$C$里面的一个元素，那么只能是$D$. 前面提到一旦出现情况$D$，后面会总是命中，我们前面描述是$D$第一次命中的时候. 现在everything is clear now, 我们开始正式来证明$M$ is model of $T$: 假设$M$ is not model for $T$, 则存在上述提到clause $D$. 我们设第一次命中$D$的时刻为$i+1$, 我们来考虑时刻$i$，那么$C$和$D$的ground resolvent 
 \[
 	R = (C - \overline{L}_i) \cup (D - L_i)
 \]
 显然$R \in T$，并且$\square \notin T$， 那么$R \neq \square$. 注意$R$中的所有literals的complements都在$M_{i-1}$中，显然$R$可以作为$D$在$i$时刻就命中，这和我们的假设是矛盾的，因此不存在这样的$D$. 最终$M$ is model of $T$，而$S \subseteq T$，所以$M$ is model of $S$. 
 \end{proof}
 
+\begin{theorem}
+\rm (\redt{ground resolution theorem v2}) If $S$ is any finite set of clauses, then $S$ is unsatisfiable if and only if, for some finite subset $P$ of the Herbrand universe of $S$, and some $n \geq 0$, $\mathcal{R}^n(P(S))$ contains $\square$.
+\end{theorem}
+
+\begin{annotation}
+\rm 接下来我们需要generalize ground resolution，让$S$ be any clauses，首先得给出对应的$\mathcal{R}(S)$和$\mathcal{R}^n(S)$的definition，其中关键的是whats the resolution of $S$? 这里又要用到unification了，它真的是无处不在，我们将记录这里特殊之处. 这里的unifier会首先构造下面定义的disagreement set, 从里面取terms出来做unification. 我们说a set of well-formed expressions $W$ is unifiable, 当且仅当存在substitution $\sigma$使得$W\sigma$ is singleton. 
+\end{annotation}
+
 \begin{definition}
-\rm A \redt{resolvent} of the two clauses $C_1$ and $C_2$ is any clause of the form $((C_1 - L) \cup (C_2-M))\sigma$ such that satisfies following conditions:
+\rm The \redt{Pdisagreement set} for a set $W$ of well-formed expressions is obtained by finding the first position (staring form the left) at which not all expressions in $W$ have the same symbol. We then extract from each expression in $W$ the subexpression that begins with  the symbol occupying that position. The set if these sub-expression is the \redt{disagreement set} for $W$.
+\end{definition}
+
+\begin{example}
+\rm 
+\[
+	A = \{P(x, h(x,y), y), P(x,k(y),y), P(x,a,b)\}
+\]
+那么$A$的disagreement set为$\{h(x,y), k(y), a\}$. 
+\end{example}
+
+\begin{definition}
+\rm If $C$ is any finite set of strings, and $v_1, \cdots, v_n$ are all the distinct variables, in alphabetical order, which occur in strings in  $C$, then \redt{$x$-standardization} of $C$, denoted by $\tau_x$, is the substitution $[v_1 \to x_1, \cdots, v_n \to x_n]$, and similarly the \redt{$y$-standardization} of $C$, denoted by $\tau_y$, is the substitution $[v_1 \to y_1, \cdots, v_n \to y_n]$. 
+\end{definition}
+
+\begin{definition}\label{resolvent-def}
+\rm A \redt{resolvent} of the two clauses $C_1$ and $C_2$ is any clause of the form $((C_1 - L_1) \cup (C_2-L_2))\sigma_N$ such that satisfies following conditions:
 \begin{itemize}
-	\item $L$ and $M$ are nonempty, and $L \subseteq C_1, M \subseteq C_2$.
-	\item 
+	\item $L_1$ and $L_2$ are nonempty, and $L \subseteq C_1, L_2 \subseteq C_2$.
+	\item $N$ is the set of atoms which are literals, or complements of literals of the set $(L_1\tau_x) \cup (L_2\tau_y)$(\bluet{why need standardization?}).
+	\item $N$ is most generally unifiable, with most general unifier $\sigma_N$.
+	\item The sets $L_1\tau_x\sigma_N$ and $L_2\tau_y\sigma_N$ are singletons whose literals are complentary. 
 \end{itemize}
 \end{definition}
+
+\begin{annotation}
+\rm 这里我们需要特别解释一下definition \ref{resolvent-def}里面的$L_1$和$L_2$要做\bluet{standardization}? 是因为你不做，后面的resolution就不够strong，这一点困扰了我非常久，最终在\cite{nor-in-resolution-principle}里面找到了答案. 它里面用到一个例子，如果给定$S$为$\{P(a,x), \neg P(x,b)\}$, 你如果不用variables standardization, 显然$S$里面这两个atoms是无法做unification的，但是$S$ is unsat, i.e., two instances $P(a,b) \wedge \neg P(b,b)$ ($x = b$)和$P(a,a) \wedge \neg P(a,b)$ ($x = a$). 后面我们希望的是resolution足够strong，即如果$S$ is unsat, then we can get empty clause $\square$ from resolution of $S$. 幸运地是variables standardization刚好在这里帮助我们解决了这个问题. 
+
+特别地，再解释一下$N$的取法，直觉上我们希望的是这样的过程
+\[
+	\infer[\vn{resolution}]{(C_i \cup C_j)\sigma}{C_i \cup \{p\} & C_i \cup \{\overline{p'}\}}
+\]
+其中$\sigma$是关于$p$和$p'$的most general unifier. 但是$N$却直接取了一堆atoms出来，这里面实际上蕴含这样一个过程
+\[
+	\infer[\vn{factoring}]{(C_i \cup \{p\})\sigma}{C_i \cup \{p, p'\}}
+\]
+其中$\sigma$是关于$p$和$p'$的most general unifier. 所以这里不仅在unify may complementary literal, 同时也在unify may equivalent literals.
+\end{annotation}
+
+\begin{theorem}
+\rm \redt{\textsc{Resolution Theorem}} If $S$ is any finite set of clause, then $S$ is unsatisfiable if and only if $\mathcal{R}^n(S)$ contains $\square$, for some $n \geq 0$.
+\end{theorem}
+
+\begin{annotation}
+\rm (\redt{The story of resolution theorem}) 这就是真正的“A complete system is formed by one inference principle”. 关于上面resolution theorem推出实际上还有一些前奏，即它是怎样最终归纳到ground resolution theorem上的，这里就不得不提两个东西了:
+\begin{enumerate}
+	\item $P(\mathcal{R}^n(S))$: the finite set of Herbrand universe of resolution of $S$.
+	\item $\mathcal{R}^n(P(S))$: the resolution of set of finite set of Herbrand universe of $S$.
+\end{enumerate}
+其中$S$都是the finite set of clauses. 这两个作为ground clauses都是vaild的，但是$|mathcal{R}^n(P(S))| \leq |P(\mathcal{R}^n(S))|$. 因此这里有一个前奏Theorem，就是把resolution theorem中的$\mathcal{R}^n(S)$换成$P(\mathcal{R}^n(S))$，换言之resolution theorem只不过是它的simplification.
+\end{annotation}
+
+%很开心最终一切都明朗了, 2022年06月16日01:40:25
 
 \newpage
 \begin{thebibliography}{00}
@@ -3280,5 +3335,9 @@ Completeness for Natural Deduction.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/09-simplified.pdf}
 \bibitem{15-317-inv} Invertibility.
 \newline\url{https://web2.qatar.cmu.edu/cs/15317/lectures/10-invertibility.pdf}
+\bibitem{resolution-principle} J. A. Robinson. A Machine-Oriented Logic Based on the Resolution Principle. J. ACM, 12(1):23–41, 1965.
+\newline\url{https://web2.qatar.cmu.edu/~greis/robinson-resolution.pdf}
+\bibitem{nor-in-resolution-principle} Chapter 12, Resolution.
+\newline\url{http://logic.stanford.edu/intrologic/notes/chapter_12.html}
 \end{thebibliography}
 \end{document}
