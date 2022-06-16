@@ -3275,7 +3275,7 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \begin{definition}\label{resolvent-def}
 \rm A \redt{resolvent} of the two clauses $C_1$ and $C_2$ is any clause of the form $((C_1 - L_1) \cup (C_2-L_2))\sigma_N$ such that satisfies following conditions:
 \begin{itemize}
-	\item $L_1$ and $L_2$ are nonempty, and $L \subseteq C_1, L_2 \subseteq C_2$.
+	\item $L_1$ and $L_2$ are nonempty, and $L_1 \subseteq C_1, L_2 \subseteq C_2$.
 	\item $N$ is the set of atoms which are literals, or complements of literals of the set $(L_1\tau_x) \cup (L_2\tau_y)$(\bluet{why need standardization?}).
 	\item $N$ is most generally unifiable, with most general unifier $\sigma_N$.
 	\item The sets $L_1\tau_x\sigma_N$ and $L_2\tau_y\sigma_N$ are singletons whose literals are complentary. 
@@ -3319,7 +3319,7 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 	(e \cdot x) \cdot z &= y
 	\end{aligned}
 \]
-就可以得到$e \cdot y = y$，感觉是一个很弱的条件得到了一个很强的条件xd. 我们可以尝试用resolution来证明它，这里只试着证明left identity element，首先需要把已知的knowledges都列出来. 这里用$\sim$来表示complement，感觉比较方便. 我们用$Q(x,y,z)$表示$x \cdot y = z$: 
+就可以得到$e \cdot y = y$，即$x$的right identify也是$y$的identity，感觉像是一个很弱的条件得到了一个很强的条件xd. 我们可以尝试用resolution来证明它，这里只试着证明left identity element，首先需要把已知的knowledges都列出来. 这里用$\sim$来表示complement，感觉比较方便. 我们用$Q(x,y,z)$表示$x \cdot y = z$: 
 \[
 	\begin{aligned}
 		&C_1: \{Q(x,y,u)\wedge Q(y,z,v) \wedge Q(x,v,w) \to Q(u,z,w)\} && \text{associativity} \\
@@ -3329,23 +3329,29 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 		&C_5: \{Q(x,y, f(x,y))\} && \text{closed under $\cdot$} \\ 
 	\end{aligned}
 \]
-其中$C_1$和$C_2$需要做一下transformation去掉implication:
+其中$C_1$和$C_2$实际来于对equivalention的transformation，这里省略了，接着还需要做一下transformation去掉implication:
 \[
 	\begin{aligned}
 		C_1: \{\sim Q(x,y,u), \sim Q(y,z,v), \sim Q(x,v,w), Q(u,z,w)\} && P \to Q \iff \neg P \vee Q \\
 		C_2: \{\sim Q(x,y,u), \sim Q(y,z,v), \sim Q(u,z,w), Q(x,v,w)\} \\ 
 	\end{aligned}
 \]
-为了能构造refutation，我们还得把conclusion $\exists e. \exists x.~ Q(e,x,x)$的negation $\forall e, \exists x.~ \neg Q(e,x,x)$放到里面去，这里还需要再转一下Skolemization:
+为了能构造refutation，我们还得把conclusion $\exists e. \forall x.~ Q(e,x,x)$的negation $\forall e, \exists x.~ \neg Q(e,x,x)$放到里面去，这里还需要再转一下Skolemization:
 \[
 	C_6:\{\sim Q(e, k(e), k(e))\}
 \]
 我们可以构造一个refutation如下
 \[
 	\begin{aligned}
-	& C_7:  
+	& C_7:\{\sim Q(x_1, y_1, y_1), Q(x_1, y_2, y_2)\}  && \text{resolvent of}~\{C_2,C_4\}\\
+	& C_8:\{\sim Q(y_1, y_2, y_1)\} && \text{resolvent of}~\{C_6,C_7\}\\
 	\end{aligned}
 \]
+其中$C_7$中$L_1 = \{\sim Q(y,z,v), \sim Q(u,z,w)\}, L_2 = \{Q(x, h(x,y), y)\}$，因此
+\[
+N = \{\sim Q(x_5,x_6,x_3), \sim Q(x_2,x_6,x_4), Q(y_1, h(y_1,y_2), y_2)\},
+\]
+那么这里$\sigma_N =[x_2 \to y_1, x_3 \to y_2, x_4 \to y_2, x_5 \to y_1, x_6 \to h(y_1,y_2)]$
 \end{example}
 
 \newpage
