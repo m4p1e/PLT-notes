@@ -3343,16 +3343,19 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 我们可以构造一个refutation如下
 \[
 	\begin{aligned}
-	& C_7:\{\sim Q(x_1, y_1, y_1), Q(x_1, y_2, y_2)\}  && \text{resolvent of}~\{C_2,C_4\}\\
-	& C_8:\{\sim Q(y_1, y_2, y_1)\} && \text{resolvent of}~\{C_6,C_7\}\\
+	& C_7:\{\sim Q(x_4, y_1, y_1), Q(x_4, y_2, y_3)\}  && \text{resolvent of}~\{C_2,C_4\}\\
+	& C_8:\{\sim Q(y_1, y_2, y_2)\} && \text{resolvent of}~\{C_6,C_7\}\\
+	& C_9: \square && \text{resolvent of}~\{C_3,C_8\}
 	\end{aligned}
 \]
 其中$C_7$中$L_1 = \{\sim Q(y,z,v), \sim Q(u,z,w)\}, L_2 = \{Q(x, h(x,y), y)\}$，因此
 \[
-N = \{\sim Q(x_5,x_6,x_3), \sim Q(x_2,x_6,x_4), Q(y_1, h(y_1,y_2), y_2)\},
+N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 \]
-那么这里$\sigma_N =[x_2 \to y_1, x_3 \to y_2, x_4 \to y_2, x_5 \to y_1, x_6 \to h(y_1,y_2)]$
+那么这里$\sigma_N =[x_1 \to y_1, x_2 \to y_2, x_3 \to y_2, x_5 \to y_1, x_6 \to h(y_1,y_2)]$. 至于$C_8$和$C_9$都比较明显，从这个例子里面你应该可以看见automated theorem proving is possible.
 \end{example}
+
+%maple alegbra gotta be one thing
 
 \newpage
 \begin{thebibliography}{00}
