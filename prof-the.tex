@@ -3080,7 +3080,7 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{enumerate}
 最后我们generalize一下
 \[
-	F = \forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k}).
+	\redt{F = \forall x_1. \cdots \forall x_n.(L_{11} \vee \cdots \vee L_{1n_1})\wedge  \cdots \wedge (L_{k1} \vee \cdots \vee L_{kn_k})}.
 \]
 其中$L_{ij}$为一个literal. 对应的$\neg F$为
 \begin{equation} \label{eq:1}
@@ -3310,6 +3310,43 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \end{annotation}
 
 %很开心最终一切都明朗了, 2022年06月16日01:40:25
+
+\begin{example}
+\rm 证明: 若给定一个subgrounp $(S,\cdot)$, 对任意的$a,b \in S$, 总存在$x,y$使得$x \cdot a = b$ and $a \cdot y = b$. 则$(S,\cdot)$ is monoid, 换句话说就是存在一个identity element. 常规证明思路: 对任意两个元素$x \in S,y \in S$，设$e$满足$e \cdot x = x$，利用extension of right存在$z$使得$x \cdot z = y$. 再用一下associativity:
+\[
+	\begin{aligned}
+	e \cdot (x \cdot z) &= e \cdot y \\
+	(e \cdot x) \cdot z &= y
+	\end{aligned}
+\]
+就可以得到$e \cdot y = y$，感觉是一个很弱的条件得到了一个很强的条件xd. 我们可以尝试用resolution来证明它，这里只试着证明left identity element，首先需要把已知的knowledges都列出来. 这里用$\sim$来表示complement，感觉比较方便. 我们用$Q(x,y,z)$表示$x \cdot y = z$: 
+\[
+	\begin{aligned}
+		&C_1: \{Q(x,y,u)\wedge Q(y,z,v) \wedge Q(x,v,w) \to Q(u,z,w)\} && \text{associativity} \\
+		&C_2: \{Q(x,y,u)\wedge Q(y,z,v) \wedge Q(u,z,w) \to Q(x,v,w)\} && \text{associativity} \\
+		&C_3: \{Q(g(x,y), x, y)\} && \text{existence of left}  \\
+		&C_4: \{Q(x, h(x,y), y)\} && \text{existence of right} \\
+		&C_5: \{Q(x,y, f(x,y))\} && \text{closed under $\cdot$} \\ 
+	\end{aligned}
+\]
+其中$C_1$和$C_2$需要做一下transformation去掉implication:
+\[
+	\begin{aligned}
+		C_1: \{\sim Q(x,y,u), \sim Q(y,z,v), \sim Q(x,v,w), Q(u,z,w)\} && P \to Q \iff \neg P \vee Q \\
+		C_2: \{\sim Q(x,y,u), \sim Q(y,z,v), \sim Q(u,z,w), Q(x,v,w)\} \\ 
+	\end{aligned}
+\]
+为了能构造refutation，我们还得把conclusion $\exists e. \exists x.~ Q(e,x,x)$的negation $\forall e, \exists x.~ \neg Q(e,x,x)$放到里面去，这里还需要再转一下Skolemization:
+\[
+	C_6:\{\sim Q(e, k(e), k(e))\}
+\]
+我们可以构造一个refutation如下
+\[
+	\begin{aligned}
+	& C_7:  
+	\end{aligned}
+\]
+\end{example}
 
 \newpage
 \begin{thebibliography}{00}
