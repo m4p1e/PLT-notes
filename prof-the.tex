@@ -3280,6 +3280,7 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 	\item $N$ is most generally unifiable, with most general unifier $\sigma_N$.
 	\item The sets $L_1\tau_x\sigma_N$ and $L_2\tau_y\sigma_N$ are singletons whose literals are complentary. 
 \end{itemize}
+And we call $\left<C_1,C_2,N\right>$ is a \redt{key triple} of pair $(C,D)$.
 \end{definition}
 
 \begin{annotation}
@@ -3360,6 +3361,28 @@ N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 \end{example}
 
 %maple alegbra gotta be one thing
+
+\begin{annotation}
+\rm 虽然我们丢掉了ground clauses的生成，但是问题又来了$\mathcal{R}^n(S)$你又得想Herbrand universe一样算, XD. 但是无论如何至少少了一个$P$的围绕. Robinson的论文里面也接着有提到几个针对简化手法. 
+\end{annotation}
+
+
+
+\begin{definition}
+\rm If $S$ is any finite set of clauses, $C$ a clause in $S$, and $L$ a literal in $C$ with the property that there is no key triple for any pair $(C,D)$ of clauses, where $D$ is any clause in $S-\{C\}$, then $L$ is said to be pure in $S$. 
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{purity theorem}) If $S$ is any finite set of clauses, and $L \in C$ is literal which is pure in $S$, where $C \in S$, then $S$ is satifiable if and only if $S - \{C\}$ is satisfiable. 
+\end{theorem}
+
+\begin{definition}
+\rm If $C$ and $D$ are two distinct nonempty clauses, we say that $C$ subsumes $D$ just in case there is a substitution $\sigma$ such that $C\sigma \subseteq D$.
+\end{definition}
+
+\begin{definition}
+\rm (\redt{subsumption theorem}) If $S$ is any finite set of clauses, and $D$ is any clause in $S$ which is subsumed by some clauses in $S - \{D\}$, then $S$ is satisfiable if and only if $S-\{D\}$ is satisfiable.
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
