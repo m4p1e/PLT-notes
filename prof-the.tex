@@ -3293,7 +3293,11 @@ The $\vn{simplify}$ method applies the following simplications to the formula:
 \[
 	\infer[\vn{factoring}]{(C_i \cup \{p\})\sigma}{C_i \cup \{p, p'\}}
 \]
-其中$\sigma$是关于$p$和$p'$的most general unifier. 所以这里不仅在unify may complementary literal, 同时也在unify may equivalent literals.
+其中$\sigma$是关于$p$和$p'$的most general unifier. 所以这里不仅在unify may complementary literal, 同时也在unify may equivalent literals. 聪明的你一定还会发现这里应该还有一个取法
+\[
+	\infer{?}{C_i \cup \{p,\overline{p'}\}}	
+\]
+其中存在一个$\sigma$为$p$和$p'$的most general unifer，简单想一下如果出现这样的情况，那么$C_i \cup \{p,\overline{p'}$本身就是satisfiable，这个clause直接可以去掉了，已经不在resolution的范畴里面了.  
 \end{annotation}
 
 \begin{theorem}
