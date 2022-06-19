@@ -3385,6 +3385,39 @@ N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 \end{definition}
 
 \newpage
+\subsection{SLD Resolution}
+
+\begin{annotation}
+\rm SLD表示selective linear definite clause resolution，它是对原本resolution的一种refinement，用于the implementation of Prolog's engine. 这就是为什么这个大章节里面会出现resolution的概念. 
+\end{annotation}
+
+\begin{definition}
+\rm If there is only one positive literal (atom) in clause $C$, then $C$ is \redt{definite clause}. 
+\end{definition}
+
+\begin{annotation}
+\rm 首先回忆一下Horn clauses长下面这样
+\[
+	B_1 \wedge \cdots \wedge B_n \supset H
+\]
+我们将其转换为CNF的形式
+\[
+	\neg B_1 \vee \cdots \vee \neg B_n \vee H
+\]
+那么它正好就是一个definite clause. 在Prolog里面make query $G$，实际上就是要证明$G$ is vaild under given rules，即$F = R_1\wedge \cdots \wedge R_k \subset G$，其中$R_i$表示一段Prolog program里面所有Horn clauses. 也就是要证明$\neg F$ is unsatifiable,  so $F$ gonna to be $R_1 \wedge \cdots \wedge R_k \wedge \neg G$, 它也是下述clauses:
+\[
+	\begin{aligned}
+	&C_1:\{\neg B_1^1, \cdots, \neg B_{n_1}^1, H_1\} \\
+	&C_1:\{\neg B_1^2, \cdots, \neg B_{n_2}^2, H_2\} \\
+	&\vdots \\
+	&C_k:\{\neg B_1^k, \cdots, \neg B_{n_k}^k, H_k\} \\
+	&C_{k+1}: \{\neg G\}
+	\end{aligned}
+\]
+SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_2$，其中$C_1$满足里面全部literals都是negative, 而$C_2$是一个finite clause. 这样就是总是拿手上的goals去match possible heads in Horn clauses，也正是我们之前谈到的backing chaining. 
+\end{annotation}
+
+\newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
 \bibitem{discharged-stack} The relation between deduction theorem and discharged. \newline\url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
