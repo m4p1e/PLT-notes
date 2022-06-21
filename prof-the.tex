@@ -16,6 +16,10 @@
 \usepackage{mathtools} %for :=
 \usepackage{stmaryrd} %for double square bracket
 
+%\usepackage[normalem]{ulem} %delete line
+%\usepackage{soul}
+\usepackage{cancel}
+
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
@@ -36,6 +40,8 @@
 \parindent=0pt
 \setlength{\parindent}{2em} 
 \usepackage{indentfirst}
+
+\usepackage{array}% for adjust tabular column widths
 
 \usepackage{listings}
 %\usepackage{minted}% hightlighting
@@ -3421,6 +3427,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \newpage
 \section{Linear Logic}
 
+\subsection{Building}
 \begin{definition}
 \rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
 \end{definition}
@@ -3438,7 +3445,17 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \[
 	\text{have cake} \vdash \text{have cake}~\wedge ~\text{eat cake}
 \]
-我们不能在仅拥有一块蛋糕的情况下，选择吃掉了它之后还剩下一块蛋糕，这显然是不正确的. 因此我们将从sequent calculus开始，小心地去掉contraction和weakening来建立linear logic.
+我们不能在仅拥有一块蛋糕的情况下，选择吃掉了它之后还剩下一块蛋糕，这显然是不正确的. 因此我们将从sequent calculus开始，小心地去掉contraction和weakening来建立linear logic. 首先我们得扩充一下我们之前的sequent，我们之前的sequent全都是\emph{additive form}，这里来扩充一下在classic logic和intuitionistic logic下等价的另外一种形式\emph{multiplicative logic}，相比于additive form它具有更弱一些premises，下面给出它们的对比:
+\begin{center}
+\setlength\tabcolsep{12pt}
+\begin{tabular}{c|c}
+\textsc{Additive} & \textsc{Multiplicative} \\[0.5em]
+$\infer[\wedge R]{\Gamma \to A \wedge B}{\Gamma \to A & \Gamma \to B}$ & $\infer[\wedge R]{\Gamma_1,\Gamma_2 \to A \wedge B}{\Gamma_1 \to A & \Gamma_2 \to B}$  \\[0.5em]
+$\infer[\wedge L]{\Gamma, A_1 \wedge A_2 \to C}{\Gamma, A_i \to C}$ & $\infer[\wedge L]{\Gamma, A_1 \wedge A_2 \to C}{\Gamma, A_1, A_2 \to C}$ \\[0.5em]
+$\infer[\vee R]{\Gamma \to A_1 \vee A_2}{\Gamma \to A_i}$ & $\cancel{\infer[\vee R]{\Gamma \to A_1 \vee A_2}{\Gamma \to A_1, A_2}}$ \\[0.5em]
+$\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & $\infer[\wedge L]{\Gamma_1,\Gamma_2, A \vee B \to C}{\Gamma_1 ,A \to C & \Gamma_2 ,B \to C}$
+\end{tabular}
+\end{center}
 \end{annotation}
 
 
