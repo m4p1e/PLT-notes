@@ -3421,6 +3421,28 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \newpage
 \section{Linear Logic}
 
+\begin{definition}
+\rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
+\end{definition}
+
+\begin{annotation}
+\rm 像我们之前见到exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 这里我们即将提到的linear logic就和它们有一点关系. linear logic关注的对象是resources，或者更准确的说是resource availability，现在假设你拥有两个相同的resources或者拥有一个resources，在语境上不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
+\[
+	\text{have cake} ~\vdash ~ \text{eat cake}
+\]
+那么我们就可以证明
+\[
+\text{have cake}, \text{have cake} \vdash \text{have cake}~\wedge ~\text{eat cake}  
+\]
+如果你用一下contraction，语境就不正确了:
+\[
+	\text{have cake} \vdash \text{have cake}~\wedge ~\text{eat cake}
+\]
+我们不能在仅拥有一块蛋糕的情况下，选择吃掉了它之后还剩下一块蛋糕，这显然是不正确的. 因此我们将从sequent calculus开始，小心地去掉contraction和weakening来建立linear logic.
+\end{annotation}
+
+
+
 \newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
