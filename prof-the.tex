@@ -20,6 +20,8 @@
 %\usepackage{soul}
 \usepackage{cancel}
 
+\usepackage{cmll} %linear logic
+
 %\usepackage{unicode-math}
 %\usepackage{chngcntr}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
@@ -899,7 +901,7 @@ $$
 \end{definition}
 
 
-\begin{definition}
+\begin{definition}\label{substitution-in-ND}
 \rm (\redt{substitution Principle}) If 
 $$
 \deduce[\mathcal{E}]{C~true}{\infer[u]{A~true}{}}
@@ -1451,8 +1453,9 @@ where $A_1,\cdots,A_n$ and $C$ are well-defined formulas.
 \begin{annotation}
 \rm (\redt{detail of correspondence}) 其中$\Gamma$是一个set of formulas，它可以是empty set. 思考上述sequent形式下的natural deduction，我们应该用bottom-up的视角来观察. 试想我们在没有additional assumptions证明一个formulas，在最开始$\Gamma$应该是empty的，随着我们不断apply上述规则过程中将不断的填充$\Gamma$. 那么什么时候证明算接结束了呢？ 在natural deduction中我们从下往上使用introduction rules，并添加相应的assumptions，再从上往下使用emilination rules，直到它们在中途相遇，这时候我们的证明就结束了，当证明结束的时候，此时所有的assumptions都应该被discharge了，这个操作对应到sequent形式下就是上述hyp rule，在利用sequent构造proof的时候，总是以hyp rule结束的.
 
-显然sequent提供了一种收集assumptions的方式，使得assumptions和需要证明的formula总是在一个level，一旦某个assumption建立之后，以此往后的证明过程中这个assumption都是visible的.    
+显然sequent提供了一种更加优雅的收集assumptions的方式，我们总是将new assumption放在left side, 使得assumptions和需要证明的goal formula总是在一个level. 一旦某个assumption建立之后，以此往后的证明过程中这个assumption都是visible的，仔细想想这是对的，在natural deduction中，我们总是在最上面添加新的assumption. 
 \end{annotation}
+
 
 \begin{example}
 \rm A proof in sequent form.
@@ -1460,6 +1463,14 @@ $$
 \infer[\supset I]{\vdash (A \supset B) \supset ((A\wedge C) \supset (B \wedge C) ) }{\infer[\supset I]{A \supset B \vdash (A\wedge C) \supset (B \wedge C)}{\infer[\wedge I]{A \supset B,(A\wedge C) \vdash  (B \wedge C)}{\infer[\supset\!\!E]{A \supset B,(A\wedge C) \vdash B}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \supset B}{} & \infer[\wedge E_1]{A \supset B,(A\wedge C) \vdash A}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}} } & \infer[\wedge E_2]{A \supset B,(A\wedge C) \vdash C}{\infer[hyp]{A \supset B,(A\wedge C) \vdash A \wedge C}{}}}}}
 $$
 \end{example}
+
+\begin{annotation}
+\rm 最后提一下最后$\vn{subst}$ rule，在ND中substitution \ref{substitution-in-ND}是指我们可以将某个assumption替换成关于它的一个derivation. $\vn{subset}$ rule也是一个意思，但是你会发现premise和conclusion都使用了相同assumpations(contexts) $\Gamma$, 这是因为下面的weakning lemma在这里做了保证.
+\end{annotation}
+
+\begin{lemma}
+\rm If $F \vdash C$, then $\Gamma, F \vdash C$.
+\end{lemma}
 
 \begin{definition}
 \rm We say a rule is \redt{admissible} if all proofs using the rule can be transformed into proofs that do not use the rule.
@@ -1481,6 +1492,15 @@ $$
 \newpage
 \subsection{Sequent Calculus}
 
+\begin{annotation}
+\rm 在前一章里面我们把ND转化成了ND in sequent nation，这一章我们就来把verification calculus转化为sequent calculus. 
+\end{annotation}
+
+
+\begin{annotation}
+\rm 为了更好的说明verification calculus和sequent calculus的对应，我们下面在定义sequent calculus的时候，会象征性地加上$left$和$right$对应use和verification.
+\end{annotation}
+
 \begin{definition}
 \rm A sequent is a pariticular form of hypothetical judgement
 $$
@@ -1490,9 +1510,9 @@ where $A~left$ corresponds to a proposition that can be used ($A\downarrow$) and
 \end{definition}
 
 
-\begin{definition}
-\rm 引入上述sequent及其inferences是为了正式地说明proof search, 即从conclusion到premises的derivations.  
-\end{definition}
+%\begin{definition}
+%\rm 引入上述sequent及其inferences是为了正式地说明proof search, 即从conclusion到premises的derivations.  
+%\end{definition}
 
 \begin{definition}
 \rm The initial rule
@@ -1515,7 +1535,7 @@ $\infer[\supset L]{\Gamma, A \supset B~left \vdash C~right}{\Gamma, A \supset B~
 \hline
 & $\infer[\top R]{\Gamma \vdash \top~right}{}$ \rule{0mm}{10mm}  \\
 \hline
-$\infer[\perp L]{C~right}{\Gamma,\perp~left}$ & \rule{0mm}{10mm}\\
+$\infer[\perp L]{\Gamma,\perp~left \vdash C~right}{}$ & \rule{0mm}{10mm}\\
 \hline
 \end{tabular}
 \end{center}
@@ -3427,6 +3447,10 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \newpage
 \section{Linear Logic}
 
+\begin{remark}
+\rm \emph{Linear logic is a refinement of classical and intuitionistic logic. Instead of emphasizing truth, as in classical logic, or proof, as in intuitionistic logic, linear logic emphasizes the role of formulas as resources. }
+\end{remark}
+
 \subsection{Building}
 \begin{definition}
 \rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
@@ -3456,6 +3480,63 @@ $\infer[\vee R]{\Gamma \to A_1 \vee A_2}{\Gamma \to A_i}$ & $\cancel{\infer[\vee
 $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & $\infer[\wedge L]{\Gamma_1,\Gamma_2, A \vee B \to C}{\Gamma_1 ,A \to C & \Gamma_2 ,B \to C}$
 \end{tabular}
 \end{center}
+删掉$\vee R$的原因是它有right side不唯一，就目前而言的single-conclusion intuitionistic logic中是不被允许的. 为了使说明更加的清晰，我们现在用不同符号来表示相同的connective在不同的形式中，即
+\begin{center}
+\begin{tabular}{c|c|c}
+& \text{Additive} & \text{Multiplicative} \\
+\hline\text{Conjunction}& $\with$ & $\otimes$ \\
+\hline\text{Disjunction}& $\oplus$ & $\parr$
+\end{tabular}
+\end{center}
+\end{annotation}
+
+\begin{definition}
+\rm The additive and multiplicative rules of conjunction and disconjunction of linear logic as follow:
+\begin{center}
+\setlength\tabcolsep{12pt}
+\begin{tabular}{c|c}
+\textsc{Additive} & \textsc{Multiplicative} \\[0.5em]
+$\infer[\with R]{\Gamma \to A \with B}{\Gamma \to A & \Gamma \to B}$ & $\infer[\otimes R]{\Gamma_1,\Gamma_2 \to A \otimes B}{\Gamma_1 \to A & \Gamma_2 \to B}$  \\[0.5em]
+$\infer[\with L]{\Gamma, A_1 \with A_2 \to C}{\Gamma, A_i \to C}$ & $\infer[\otimes L]{\Gamma, A_1 \otimes A_2 \to C}{\Gamma, A_1, A_2 \to C}$ \\[0.5em]
+$\infer[\oplus R]{\Gamma \to A_1 \oplus A_2}{\Gamma \to A_i}$ & $\cancel{\infer[\parr R]{\Gamma \to A_1 \parr A_2}{\Gamma \to A_1, A_2}}$ \\[0.5em]
+$\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & $\cancel{\infer[\parr L]{\Gamma_1,\Gamma_2, A \parr B \to C}{\Gamma_1 ,A \to C & \Gamma_2 ,B \to C}}$
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{annotation}
+\rm 这里我们希望build一种linear logic同时适应我们之前构造的classic logic和intuitionistic logic里面的特性，只是去掉了它们里面涉及到structural rules那部分proofs. 因此我们去掉了$\parr L$，这是我之前在思考的一个问题，不同的primises拼到一起是否会产生一些额外的情况，例如两个本来冲突的primises，现在放在一起之后是什么形态呢？ 显然在classic logic里面就是$p$和$\neq p$放到一起了，这样就出现了一个contradiction，但是contradiction可以得到任意命题，那么这样并不会影响我们的conclusion. 但是你如果想想这种情况放在intuitionistic logic里面，好像并不存在contradiction这种东西，因为$\perp$似乎没有introduction rule. 再想想一下它在linear logic是怎样的形态？ 如果$\Gamma_1$和$\Gamma_2$两个resources冲突，那么conclusion显然是不对的. 实际上linear logic应该有两种classic linear logic和intuitionistic linear logic.
+\end{annotation}
+
+\begin{definition}
+\rm Different connective require different neutral elements:
+\begin{center}
+\begin{tabular}{c|c}
+\text{Connective} & \text{Neutral} \\
+$\with$ & $\top$\\
+$\otimes$ & $1$ \\
+$\oplus$ & $0$ \\
+$\parr$ & $\perp$ 
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{definition}
+\rm The rules for neutral elements:
+\[
+\begin{gathered}
+\infer[\top R]{\Gamma \to \top}{} \\
+\infer[1 R]{\cdot \to 1}{} \quad \quad \infer[1 L]{\Gamma,1 \to C}{\Gamma \to C} \\
+\infer[0 L]{\Gamma, 0 \to C}{} 
+\end{gathered}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 关于neutral elements的rules你一定会非常的疑惑. 虽然现在我也不知道它们的存在是什么的，但是我还是想记录一下我对它们合理性的看法. 首先这些neutral elements都看zero conjuncts或者zero disjuncts，我们再看左右两边都是如何introduce connective. 例如$\with$的$\top$, 如果$\top$在right side， 根据$\with R$，它就就需要 conjuncts with some contexts作为primise，但是此时zero conjuncts，因此是empty primise; 如果$\top$在left side， 根据$\with L$，我们需要从$\top$选一个conjunct出来，但是$\top$ is zero conjuncts，因此没有$\top L$. 如果你想既然$\top$是zero conjuncts, 那么为何不能这样呢
+\[
+\infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}
+\]   
 \end{annotation}
 
 
