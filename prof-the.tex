@@ -1493,13 +1493,9 @@ $$
 \subsection{Sequent Calculus}
 
 \begin{annotation}
-\rm 在前一章里面我们把ND转化成了ND in sequent nation，这一章我们就来把verification calculus转化为sequent calculus. 
+\rm 在前一章里面我们把ND转化成了ND in sequent nation，这一章我们就来把verification calculus转化为sequent calculus. 为了更好的说明verification calculus和sequent calculus的对应，我们下面在定义sequent calculus的时候，会象征性地加上$left$和$right$对应use和verification.
 \end{annotation}
 
-
-\begin{annotation}
-\rm 为了更好的说明verification calculus和sequent calculus的对应，我们下面在定义sequent calculus的时候，会象征性地加上$left$和$right$对应use和verification.
-\end{annotation}
 
 \begin{definition}
 \rm A sequent is a pariticular form of hypothetical judgement
@@ -3536,7 +3532,8 @@ $\parr$ & $\perp$
 \rm 关于neutral elements的rules你一定会非常的疑惑. 虽然现在我也不知道它们的存在是什么的，但是我还是想记录一下我对它们合理性的看法. 首先这些neutral elements都看zero conjuncts或者zero disjuncts，我们再看左右两边都是如何introduce connective. 例如$\with$的$\top$, 如果$\top$在right side， 根据$\with R$，它就就需要 conjuncts with some contexts作为primise，但是此时zero conjuncts，因此是empty primise; 如果$\top$在left side， 根据$\with L$，我们需要从$\top$选一个conjunct出来，但是$\top$ is zero conjuncts，因此没有$\top L$. 如果你想既然$\top$是zero conjuncts, 那么为何不能这样呢
 \[
 \infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}
-\]   
+\]
+说实话我也没有想通...TODO
 \end{annotation}
 
 
