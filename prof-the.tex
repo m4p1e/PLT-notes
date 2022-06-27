@@ -956,7 +956,7 @@ As u can see it's not local soundness.
 $$
 \infer[\supset I^u]{(A \wedge B) \supset (B \wedge A)~true}{\infer[\wedge I]{B \wedge A~true}{\infer[\wedge E_2]{B~true}{\infer[\wedge I]{A \wedge B~true}{\infer[\wedge E_1]{A~true}{\infer[u]{A \wedge B ~true}{}}  &  \infer[\wedge E_2]{B~true}{\infer[u]{A \wedge B ~true}{}}}}  &  \infer[\wedge E_1]{A~true}{\infer[u]{A \wedge B ~true}{}}}}
 $$
-其中左上角的local reduction显然是冗余的. 这样对于谈论某个具体proposition的proof时就会出现问题，因为the shape of proof is not decidable. 同时我们也希望未来能够设计出一个tool用于deviates proofs automatically，也就是search proof automatically. 因此从natural deduction上诞生了一个新的calculus，它会在syntax level上来施加一些限制，借此限制the shape of proof. 最后我们将证明这个calculus引入的restrictions不会产生side-effect.   
+其中左上角的local reduction显然是冗余的. 这样对于谈论某个具体proposition的proof时就会出现问题，因为the shape of proof is not decidable. 同时我们也希望未来能够设计出一个tool用于deviating proofs automatically，也就是search proof automatically. 因此从natural deduction上诞生了一个新的calculus，它会在syntax level上来施加一些限制，借此限制the shape of proof. 最后我们将证明这个calculus引入的restrictions不会产生side-effect.   
 \end{annotation}
 
 
@@ -3480,10 +3480,14 @@ $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & 
 \begin{center}
 \begin{tabular}{c|c|c}
 & \text{Additive} & \text{Multiplicative} \\
-\hline\text{Conjunction}& $\with$ & $\otimes$ \\
-\hline\text{Disjunction}& $\oplus$ & $\parr$
+\hline\text{Conjunction}& $\with$(with) & $\otimes$(time) \\
+\hline\text{Disjunction}& $\oplus$(plus) & $\parr$ (par)
 \end{tabular}
 \end{center}
+\end{annotation}
+
+\begin{annotation}
+\rm 疑问:\bluet{为什么在building linear logic的时候需要同时考虑两种形式的sequent calculus？}
 \end{annotation}
 
 \begin{definition}
@@ -3537,6 +3541,36 @@ $\parr$ & $\perp$
 \end{annotation}
 
 
+\begin{definition}
+\rm The ruls for linear implication, denoted by $\multimap$, can be written as follow:
+\[
+	\infer[\multimap R]{\Gamma \to A \multimap B}{\Gamma, A \to B}\quad\quad \infer[\multimap L]{\Gamma_1, \Gamma_2, A \multimap B \to C}{\Gamma_1 \to A, \Gamma_2, B\to C}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 注意这个linear implication只能出现在classical linear logic里面，不在intuitionistic linear logic里面.
+\end{annotation}
+
+\begin{definition}
+\rm The initial rule as follow
+\[
+\infer[\vn{init}]{a \to a}{}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 这个initial rule你可以理解为Whether there really exist the available resource，例如当我需要完成某件事的时候，需要一些resources，只有最后我确定这些resources真的存在，那么这件事才真的有可能被发现.
+\end{annotation}
+
+\begin{definition}
+\rm The logic composed of the connectives seen so far (including $\parr$ and $\perp$) constitutes of the multiplicative-additive fragment of linear logic, called \redt{MALL} 
+\end{definition}
+
+
+\begin{annotation}
+\rm 仔细再check一下前面提到的所有rules，你会发现都是在从conclusion到primise做decomposing，这正是为什么linear logic里面的每个formula可以恰好解释为resource的原因，当你分解一个resource的时候，就意味你正在失去它们. 这也意味我们的proof fragment都是decidable的(the main formula of every rule is not in the premises). 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
