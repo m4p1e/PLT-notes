@@ -3453,7 +3453,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \end{definition}
 
 \begin{annotation}
-\rm 像我们之前见到exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 这里我们即将提到的linear logic就和它们有一点关系. linear logic关注的对象是resources，或者更准确的说是resource availability，现在假设你拥有两个相同的resources或者拥有一个resources，在语境上不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
+\rm 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和拥有一个resources，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
 \[
 	\text{have cake} ~\vdash ~ \text{eat cake}
 \]
@@ -3461,11 +3461,18 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \[
 \text{have cake}, \text{have cake} \vdash \text{have cake}~\wedge ~\text{eat cake}  
 \]
-如果你用一下contraction，语境就不正确了:
+如果你接着用一下contraction，语境就不正确了:
 \[
 	\text{have cake} \vdash \text{have cake}~\wedge ~\text{eat cake}
 \]
-我们不能在仅拥有一块蛋糕的情况下，选择吃掉了它之后还剩下一块蛋糕，这显然是不正确的. 因此我们将从sequent calculus开始，小心地去掉contraction和weakening来建立linear logic. 首先我们得扩充一下我们之前的sequent，我们之前的sequent全都是\emph{additive form}，这里来扩充一下在classic logic和intuitionistic logic下等价的另外一种形式\emph{multiplicative logic}，相比于additive form它具有\redt{更弱一些premises}，下面给出它们的对比:
+我们不能在仅拥有一块蛋糕的情况下，选择吃掉了它之后还剩下一块蛋糕，这显然是不正确的. 而在classic and intuitionistic logic下有一种与之完全对立的语境:
+\[
+	\text{if}~A~\text{and}~A \supset B,~\text{then}~B, ~\text{but}~A~\text{still holds}.
+\]
+可以看见两者在对premises处理上是不一样的，前者需要“消耗”premises(注意它和discharge是不一样的，discharge本质上一种identity)，而后者可以依然保持premises. 
+
+
+我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus呢？ 尽管我们现在还不知道linear logic大体上怎样的，但是我们知道the quantity of resources is the property of linear logics，因此一个明显地问题是其中contraction和weakening如何处理? 首先我们得扩充一下我们之前的sequent，我们之前的sequent全都是\emph{additive form}，这里来扩充一下在classic logic和intuitionistic logic下等价的另外一种形式\emph{multiplicative logic}，相比于additive form它具有\redt{更弱一些premises}，下面给出它们的对比:
 \begin{center}
 \setlength\tabcolsep{12pt}
 \begin{tabular}{c|c}
@@ -3571,6 +3578,11 @@ $\parr$ & $\perp$
 \begin{annotation}
 \rm 仔细再check一下前面提到的所有rules，你会发现都是在从conclusion到primise做decomposing，这正是为什么linear logic里面的每个formula可以恰好解释为resource的原因，当你分解一个resource的时候，就意味你正在失去它们. 这也意味我们的proof fragment都是decidable的(the main formula of every rule is not in the premises). 
 \end{annotation}
+
+
+\begin{definition}
+\rm There are two connectives $\oc$ and $\wn$ are called \redt{exponentials} which shall express the iterability of an formula.  That is we can use these mark the formulas that be used an unbounded number of times (including zero). $\oc$ marks such formulas on the left and $\wn$ marks such formulas on the right. 
+\end{definition}
 
 \newpage
 \begin{thebibliography}{00}
