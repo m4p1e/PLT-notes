@@ -1418,8 +1418,11 @@ $$
 \rm \redt{Quantifiers corresponse dependent types}.
 \end{annotation}
 
+
+
+
 \newpage
-\section{More Delicate}
+\section{Proof Searching}
 
 \subsection{Natural Deduction in Sequent Nation}
 
@@ -1493,7 +1496,7 @@ $$
 \subsection{Sequent Calculus}
 
 \begin{annotation}
-\rm 在前一章里面我们把ND转化成了ND in sequent nation，这一章我们就来把verification calculus转化为sequent calculus. 为了更好的说明verification calculus和sequent calculus的对应，我们下面在定义sequent calculus的时候，会象征性地加上$left$和$right$对应use和verification.
+\rm 在前一章里面我们把ND转化成了ND in sequent nation，这一章我们就来把verification calculus转化为sequent calculus. 为了更好的说明verification calculus和sequent calculus的对应，我们下面在定义sequent calculus的时候，会象征性地加上$left$和$right$对应use和verification. \bluet{准确地说这里应该是intuitionistic sequent calculus, 每个sequent的left side只有一个formula}
 \end{annotation}
 
 
@@ -1927,139 +1930,6 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 \end{annotation}
 
 \newpage
-\subsection{Validity}
-
-\begin{definition}
-\rm $A~valid$ if $\bullet \vdash A~true$ where $\bullet$ is emphasizing that there are no truth hypotheses(different from $\cdot$ that represents empty collection of hypotheses), and we call $\bullet \vdash A~true$ is \redt{categorical judgement}. Written $\Delta A$ for reflecting the notion of validity as a proposition. 
-\end{definition}
-
-\begin{annotation}
-\rm 其中$\square A$表示一个proposition claimed $A$ is vaild, 因此$\square A ~true$表示这个proposition成立. 那么关于它的introduction rule是什么？ 很自然地由$A ~ valid$的definition有
-$$
-\infer[\square I]{\Gamma \vdash \square A~true}{\bullet \vdash A~true}
-$$
-那么它的elimination rule又是什么呢？ 第一次尝试
-$$
-\infer[\square E]{\bullet \vdash A~true}{\Gamma \vdash \square A~true}
-$$
-看起来是local soundness，通过它得到的infos还行. 但是实际上有问题
-$$
-\infer[\square E]{\bullet \vdash A~true}{\infer{\square A~true \vdash \square A~true}{}}
-$$
-这等于我们可以no assumption推出所有proposition都是valid，因此这个elimination rule有点太强了. 那么我们考虑让它弱一点，第二次尝试
-$$
-\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}
-$$
-这里确实是local soundness，但却不是local completeness
-$$
-\infer[?]{\Gamma \vdash \square A~true}{\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}}
-$$
-我们得改变一下思路，如果$A~vaild$，那么其他premise包含$A~vaild$的judgement那么实际上都是可以去掉$A~vaild$，但也仅仅局限以此，这才是emilination故事的主线. 
-\end{annotation}
-
-\begin{definition}
-\rm Then general judgement form
-$$
-\underbrace{u_1::B_1~vaild,\cdots,u_k::B_k~vaild}_{\Delta}; \underbrace{x_1:A_1~true,\cdots,x_n:A_n~true}_{\Gamma} \vdash C~true
-$$
-\end{definition}
-
-\begin{definition}
-\rm The introduction rule and elimination rule of $A~vaild$ as follow
-$$
-\begin{aligned}
-\infer[\square I]{\Delta; \Gamma \vdash \square A~true}{\Delta; \bullet \vdash A~true} &&&& \infer[\square E]{\Delta;\Gamma \vdash C~true}{\Delta;\Gamma \vdash \square A~true & \Delta, u::A~vaild; \Gamma \vdash C~true}
-\end{aligned}
-$$
-\end{definition}
-
-\begin{theorem}
-\rm Local soundness and local completeness of above introduction and elimination rule are held 
-\end{theorem}
-
-\begin{annotation}
-\rm 可以看到emilination rule变成了substitution，而不是从单纯从本身要得到什么，后面会看见更多这样的东西. 
-\end{annotation}
-
-
-\begin{example}
-\rm Proof of $\cdot;\cdot\vdash \square A \supset A$.
-$$
-\infer[\supset I^x]{\cdot;\cdot\vdash (\square A \supset A)~true}{\infer[\square E^u]{\cdot;x:\square A~true}{\infer[x]{\cdot;x:\square A~true \vdash \square A~true}{} & \infer[u]{u::A~vaild; x:\square A~true \vdash A~true}{}  }}
-$$
-\end{example}
-
-
-
-\newpage
-\subsection{Box is Powerful}
-
-\begin{definition}
-\rm $\square$ is $\square$. 
-\end{definition}
-
-
-\begin{definition}
-\rm A term $\text{box} M$ means $M$ is a quated source expression such that there are not any free variables $x$. 
-\end{definition}
-
-
-\begin{definition}
-\rm And $\square A$ is necessity modality. 
-\end{definition}
-
-\subsection{Tableaux Calculus}
-
-%https://en.wikipedia.org/wiki/Method_of_analytic_tableaux
-
-\newpage
-\subsection{Possibility}
-
-\begin{definition}
-\rm We use $\Diamond A$ for possibility modality.
-\end{definition}
-
-\begin{annotation}
-\rm $\Diamond A$就是一个claim $A$ is possible的命题. 通常在classic modal logic里面我们定义$A$ is possible if its negation is not necessary, that is $\Diamond A = \neg \square \neg A$. 但是这种手法在现在我们讨论的intuitionistic logic无法奏效，我们希望的是有一个直观的introduction rule来得到它，也就是我们需要一些explicit evidences，一开始就它的negation那显然是做不到的. 
-\end{annotation}
-
-\begin{definition}
-\rm \cite{15-816-ciom}The definition of possiblity.
-$$
-\infer[poss]{\Delta,\Gamma \vdash A~poss}{\Delta,\Gamma \vdash A~true}
-$$
-\end{definition}
-
-
-\begin{definition}
-\rm The introduction and emilination rule of possiblity.
-$$
-\begin{aligned}
-\infer[\Diamond I]{\Delta;\Gamma \vdash \Diamond A~true}{\Delta;\Gamma \vdash A~poss} &&&&
-\infer[\Diamond E]{\Delta;\Gamma \vdash C~poss}{\Delta;\Gamma \vdash \Diamond A~true & \Delta;x:A~true \vdash C~poss}
-\end{aligned}
-$$
-\end{definition}
-
-\begin{annotation}
-\rm 注意这里的emilination rule里面的第二个premise中的hypothesis只有$A ~true$，即我们under assumption $A~true$, we conclude $C~poss$.
-\end{annotation}
-
-\begin{theorem}
-\rm Local soundness and completeness are held. 
-\end{theorem}
-
-\begin{annotation}
-\rm td; 对上述inference rule的理解. 
-\end{annotation}
-
-\begin{example}
-\rm Proof of $\square(A \supset B) \supset \Diamond A \supset \Diamond B$.
-\end{example}
-
-
-\newpage
-\section{Proof Searching}
 
 \subsection{Simplification}
 
@@ -3447,13 +3317,13 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \rm \emph{Linear logic is a refinement of classical and intuitionistic logic. Instead of emphasizing truth, as in classical logic, or proof, as in intuitionistic logic, linear logic emphasizes the role of formulas as resources. }
 \end{remark}
 
-\subsection{Building}
+\subsection{MALL}
 \begin{definition}
 \rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
 \end{definition}
 
 \begin{annotation}
-\rm 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和拥有一个resources，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
+\rm 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和只拥有一个resource，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
 \[
 	\text{have cake} ~\vdash ~ \text{eat cake}
 \]
@@ -3469,10 +3339,44 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \[
 	\text{if}~A~\text{and}~A \supset B,~\text{then}~B, ~\text{but}~A~\text{still holds}.
 \]
-可以看见两者在对premises处理上是不一样的，前者需要“消耗”premises(注意它和discharge是不一样的，discharge本质上一种identity)，而后者可以依然保持premises. 
+可以看见两者在对premises处理上是不一样的，前者需要“消耗”premises(注意它和discharge是不一样的，discharge本质上一种identity)，而后者可以依然保持premises.
+\end{annotation}
 
+\begin{definition}
+\rm (\redt{Logical linearity}) A proof of $\Gamma,A \to B$ is linear in $A$ if the $A$ is not involved in a contraction or weakning any where in the proof.
+\end{definition}
 
-我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus呢？ 尽管我们现在还不知道linear logic大体上怎样的，但是我们知道the quantity of resources is the property of linear logics，因此一个明显地问题是其中contraction和weakening如何处理? 首先我们得扩充一下我们之前的sequent，我们之前的sequent全都是\emph{additive form}，这里来扩充一下在classic logic和intuitionistic logic下等价的另外一种形式\emph{multiplicative logic}，相比于additive form它具有\redt{更弱一些premises}，下面给出它们的对比:
+\begin{definition}
+\rm we define $\multimap$ for \redt{linear implicaction}.
+\end{definition}
+
+\begin{annotation}
+\rm 我们就可以用linear implication来描述上面的logical linearity，其中$A$表示have cave，$B$表示eat cake. 
+\[
+	\text{have cake} ~\multimap ~ \text{eat cake}
+\]
+现在可以将linear implication两端的formulas想象成actions，那么$A$这个action在上面这个特殊"sequent"下($A \vdash B$和$\vdash A \supset B$是等价的，我们经常说$A \supset B$ is valid，就是指$\vdash A \supset B$ is valid)下就是linear的. 同时从前面的过程我们知道resources是可以计数的，例如有两块蛋糕之后我们可以选择吃掉一块和留下一块. 那么试想如果我们吃不完的蛋糕我们应当如何描述这个action呢？ 难道要用$A, A, \cdots$吗？ 我们有更优雅的方式$\oc A$.
+\end{annotation}
+
+\begin{definition}
+\rm There are two connectives $\oc$ and $\wn$ are called \redt{exponentials} which shall express the iterability of an formula.  That is we can use these mark the formulas that be used an unbounded number of times (including zero). $\oc$ marks such formulas on the left and $\wn$ marks such formulas on the right. 
+\end{definition}
+
+\begin{annotation}
+\rm 现在我们可以给出之前implication in classical and intuitionistic和linear implication的关系
+\[
+A \subset B \equiv \oc A \subset B
+\] 
+\end{annotation}
+
+\begin{annotation}
+\rm 我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus大体框架呢？ 这里面有几个需要思考的问题是:
+\begin{itemize}
+	\item contraction和weakening rules如何处理？
+	\item 除了我们前面引入新的linear implication，其他的connective是否有足够的expressive来作为linear logic的presentation?
+\end{itemize} 
+
+最初Gentzen提出了第一个sequent calculus \redt{LK system}，在它的基础上把right side严格限制为了single formula，就得到了专为intuitionistic logic设计的\redt{LJ system}. 但是你仔细对比它们在wiki上的样子和我们之前在proof searching那一章我们介绍的intuitionistic sequent calculus是存在差异的，这是也是曾困扰我的一个地方，其中的差异体现在部分的rules，例如$\wedge L$. 后来经过查阅相关的资料终于在\cite{proof-theory-development}中找到了为什么，原来这是Gentzen的学生Ketonen做的一个重要的工作，也就是我们前面提到的invertibility. 为什么要介绍这些前因后果，是因为我们又需要回到最初的sequent calculus了，并且扩充一下它的另外一种形式. 我们之前看到的sequent calculus inference rules全都是\emph{additive form}，还存在另外一种在classic logic和intuitionistic logic下等价的形式\emph{multiplicative form}，相比于additive form它具有\redt{更弱一些premises}，下面给出它们的对比:
 \begin{center}
 \setlength\tabcolsep{12pt}
 \begin{tabular}{c|c}
@@ -3483,7 +3387,13 @@ $\infer[\vee R]{\Gamma \to A_1 \vee A_2}{\Gamma \to A_i}$ & $\cancel{\infer[\vee
 $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & $\infer[\wedge L]{\Gamma_1,\Gamma_2, A \vee B \to C}{\Gamma_1 ,A \to C & \Gamma_2 ,B \to C}$
 \end{tabular}
 \end{center}
-删掉$\vee R$的原因是它有right side不唯一，就目前而言的single-conclusion intuitionistic logic中是不被允许的. 为了使说明更加的清晰，我们现在用不同符号来表示相同的connective在不同的形式中，即
+删掉$\vee R$的原因是是它在single-conclusion intuitionistic logic中是不被允许的. 这里我们还是重点记录一下intuitionistic linear logic. 引入前面的两种形式是为了在后面构造linear logic的过程中，给你造成一种清晰的对应关系，让你感受linear logic和classic and intuitionistic logic到底存在什么联系. 
+
+我们之前在构造新logic的时候，并没有改变operators，而是在rules上做一些技术性的操作. linear logic就不太一样了，我们会提出新的connectives，使其更加expressive. 
+\end{annotation}
+
+\begin{definition}
+\rm The additive and multiplicative forms of conjunction and disjunction are defined as follow
 \begin{center}
 \begin{tabular}{c|c|c}
 & \text{Additive} & \text{Multiplicative} \\
@@ -3491,7 +3401,7 @@ $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & 
 \hline\text{Disjunction}& $\oplus$(plus) & $\parr$ (par)
 \end{tabular}
 \end{center}
-\end{annotation}
+\end{definition}
 
 \begin{annotation}
 \rm 疑问:\bluet{为什么在building linear logic的时候需要同时考虑两种形式的sequent calculus？}
@@ -3580,9 +3490,137 @@ $\parr$ & $\perp$
 \end{annotation}
 
 
+\newpage
+\section{More Delicate}
+\subsection{Box is Powerful}
+
 \begin{definition}
-\rm There are two connectives $\oc$ and $\wn$ are called \redt{exponentials} which shall express the iterability of an formula.  That is we can use these mark the formulas that be used an unbounded number of times (including zero). $\oc$ marks such formulas on the left and $\wn$ marks such formulas on the right. 
+\rm $\square$ is $\square$. 
 \end{definition}
+
+
+\begin{definition}
+\rm A term $\text{box} M$ means $M$ is a quated source expression such that there are not any free variables $x$. 
+\end{definition}
+
+
+\begin{definition}
+\rm And $\square A$ is necessity modality. 
+\end{definition}
+
+
+\subsection{Validity}
+
+\begin{definition}
+\rm $A~valid$ if $\bullet \vdash A~true$ where $\bullet$ is emphasizing that there are no truth hypotheses(different from $\cdot$ that represents empty collection of hypotheses), and we call $\bullet \vdash A~true$ is \redt{categorical judgement}. Written $\Delta A$ for reflecting the notion of validity as a proposition. 
+\end{definition}
+
+\begin{annotation}
+\rm 其中$\square A$表示一个proposition claimed $A$ is vaild, 因此$\square A ~true$表示这个proposition成立. 那么关于它的introduction rule是什么？ 很自然地由$A ~ valid$的definition有
+$$
+\infer[\square I]{\Gamma \vdash \square A~true}{\bullet \vdash A~true}
+$$
+那么它的elimination rule又是什么呢？ 第一次尝试
+$$
+\infer[\square E]{\bullet \vdash A~true}{\Gamma \vdash \square A~true}
+$$
+看起来是local soundness，通过它得到的infos还行. 但是实际上有问题
+$$
+\infer[\square E]{\bullet \vdash A~true}{\infer{\square A~true \vdash \square A~true}{}}
+$$
+这等于我们可以no assumption推出所有proposition都是valid，因此这个elimination rule有点太强了. 那么我们考虑让它弱一点，第二次尝试
+$$
+\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}
+$$
+这里确实是local soundness，但却不是local completeness
+$$
+\infer[?]{\Gamma \vdash \square A~true}{\infer[\square E]{\Gamma \vdash A~true}{\Gamma \vdash \square A~true}}
+$$
+我们得改变一下思路，如果$A~vaild$，那么其他premise包含$A~vaild$的judgement那么实际上都是可以去掉$A~vaild$，但也仅仅局限以此，这才是emilination故事的主线. 
+\end{annotation}
+
+\begin{definition}
+\rm Then general judgement form
+$$
+\underbrace{u_1::B_1~vaild,\cdots,u_k::B_k~vaild}_{\Delta}; \underbrace{x_1:A_1~true,\cdots,x_n:A_n~true}_{\Gamma} \vdash C~true
+$$
+\end{definition}
+
+\begin{definition}
+\rm The introduction rule and elimination rule of $A~vaild$ as follow
+$$
+\begin{aligned}
+\infer[\square I]{\Delta; \Gamma \vdash \square A~true}{\Delta; \bullet \vdash A~true} &&&& \infer[\square E]{\Delta;\Gamma \vdash C~true}{\Delta;\Gamma \vdash \square A~true & \Delta, u::A~vaild; \Gamma \vdash C~true}
+\end{aligned}
+$$
+\end{definition}
+
+\begin{theorem}
+\rm Local soundness and local completeness of above introduction and elimination rule are held 
+\end{theorem}
+
+\begin{annotation}
+\rm 可以看到emilination rule变成了substitution，而不是从单纯从本身要得到什么，后面会看见更多这样的东西. 
+\end{annotation}
+
+
+\begin{example}
+\rm Proof of $\cdot;\cdot\vdash \square A \supset A$.
+$$
+\infer[\supset I^x]{\cdot;\cdot\vdash (\square A \supset A)~true}{\infer[\square E^u]{\cdot;x:\square A~true}{\infer[x]{\cdot;x:\square A~true \vdash \square A~true}{} & \infer[u]{u::A~vaild; x:\square A~true \vdash A~true}{}  }}
+$$
+\end{example}
+
+\newpage
+
+\subsection{Tableaux Calculus}
+
+%https://en.wikipedia.org/wiki/Method_of_analytic_tableaux
+
+\newpage
+\subsection{Possibility}
+
+\begin{definition}
+\rm We use $\Diamond A$ for possibility modality.
+\end{definition}
+
+\begin{annotation}
+\rm $\Diamond A$就是一个claim $A$ is possible的命题. 通常在classic modal logic里面我们定义$A$ is possible if its negation is not necessary, that is $\Diamond A = \neg \square \neg A$. 但是这种手法在现在我们讨论的intuitionistic logic无法奏效，我们希望的是有一个直观的introduction rule来得到它，也就是我们需要一些explicit evidences，一开始就它的negation那显然是做不到的. 
+\end{annotation}
+
+\begin{definition}
+\rm \cite{15-816-ciom}The definition of possiblity.
+$$
+\infer[poss]{\Delta,\Gamma \vdash A~poss}{\Delta,\Gamma \vdash A~true}
+$$
+\end{definition}
+
+
+\begin{definition}
+\rm The introduction and emilination rule of possiblity.
+$$
+\begin{aligned}
+\infer[\Diamond I]{\Delta;\Gamma \vdash \Diamond A~true}{\Delta;\Gamma \vdash A~poss} &&&&
+\infer[\Diamond E]{\Delta;\Gamma \vdash C~poss}{\Delta;\Gamma \vdash \Diamond A~true & \Delta;x:A~true \vdash C~poss}
+\end{aligned}
+$$
+\end{definition}
+
+\begin{annotation}
+\rm 注意这里的emilination rule里面的第二个premise中的hypothesis只有$A ~true$，即我们under assumption $A~true$, we conclude $C~poss$.
+\end{annotation}
+
+\begin{theorem}
+\rm Local soundness and completeness are held. 
+\end{theorem}
+
+\begin{annotation}
+\rm td; 对上述inference rule的理解. 
+\end{annotation}
+
+\begin{example}
+\rm Proof of $\square(A \supset B) \supset \Diamond A \supset \Diamond B$.
+\end{example}
 
 \newpage
 \begin{thebibliography}{00}
@@ -3612,5 +3650,7 @@ Completeness for Natural Deduction.
 \newline\url{https://web2.qatar.cmu.edu/~greis/robinson-resolution.pdf}
 \bibitem{nor-in-resolution-principle} Chapter 12, Resolution.
 \newline\url{http://logic.stanford.edu/intrologic/notes/chapter_12.html}
+\bibitem{proof-theory-development} Chapter 12, Resolution.
+\newline\url{https://plato.stanford.edu/entries/proof-theory-development/#SeqCalLatDev}
 \end{thebibliography}
 \end{document}
