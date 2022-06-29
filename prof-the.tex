@@ -3309,6 +3309,9 @@ N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_2$，其中$C_1$满足里面全部literals都是negative, 而$C_2$是一个finite clause. 这样就是总是拿手上的goals去match possible heads in Horn clauses，也正是我们之前谈到的backing chaining. 
 \end{annotation}
 
+\begin{annotation}
+\rm 再buidling linear logic过程，也许你可以感受一种非常独特看待theory的视角. 我们在学习某个theory的时候，往往会通过practices来指导我们来理解它里面的一些definitions，但是你如果不能很好的掌握全局话，这样做很难让你继续下去. 它给我带来了一种全新的视角，如果在最开始我们无法用很具体的东西来理解抽象的definitions，没关系你试着接着走下去，只要这些definitions让你感觉舒适就行了，大体上没什么太过怪异的就行，在后面应用这个theory的时候，你自然会得到你想要的interpretations. 带着特殊的practices反而会太局限！
+\end{annotation}
 
 \newpage
 \section{Linear Logic}
@@ -3355,7 +3358,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \[
 	\text{have cake} ~\multimap ~ \text{eat cake}
 \]
-现在可以将linear implication两端的formulas想象成actions，那么$A$这个action在上面这个特殊"sequent"下($A \vdash B$和$\vdash A \supset B$是等价的，我们经常说$A \supset B$ is valid，就是指$\vdash A \supset B$ is valid)下就是linear的. 同时从前面的过程我们知道resources是可以计数的，例如有两块蛋糕之后我们可以选择吃掉一块和留下一块. 那么试想如果我们吃不完的蛋糕我们应当如何描述这个action呢？ 难道要用$A, A, \cdots$吗？ 我们有更优雅的方式$\oc A$.
+那么$A$在上面这个特殊"sequent"下($A \vdash B$和$\vdash A \supset B$是等价的，我们经常说$A \supset B$ is valid，就是指$\vdash A \supset B$ is valid)下就是linear的. 同时从前面的过程我们知道resources是可以计数的，例如有两块蛋糕之后我们可以选择吃掉一块和留下一块. 那么试想如果我们吃不完的蛋糕我们应当如何描述它呢？ 难道要用$A, A, \cdots$吗？ 我们有更优雅的方式$\oc A$.
 \end{annotation}
 
 \begin{definition}
@@ -3370,13 +3373,13 @@ A \subset B \equiv \oc A \subset B
 \end{annotation}
 
 \begin{annotation}
-\rm 我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus大体框架呢？ 这里面有几个需要思考的问题是:
+\rm 再了解了前面几个关于linear logic的有趣的properties之后，我们来正式构建它. 我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus大体框架呢？ 这里面有几个需要思考的问题是:
 \begin{itemize}
 	\item contraction和weakening rules如何处理？
 	\item 除了我们前面引入新的linear implication，其他的connective是否有足够的expressive来作为linear logic的presentation?
 \end{itemize} 
 
-最初Gentzen提出了第一个sequent calculus \redt{LK system}，在它的基础上把right side严格限制为了single formula，就得到了专为intuitionistic logic设计的\redt{LJ system}. 但是你仔细对比它们在wiki上的样子和我们之前在proof searching那一章我们介绍的intuitionistic sequent calculus是存在差异的，这是也是曾困扰我的一个地方，其中的差异体现在部分的rules，例如$\wedge L$. 后来经过查阅相关的资料终于在\cite{proof-theory-development}中找到了为什么，原来这是Gentzen的学生Ketonen做的一个重要的工作，也就是我们前面提到的invertibility. 为什么要介绍这些前因后果，是因为我们又需要回到最初的sequent calculus了，并且扩充一下它的另外一种形式. 我们之前看到的sequent calculus inference rules全都是\emph{additive form}，还存在另外一种在classic logic和intuitionistic logic下等价的形式\emph{multiplicative form}，相比于additive form它具有\redt{更弱一些premises}，下面给出它们的对比:
+最初Gentzen提出了第一个sequent calculus \redt{LK system}，在它的基础上把right side严格限制为了single formula，就得到了专为intuitionistic logic设计的\redt{LJ system}. 但是你仔细对比它们在wiki上的样子和我们之前在proof searching那一章我们介绍的intuitionistic sequent calculus是存在差异的，这是也是曾困扰我的一个地方，其中的差异体现在部分的rules，例如$\wedge L$. 后来经过查阅相关的资料终于在\cite{proof-theory-development}中找到了为什么，原来这是Gentzen的学生Ketonen做的一个重要的工作，也就是我们前面提到的invertibility. 为什么要介绍这些前因后果，是因为我们又需要回到最初的sequent calculus了，并且扩充一下它的另外一种形式. 我们之前看到的sequent calculus inference rules全都是\emph{additive form}，还存在另外一种在classic logic和intuitionistic logic下等价的形式\emph{multiplicative form}，相比于\emph{additive form}它具有\redt{更弱一些premises}，下面给出它们的对比:
 \begin{center}
 \setlength\tabcolsep{12pt}
 \begin{tabular}{c|c}
@@ -3387,9 +3390,7 @@ $\infer[\vee R]{\Gamma \to A_1 \vee A_2}{\Gamma \to A_i}$ & $\cancel{\infer[\vee
 $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & $\infer[\wedge L]{\Gamma_1,\Gamma_2, A \vee B \to C}{\Gamma_1 ,A \to C & \Gamma_2 ,B \to C}$
 \end{tabular}
 \end{center}
-删掉$\vee R$的原因是是它在single-conclusion intuitionistic logic中是不被允许的. 这里我们还是重点记录一下intuitionistic linear logic. 引入前面的两种形式是为了在后面构造linear logic的过程中，给你造成一种清晰的对应关系，让你感受linear logic和classic and intuitionistic logic到底存在什么联系. 
-
-我们之前在构造新logic的时候，并没有改变operators，而是在rules上做一些技术性的操作. linear logic就不太一样了，我们会提出新的connectives，使其更加expressive. 
+删掉$\vee R$的原因是是它在intuitionistic logic中是不被允许的. 这里我们还是重点记录一下intuitionistic linear logic. 引出这两种forms是为了让我们在sequent calculus的基础上提出新的connectives变成可能. 我们之前在构造新logic的时候，并没有改变operators，而是在rules上做一些技术性的操作. linear logic就不太一样了，我们会提出新的connectives，使其更加具有expressive. 
 \end{annotation}
 
 \begin{definition}
@@ -3404,7 +3405,16 @@ $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & 
 \end{definition}
 
 \begin{annotation}
-\rm 疑问:\bluet{为什么在building linear logic的时候需要同时考虑两种形式的sequent calculus？}
+\rm 这里我们解释两个名词action和type为了后面更好的说明: 
+\begin{itemize}
+	\item action实际上就是我们之前所说的instance，只不过把它用在对resources上formulation会显得比较合适. 
+	\item type就是由scheme variables组成的formula，例如$A \with B, A \otimes B$. 你用Curry-Howard ismorphism来看就比较能理解了，某个action就是具有某种type的instance. 
+\end{itemize}
+首先我们来看additive conjunction $\with$和multiplicative conjunction $\otimes$, 它们都可以表示availability of two actions, 不同的是$\otimes$强调是两个actions will be done，$\with$强调最终只有一个action will be done. 例如$A$表示have cake, $B_1$和$B_2$分表表示maple eats cake和laura eats cake, 那么对于
+\[
+A \multimap B_1 \with B_2
+\]
+是没问题的，但是$A \multimap B_1 \otimes B_2$显然就不行了. 我们再来看一下additive disjunction $\oplus$和multiplicative disjunction $\parr$. 其中$\otimes$可以表示the choice of one action between two possible types，这里它仅仅只是表示一种choice，并不是和$\with$里面那样选了之后还要be done. 而$\parr$可以表示the dependency between two types of actions. 
 \end{annotation}
 
 \begin{definition}
@@ -3422,7 +3432,11 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \end{definition}
 
 \begin{annotation}
-\rm 这里我们希望build一种linear logic同时适应我们之前构造的classic logic和intuitionistic logic里面的特性，只是去掉了它们里面涉及到structural rules那部分proofs. 因此我们去掉了$\parr L$，这是我之前在思考的一个问题，不同的primises拼到一起是否会产生一些额外的情况，例如两个本来冲突的primises，现在放在一起之后是什么形态呢？ 显然在classic logic里面就是$p$和$\neq p$放到一起了，这样就出现了一个contradiction，但是contradiction可以得到任意命题，那么这样并不会影响我们的conclusion. 但是你如果想想这种情况放在intuitionistic logic里面，好像并不存在contradiction这种东西，因为$\perp$似乎没有introduction rule. 再想想一下它在linear logic是怎样的形态？ 如果$\Gamma_1$和$\Gamma_2$两个resources冲突，那么conclusion显然是不对的. 实际上linear logic应该有两种classic linear logic和intuitionistic linear logic.
+\rm 似乎$\otimes$和sum type对应上了，上面的inference非常像match syntax, 但是$\otimes$是不是和production type对应上了，还不太确定.
+\end{annotation}
+
+\begin{annotation}
+\rm 这里我们希望build一种linear logic同时适应我们之前构造的classic logic和intuitionistic logic里面的特性，只是去掉了它们里面涉及到structural rules那部分proofs. 因此我们去掉了$\parr L$，这是我之前在思考的一个问题，不同的primises拼到一起是否会产生一些额外的情况，例如两个本来冲突的primises，现在放在一起之后是什么形态呢？ 显然在classic logic里面就是$p$和$\neg p$放到一起了，这样就出现了一个contradiction，但是contradiction可以得到任意命题，那么这样并不会影响我们的conclusion. 但是你如果想想这种情况放在intuitionistic logic里面，好像并不存在contradiction这种东西，因为$\perp$似乎没有introduction rule. 再想想一下它在linear logic是怎样的形态？ 如果$\Gamma_1$和$\Gamma_2$两个resources冲突，那么conclusion显然是不对的. 实际上linear logic应该有两种classic linear logic和intuitionistic linear logic.
 \end{annotation}
 
 \begin{definition}
