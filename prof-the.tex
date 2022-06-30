@@ -3431,23 +3431,19 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \end{center}
 \end{definition}
 
+
+%TODO
 \begin{annotation}
 \rm 似乎$\otimes$和sum type对应上了，上面的inference非常像match syntax, 但是$\otimes$是不是和production type对应上了，还不太确定.
-\end{annotation}
-
-\begin{annotation}
-\rm 这里我们希望build一种linear logic同时适应我们之前构造的classic logic和intuitionistic logic里面的特性，只是去掉了它们里面涉及到structural rules那部分proofs. 因此我们去掉了$\parr L$，这是我之前在思考的一个问题，不同的primises拼到一起是否会产生一些额外的情况，例如两个本来冲突的primises，现在放在一起之后是什么形态呢？ 显然在classic logic里面就是$p$和$\neg p$放到一起了，这样就出现了一个contradiction，但是contradiction可以得到任意命题，那么这样并不会影响我们的conclusion. 但是你如果想想这种情况放在intuitionistic logic里面，好像并不存在contradiction这种东西，因为$\perp$似乎没有introduction rule. 再想想一下它在linear logic是怎样的形态？ 如果$\Gamma_1$和$\Gamma_2$两个resources冲突，那么conclusion显然是不对的. 实际上linear logic应该有两种classic linear logic和intuitionistic linear logic.
 \end{annotation}
 
 \begin{definition}
 \rm Different connective require different neutral elements:
 \begin{center}
-\begin{tabular}{c|c}
-\text{Connective} & \text{Neutral} \\
-$\with$ & $\top$\\
-$\otimes$ & $1$ \\
-$\oplus$ & $0$ \\
-$\parr$ & $\perp$ 
+\begin{tabular}{c|c|c}
+& \text{Neutral "true"} & \text{Neutral "false"} \\
+\hline\text{Additive}& $\top$($\with$) & $0$($\oplus$) \\
+\hline\text{Multiplicative}& $1$($\otimes$) & $\perp$ ($\parr$)
 \end{tabular}
 \end{center}
 \end{definition}
@@ -3468,7 +3464,11 @@ $\parr$ & $\perp$
 \[
 \infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}
 \]
-说实话我也没有想通...TODO
+如果有它存在，那么我们会得到
+\[
+\infer[neu]{\Gamma, A \to C}{\infer[\with L_1]{\Gamma, \top \with A \to C}{\infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}}}
+\]
+这下把weakeaning给造出来了XD. 
 \end{annotation}
 
 
