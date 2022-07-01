@@ -428,7 +428,7 @@ We call it modal logic $\mathcal{S}4$.
 $$
 \square \phi \wedge \square(\phi \to \psi) \to \square \psi
 $$
-上面是它经常用的等价形式. Axiom T是指若$\phi$ is necessary, 那么$\phi$ is true. Axiom 4是指$\phi$ is necessary, 那么命题"$\phi$ is necessary" is necessary, 有点别扭，举个形象的例子如果box是指某个人知道某件事，假设我知道$A~true$, 那么我肯定知道我知道$A~true$. 最后一个叫G\"{o}del translation, 它将intuitionistic logic里面的formulas转换到modal logic里面. 
+上面是它经常用的等价形式. Axiom T是指若if we $\phi$ is necessary, the we have $\phi$. Axiom 4是指$\phi$ is necessary, 那么命题"$\phi$ is necessary" is necessary, 有点别扭，举个形象的例子如果box是指某个人知道某件事，假设我知道$A~true$, 那么我肯定知道我知道$A~true$. 最后一个叫G\"{o}del translation, 它将intuitionistic logic里面的formulas转换到modal logic里面. 
 \end{annotation}
 
 \begin{definition}
@@ -3326,7 +3326,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \end{definition}
 
 \begin{annotation}
-\rm 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和只拥有一个resource，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
+\rm (\redt{初见linear logic}) 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和只拥有一个resource，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
 \[
 	\text{have cake} ~\vdash ~ \text{eat cake}
 \]
@@ -3354,7 +3354,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \end{definition}
 
 \begin{annotation}
-\rm 我们就可以用linear implication来描述上面的logical linearity，其中$A$表示have cave，$B$表示eat cake. 
+\rm (\redt{如何用linear implication}) 我们就可以用linear implication来描述上面的logical linearity，其中$A$表示have cave，$B$表示eat cake. 
 \[
 	\text{have cake} ~\multimap ~ \text{eat cake}
 \]
@@ -3366,14 +3366,14 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \end{definition}
 
 \begin{annotation}
-\rm 现在我们可以给出之前implication in classical and intuitionistic和linear implication的关系
+\rm (\redt{linear implication的等价形式}) 现在我们可以给出之前implication in classical and intuitionistic和linear implication的关系
 \[
 A \subset B \equiv \oc A \subset B
 \] 
 \end{annotation}
 
 \begin{annotation}
-\rm 再了解了前面几个关于linear logic的有趣的properties之后，我们来正式构建它. 我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus大体框架呢？ 这里面有几个需要思考的问题是:
+\rm (\redt{通过sequent calculus构建linear logic}) 再了解了前面几个关于linear logic的有趣的properties之后，我们来正式构建它. 我们知道classic and intuitionistic logic的deduction都可以依赖sequent calculus, 那么我们linear logic是否也可以依赖sequent calculus大体框架呢？ 这里面有几个需要思考的问题是:
 \begin{itemize}
 	\item contraction和weakening rules如何处理？
 	\item 除了我们前面引入新的linear implication，其他的connective是否有足够的expressive来作为linear logic的presentation?
@@ -3405,7 +3405,7 @@ $\infer[\wedge L]{\Gamma, A \vee B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ & 
 \end{definition}
 
 \begin{annotation}
-\rm 这里我们解释两个名词action和type为了后面更好的说明: 
+\rm (\redt{关于新的connectives的简单解释}) 这里我们解释两个名词action和type为了后面更好的说明: 
 \begin{itemize}
 	\item action实际上就是我们之前所说的instance，只不过把它用在对resources上formulation会显得比较合适. 
 	\item type就是由scheme variables组成的formula，例如$A \with B, A \otimes B$. 你用Curry-Howard ismorphism来看就比较能理解了，某个action就是具有某种type的instance. 
@@ -3434,7 +3434,7 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 
 %TODO
 \begin{annotation}
-\rm 似乎$\otimes$和sum type对应上了，上面的inference非常像match syntax, 但是$\otimes$是不是和production type对应上了，还不太确定.
+\rm (\redt{linear logic似乎对应某个type system}) 似乎$\otimes$和sum type对应上了，上面的inference非常像match syntax, 但是$\otimes$是不是和production type对应上了，还不太确定.
 \end{annotation}
 
 \begin{definition}
@@ -3460,7 +3460,7 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \end{definition}
 
 \begin{annotation}
-\rm 关于neutral elements的rules你一定会非常的疑惑. 虽然现在我也不知道它们的存在是什么的，但是我还是想记录一下我对它们合理性的看法. 首先这些neutral elements都看zero conjuncts或者zero disjuncts，我们再看左右两边都是如何introduce connective. 例如$\with$的$\top$, 如果$\top$在right side， 根据$\with R$，它就就需要 conjuncts with some contexts作为primise，但是此时zero conjuncts，因此是empty primise; 如果$\top$在left side， 根据$\with L$，我们需要从$\top$选一个conjunct出来，但是$\top$ is zero conjuncts，因此没有$\top L$. 如果你想既然$\top$是zero conjuncts, 那么为何不能这样呢
+\rm (\redt{对netural elements的思考}) 关于neutral elements的rules你一定会非常的疑惑，它的存在就为了对应classical logic里面的truth和falsehood，这里多了一对conjunction和disjunction，自然有两对truth-falsehood. 先简单地解释一下关于这些netural rule的构造，这些neutral elements都看zero conjuncts或者zero disjuncts，我们再看左右两边都是如何introduce它们的，整个下来就比较清晰了. 例如$\with$的$\top$, 如果$\top$在right side， 根据$\with R$，它就就需要 conjuncts with some contexts作为primise，但是此时zero conjuncts，因此是empty primise; 如果$\top$在left side， 根据$\with L$，我们需要从$\top$选一个conjunct出来，但是$\top$ is zero conjuncts，因此没有$\top L$. 如果你想既然$\top$是zero conjuncts, 那么为何不能这样呢
 \[
 \infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}
 \]
@@ -3468,19 +3468,30 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \[
 \infer[neu]{\Gamma, A \to C}{\infer[\with L_1]{\Gamma, \top \with A \to C}{\infer[\top L]{\Gamma, \top \to C}{\Gamma \to C}}}
 \]
-这下把weakeaning给造出来了XD. 
+这下把weakeaning给造出来了XDDD.  
 \end{annotation}
 
+\begin{annotation}
+\rm (\redt{对于$\multimap L$ shape的解释}) 下面linear implication和sequent calculus的implication是相似的，这里的$\multimap L$也是用最开始non-invertiable $\supset L$模子.
+\end{annotation}
 
 \begin{definition}
 \rm The ruls for linear implication, denoted by $\multimap$, can be written as follow:
 \[
-	\infer[\multimap R]{\Gamma \to A \multimap B}{\Gamma, A \to B}\quad\quad \infer[\multimap L]{\Gamma_1, \Gamma_2, A \multimap B \to C}{\Gamma_1 \to A, \Gamma_2, B\to C}
+	\infer[\multimap R]{\Gamma \to A \multimap B}{\Gamma, A \to B}\quad\quad \infer[\multimap L]{\Gamma_1, \Gamma_2, A \multimap B \to C}{\Gamma_1 \to A & \Gamma_2, B\to C}
 \]
 \end{definition}
 
 \begin{annotation}
-\rm 注意这个linear implication只能出现在classical linear logic里面，不在intuitionistic linear logic里面.
+\rm (\redt{linear implication的逻辑等价形式}) 实际上MALL里面是没有linear implication这个connective，而是通过引入negation来做一个logical equivalent
+\[
+	A \multimap B  \equiv \neg A \parr B
+\]
+你可以通过上述的linear implication rules来证明一下:
+\[
+	\infer[\parr R]{A \multimap B \to \neg A \parr B}{\infer[\vn{neg}~\!R]{A \multimap B \to \neg A, B}{\infer{A \multimap B, A \to B}{\infer[\vn{init}]{A \to A}{} & \infer[\vn{init}]{B \to B}{}}}}
+\]
+反过来也一样. 注意这个linear implication只能出现在classical linear logic里面，不在intuitionistic linear logic里面（无法理解其中的意思）.
 \end{annotation}
 
 \begin{definition}
@@ -3490,19 +3501,43 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \]
 \end{definition}
 
+
 \begin{annotation}
-\rm 这个initial rule你可以理解为Whether there really exist the available resource，例如当我需要完成某件事的时候，需要一些resources，只有最后我确定这些resources真的存在，那么这件事才真的有可能被发现.
+\rm 这个initial rule非常自然地描述了resources availability.
 \end{annotation}
 
 \begin{definition}
-\rm The logic composed of the connectives seen so far (including $\parr$ and $\perp$) constitutes of the multiplicative-additive fragment of linear logic, called \redt{MALL} 
+\rm The structural rules of exponentials as follow:
+\[
+	\begin{gathered}
+	\infer[\oc cL]{\Gamma, \oc A \to C}{\Gamma, \oc A, \oc A \to C} \quad\quad \infer[!wL]{\Gamma, \oc A \to C}{\Gamma \to C} \quad\quad \cancel{\infer[\wn cR]{\Gamma \to \wn A}{\Gamma \to \wn A, \wn A}} \cancel{\quad\quad \infer[\wn wR]{\Gamma \to \wn A}{\Gamma \to}}, 
+	\end{gathered}
+\]
+\end{definition}
+
+\begin{definition}
+\rm The logical rules of exponential $\oc$ as follow:
+\[
+	\infer[\oc L]{\Gamma, \oc A \to C}{\Gamma, A \to C} \quad\quad \infer[\oc R]{\oc \Gamma \to \oc A}{\oc \Gamma \to A} 
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 其中rule $\oc L$是比较好理解的 “finite resource $A$ can prove $C$, then unbounded resource $!A$ also can.” 如果$\oc A$出现来右边，它可以解释为"$A$ can be proved with unbouned resources, then $\oc A$ also can be proved".  
+\end{annotation}
+
+\begin{definition}
+\rm The logic composed of the connectives seen so far (including $\parr$ and $\perp$) constitutes of the multiplicative-additive fragment of linear logic, called \redt{MALL}. 
 \end{definition}
 
 
+%TODO
 \begin{annotation}
-\rm 仔细再check一下前面提到的所有rules，你会发现都是在从conclusion到primise做decomposing，这正是为什么linear logic里面的每个formula可以恰好解释为resource的原因，当你分解一个resource的时候，就意味你正在失去它们. 这也意味我们的proof fragment都是decidable的(the main formula of every rule is not in the premises). 
+\rm 总结
 \end{annotation}
 
+\newpage
+\subsection{States and Transitions}
 
 \newpage
 \section{More Delicate}
