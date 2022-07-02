@@ -3540,14 +3540,58 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \subsection{States and Transitions}
 
 \begin{annotation}
-\rm 在Kripke frame里面我们提到过关于finite automata的reasoning，但需要构造几个特殊的modalities才行，不过还是比较自然的. 在finite automata上做reasoning之前，你得先想办法encode它，其中包括三个重要的部分: initial state, states, transitions; 如果你考虑classi logical或者intuitionistic logical来做encoding的话，面临困难是处理transitions，因为states的更新不能用通常意义下的implication来完成，但是你考虑linear implication时候就比较合适了. 例如$\multimap L$:
+\rm 在Kripke frame里面我们提到过关于finite state machine(FSM)的reasoning，但需要构造几个特殊的modalities才行，不过还是比较自然的. 在FSM上做reasoning之前，你得先想办法encode它，其中包括三个重要的部分: initial state, states, transitions; 如果你考虑classi logical或者intuitionistic logical来做encoding的话，面临困难是处理transitions，因为states的更新不能用通常意义下的implication来完成，但是你考虑linear implication时候就比较合适了. 例如$\multimap L$:
 \[
 	\infer[\multimap L]{\Gamma_1, \Gamma_2, A \multimap B \to C}{\Gamma_1 \to A & \Gamma_2, B\to C}
 \]
-如果$A \multimap B$表示一个transition，那么上面两个primises是非常好解释的: 左边$\Gamma_1 \to A$表示某个$A$ is available in $\Gamma_1$, 而右边我们可以得到$\Gamma_2$ with $B$ is available and $A$ is not available, 这样很自然的表示了update.
+如果$A \multimap B$表示一个transition，那么上面两个primises是非常好解释的: 左边$\Gamma_1 \to A$表示某个$A$ is available in $\Gamma_1$, 而右边我们可以得到$\Gamma_2$ with $B$ is available and $A$ is not available, 这样很自然的表示了update. 其次$\otimes$的expressive也是在state representation中比较重要的，例如你如果考虑是化学反应状态变化，在某个状态下其中化合物比例是必须记录的量，这个时候就需要$\otimes$来发挥作用了.
 \end{annotation}
 
 
+\begin{definition}
+\rm The logical representation of finite state machine is defined as follow:
+\[
+	\text{FA} = \text{linear logic} ~ + ~ \text{axioms} ~ + ~  \text{initial state}
+\]
+where aximos can of course be replaced by $\oc A$.
+\end{definition}
+
+\begin{example}
+\rm 设我们下面这样一个FSM
+\begin{center}
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (23.9,-27.3) circle (3);
+\draw (23.9,-27.3) node {$Locked$};
+\draw [black] (23.9,-27.3) circle (2.4);
+\draw [black] (43.1,-27.3) circle (3);
+\draw (43.1,-27.3) node {$Unlocked$};
+\draw [black] (41.606,-29.89) arc (-38.29609:-141.70391:10.329);
+\fill [black] (41.61,-29.89) -- (40.72,-30.21) -- (41.5,-30.83);
+\draw (33.5,-34.32) node [below] {$Coin$};
+\draw [black] (24.647,-24.407) arc (156.61151:23.38849:9.646);
+\fill [black] (24.65,-24.41) -- (25.42,-23.87) -- (24.51,-23.47);
+\draw (33.5,-18.09) node [above] {$Push$};
+\draw [black] (45.78,-25.977) arc (144:-144:2.25);
+\draw (50.35,-27.3) node [right] {$Coin$};
+\fill [black] (45.78,-28.62) -- (46.13,-29.5) -- (46.72,-28.69);
+\draw [black] (21.22,-28.623) arc (324:36:2.25);
+\draw (16.65,-27.3) node [left] {$Push$};
+\fill [black] (21.22,-25.98) -- (20.87,-25.1) -- (20.28,-25.91);
+\end{tikzpicture}
+\end{center}
+根据上图我们可以得到下面的axioms:
+\begin{itemize}
+	\item $T_1 = locked \otimes coin \multimap unlocked$.
+	\item $T_2 = locked \otimes push \multimap locked$.
+	\item $T_3 = unlocked \otimes coin \multimap unlocked \otimes coin$ (注意这里我们保留了coin).
+	\item $T_4 = unlocked \otimes push \multimap locked$
+\end{itemize}
+那么我们可以来试着证明一下$coin \multimap unlocked$:
+\[
+	\infer[\multimap R]{locked, \oc T_1, \oc T_2, \oc T_3, \oc T_4 \to coin \multimap unlocked}{\infer[\oc L]{locked, \oc T_1, \oc T_2, \oc T_3, \oc T_4, coin \to unlocked}{\infer[\multimap L]{locked, T_1, \oc T_2, \oc T_3, \oc T_4, coin \to unlocked}{\infer[\otimes R]{locked, coin \to locked \otimes coin}{\infer[init]{locked \to locked}{} & \infer[init]{coin \to coin}{}} & \infer[\oc wL^* + init]{\oc T_2, \oc T_3, \oc T_4, unlocked \to unlocked}{}}}}
+\]
+\end{example}
 
 \newpage
 \section{More Delicate}
