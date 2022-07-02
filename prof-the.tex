@@ -3539,6 +3539,16 @@ $\infer[\oplus L]{\Gamma, A \oplus B \to C}{\Gamma ,A \to C & \Gamma ,B \to C}$ 
 \newpage
 \subsection{States and Transitions}
 
+\begin{annotation}
+\rm 在Kripke frame里面我们提到过关于finite automata的reasoning，但需要构造几个特殊的modalities才行，不过还是比较自然的. 在finite automata上做reasoning之前，你得先想办法encode它，其中包括三个重要的部分: initial state, states, transitions; 如果你考虑classi logical或者intuitionistic logical来做encoding的话，面临困难是处理transitions，因为states的更新不能用通常意义下的implication来完成，但是你考虑linear implication时候就比较合适了. 例如$\multimap L$:
+\[
+	\infer[\multimap L]{\Gamma_1, \Gamma_2, A \multimap B \to C}{\Gamma_1 \to A & \Gamma_2, B\to C}
+\]
+如果$A \multimap B$表示一个transition，那么上面两个primises是非常好解释的: 左边$\Gamma_1 \to A$表示某个$A$ is available in $\Gamma_1$, 而右边我们可以得到$\Gamma_2$ with $B$ is available and $A$ is not available, 这样很自然的表示了update.
+\end{annotation}
+
+
+
 \newpage
 \section{More Delicate}
 \subsection{Box is Powerful}
