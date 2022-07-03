@@ -1544,9 +1544,7 @@ $\infer[\perp L]{\Gamma,\perp~left \vdash C~right}{}$ & \rule{0mm}{10mm}\\
 \end{annotation}
 
 \begin{annotation}
-\rm 这里frank给出的left rules怪怪的，因为conclusion里面的assumptions依然出现在了primises里面，这让人很奇怪，虽然不影响其正确性. frank对此的意见是这只是一种weakening操作，同时他想表达一个"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的构造过程中同样available. 
-
-我的感觉是left rules应该和right rules一样，right rules在simplify conclusion，而left rules也应该去simplify hypotheses. 这里simplify是指去掉formula里面存在的connectives. 
+\rm 这里frank给出的rules都有一个特点: conclusion里面的assumptions依然出现在了primises里面，这是因为"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的derivation中同样available. 那么你可能回想最后还留着这么多assumption，还怎么用init rule来close掉证明呢？ 这里不用担心，我们是可以一些structural rules来去掉这些冗余的assumption的. 
 \end{annotation}
 
 
@@ -1928,12 +1926,42 @@ $$
 where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ means the systems are sound and complete each other, and $\redt{\updownarrow}$ means the system are shown to be equivalent by showing the rules cut, identity and weakening are admissible. 
 \end{annotation}
 
-\newpage
 
+\begin{theorem}
+\rm (\redt{Consistency}) Sequent calculus is consistent, that is we dont have $\vdash \perp$. 
+\end{theorem}
+
+\begin{proof}
+\rm 我们没有applicable rules for it. 
+\end{proof}
+
+\begin{annotation}
+\rm 注意我们当前的intuitionistic sequent calculus也是无法证明excluded middle  law $\vdash A \vee \neg A$，因为此时唯一applicable rule是$\vee R_i$，但是当你apply之后，无法继续进行下去. 
+\end{annotation}
+
+\newpage
+\subsection{Classic Sequent Calculus}
+
+\begin{annotation}
+\rm 前面的sequent calculus实际上只适用于intuitionistic logic，无法证明excluded middle law, double negation etc. 那么我们如何使其可以变成适用于classical logic的sequent calculus呢？ 我们只需要修改两个地方:
+\begin{itemize}
+	\item 允许sequent拥有多个conclusions, 即$\Gamma \vdash \Delta$, 此时$\Delta$ is collections of formulas.
+	\item 同时每个rules里面的main formula in right side也在primise继续保留. 
+\end{itemize}
+\end{annotation}
+
+\begin{example}
+\rm 我们现在来证明$\vdash A \vee \neg A$:
+\[
+	\infer[\vee R_1]{\vdash A \vee \neg A}{\infer[\vee R_2]{\vdash A \vee \neg A, A}{\infer[\supset L]{\vdash A \vee \neg A, A, \neg A}{\infer[init]{A \vdash A \vee \neg A, A, \neg A}{}}}}
+\]
+\end{example}
+
+\newpage
 \subsection{Simplification}
 
 \begin{annotation}
-\rm 目的是去掉sequent calculus里面the duplication of main formula. 为了区分simplified sequent，我们用$\to$代替$\Rightarrow$
+\rm 目的是去掉sequent calculus里面the duplication of main formula，因为这些main formula往往是冗余的. 为了区分simplified sequent，我们用$\to$代替$\Rightarrow$
 \end{annotation}
 
 \begin{definition}
@@ -1951,12 +1979,11 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 \end{center}
 \end{definition}
 
+%\[
+%\infer[weakning]{\Gamma, A \supset B, B \vdash C}{\Gamma, B \vdash C} \quad\quad \infer[cut]{\Gamma, B \vdash C}{\infer[id]{\Gamma, A \supset B \vdash A \supset B}{} & \Gamma,A \supset B, B \vdash C}
+%\]
 \begin{annotation}
-\rm \redt{为什么implication emilination的left premise中的main formual没有去掉?} 这是值得探讨的问题，right premise能去掉因为
-$$
-\infer[cut]{\Gamma, B \Rightarrow C}{\infer[id]{\Gamma, A \supset B \Rightarrow A \supset B}{} & \Gamma,A \supset B, B \vdash C}
-$$
-同时更加底层的原因是$\vdash B \supset (A \supset B)$. 而你此时思考$\Gamma, A \supset B \supset A$时，应当思考是否存在一个关于$A$的proof里面需要用到$A \supset B$? 注意此时的\emph{cut} rule在这里是无法奏效的，我好想想不到这样proof td.
+\rm \redt{为什么implication emilination的left premise中的main formual没有去掉?} 这是值得探讨的问题，其中right premise能去掉因为$\vdash B \supset (A \supset B)$，即$B$本身就"包含"了$A \supset B$. 而当你思考想要将left primise变为$\Gamma \vdash A$之前，应当思考是否存在一个关于$A$的proof里面需要用到$A \supset B$? 我好像找不到这样proof td.
 \end{annotation}
 
 \begin{theorem}
@@ -2143,14 +2170,14 @@ $$
 \end{annotation}
 
 \begin{example}
-\rm \redt{如果$A$是atom}，那么此时的$\subset L$对应的instance为
+\rm \redt{如果$A$是atom}，那么此时的$\supset L$对应的instance为
 $$
 \infer[\supset L]{\Gamma, a \supset B \to C}{\Gamma, a \supset B \to a & \Gamma, B \to C}
 $$
 这里分三种情况讨论left premise的subproof:
 \begin{enumerate}
 	\item 如果$a \in \Gamma$, 那么显然我们是可以close掉left subproof，直接以right premise作为前提. 
-	\item 如果继续对left premise继续使用$\subset L$，前面说了没有意义，更何况这里$A$还只是一个atom.  那么什么时候重复apply $\subset L$有意义呢？ 除非我们还想从$A$里面提取点其他的信息，例如$A = A_1 \vee A_2$，可以两次apply $\subset L$，再利用一下$\vee R_1$和$\vee R_2$就能得到不一样的信息.
+	\item 如果继续对left premise继续使用$\supset L$，前面说了没有意义，更何况这里$A$还只是一个atom.  那么什么时候重复apply $\supset L$有意义呢？ 除非我们还想从$A$里面提取点其他的信息，例如$A = A_1 \vee A_2$，可以两次apply $\supset L$，再利用一下$\vee R_1$和$\vee R_2$就能得到不一样的信息.
 	\item 如果从$\Gamma$里面挑一个formula出来apply rules，那么这里可能有两种选择，要么apply invertible rule或者non-invertible rule. 对于non-invertible rule而言，这里只能选择$\supset L$，因为此时right side是一个atom. 当我们考虑delay applying $\supset L$ for $a \supset B$，apply invertible rule and other left implicaion as possible we can, 我们最终会回到第一种情况. 
 \end{enumerate}
 因此我们分析告诉我们在这种情况下，我可以将$\supset L$化简为
@@ -2175,7 +2202,7 @@ $$
 $$
 很显然后者我们将所有antecedent里面implication都简化了，每个implication都只依赖一个assumption，这样是有利于我们做归纳的. 因此在这里情况下可以简化$\supset L$为
 $$
-\infer[\wedge \subset L]{\Gamma, (A_1 \vee A_2) \subset B \to C}{\Gamma, A_1 \supset (A_2 \subset B) \to C}
+\infer[\wedge \supset L]{\Gamma, (A_1 \vee A_2) \supset B \to C}{\Gamma, A_1 \supset (A_2 \supset B) \to C}
 $$
 \end{example}
 
@@ -2188,7 +2215,7 @@ $$
 %$$
 %\infer[\supset L]{\Gamma, A_1 \supset B, A_2 \supset B \to C}{\infer{\Gamma, A_1 \supset B, A_2 \supset B \to A_2}{} & \infer{\Gamma, A_1 \supset B, A_2 \to C}{\Gamma,A_2, A_1 \subset B \to A_1 & \Gamma,A_2, B \to C}}
 %$$
-这样我们就不需要再使用$\vee R$来从$A_1 \vee A_2$获得信息，因此这里简化的$\subset L$为
+这样我们就不需要再使用$\vee R$来从$A_1 \vee A_2$获得信息，因此这里简化的$\supset L$为
 $$
 \infer[\vee \supset L]{\Gamma, (A_1 \vee A_2) \supset B  \to C}{\Gamma, A_1 \supset B, A_2 \supset B \to C}
 $$
@@ -2212,19 +2239,19 @@ $$
 \begin{example}
 \rm 若$A$为$\top$，显然有
 $$
-\infer[\top \supset L]{\Gamma, \top \subset B \to C}{\Gamma, B \to C}
+\infer[\top \supset L]{\Gamma, \top \supset B \to C}{\Gamma, B \to C}
 $$
-因为left branch $\Gamma, \top \subset B \to \top$显然是可以直接close掉的. 
+因为left branch $\Gamma, \top \supset B \to \top$显然是可以直接close掉的. 
 \end{example}
 
 \begin{example}
-\rm 若$A$为$\perp$，这里有一个显然的logical equivalent:
+\rm 若$A$为$\perp$，这里有一个logical equivalent:
 $$
-\perp \subset B \equiv A
+\perp \supset B \equiv \top
 $$
 因此这里简化的$\supset L$为
 $$
-\infer[\perp \supset L]{\Gamma, \perp \subset B \to C}{\Gamma \to C}
+\infer[\perp \supset L]{\Gamma, \perp \supset  B \to C}{\Gamma \to C}
 $$
 \end{example}
 
@@ -2243,7 +2270,7 @@ $$
 \begin{annotation}
 \rm 要证明completeness of derivability in G4ip，我们得先证明terminitation of proof searching in G4ip，因为现在没有soundness中的前提条件了. 那是什么原因导致我们会担心会不会terminated呢？ 因为$\wedge \supset L$
 $$
-\infer[\wedge \subset L]{\Gamma, (A_1 \vee A_2) \subset B \to C}{\Gamma, A_1 \supset (A_2 \subset B) \to C}
+\infer[\wedge \supset L]{\Gamma, (A_1 \vee A_2) \supset B \to C}{\Gamma, A_1 \supset (A_2 \supset B) \to C}
 $$
 看起来premise和conclusion似乎有相同的规模，这里能否保证termination? 这里引入weight来证明它，很奇妙的规则，至少我还没有洞悉它. 
 \end{annotation}
@@ -3295,7 +3322,7 @@ N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 \[
 	\neg B_1 \vee \cdots \vee \neg B_n \vee H
 \]
-那么它正好就是一个definite clause. 在Prolog里面make query $G$，实际上就是要证明$G$ is vaild under given rules，即$F = R_1\wedge \cdots \wedge R_k \subset G$，其中$R_i$表示一段Prolog program里面所有Horn clauses. 也就是要证明$\neg F$ is unsatifiable,  so $F$ gonna to be $R_1 \wedge \cdots \wedge R_k \wedge \neg G$, 它也是下述clauses:
+那么它正好就是一个definite clause. 在Prolog里面make query $G$，实际上就是要证明$G$ is vaild under given rules，即$F = R_1\wedge \cdots \wedge R_k \supset G$，其中$R_i$表示一段Prolog program里面所有Horn clauses. 也就是要证明$\neg F$ is unsatifiable,  so $F$ gonna to be $R_1 \wedge \cdots \wedge R_k \wedge \neg G$, 它也是下述clauses:
 \[
 	\begin{aligned}
 	&C_1:\{\neg B_1^1, \cdots, \neg B_{n_1}^1, H_1\} \\
@@ -3367,7 +3394,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \begin{annotation}
 \rm (\redt{linear implication的等价形式}) 现在我们可以给出之前implication in classical and intuitionistic和linear implication的关系
 \[
-A \subset B \equiv \oc A \subset B
+A \supset B \equiv \oc A \supset B
 \] 
 \end{annotation}
 
