@@ -397,7 +397,6 @@ if and only if for all truth valuations $t$, if $\Sigma^t = T$ then also $\alpha
 \newpage
 \subsection{Classic Propositional Modal Logic}
 
-
 \begin{definition}
 \rm \cite{15-816-cml}Let $\Sigma$ be a set of propositional letters or atomic propositions. The set $F_P(\Sigma)$ of formulas of classical propositional modal logic is the smallest set with:
 \begin{enumerate}
@@ -2485,17 +2484,17 @@ partition([X|L], P, Ls, [X|Gs]) :- X >= P,
 \begin{tabular}{c|c}
 Right invertible rules & $\infer[\forall R]{\Gamma^-;\Omega \xrightarrow{R} \forall x.A}{\Gamma^-;\Omega \xrightarrow{R} A[c/x]}$ where $c$ is fresh variable \\
 \hline Side change & $\infer[LR_\exists]{\Gamma^-;\Omega \xrightarrow{R} \exists x.A}{\Gamma^-;\Omega \xrightarrow{L} \exists x.A}$ \\
-\hline Left invertible rules & $\infer[L \exists]{\Gamma^-,\Omega,\exists x. A \xrightarrow{L} C^+}{\Gamma^-,\Omega,A[c/x] \xrightarrow{L} C^+}$ where $c$ is fresh variable \\
+\hline Left invertible rules & $\infer[\exists L]{\Gamma^-,\Omega,\exists x. A \xrightarrow{L} C^+}{\Gamma^-,\Omega,A[c/x] \xrightarrow{L} C^+}$ where $c$ is fresh variable \\
 \hline Shift rules & $\infer[\textsl{shift}_\forall]{\Gamma^-; \Omega, \forall x. A \xrightarrow{L} C^+}{\Gamma^-,\forall x. A; \Omega \xrightarrow{L} C^+}$ \\
-\hline Noninvertible rules & $\infer[R \exists]{\Gamma^-; \cdot \xrightarrow{L} \exists x.A}{\Gamma^-; \cdot \xrightarrow{L} A[t/x]} \quad\quad \infer[L \forall]{\Gamma, \forall x. A;\cdot \to C^+}{\Gamma, \forall x. A; A[t/x] \to C^+}$ where $t$ is term
+\hline Noninvertible rules & $\infer[\exists R]{\Gamma^-; \cdot \xrightarrow{L} \exists x.A}{\Gamma^-; \cdot \xrightarrow{L} A[t/x]} \quad\quad \infer[\forall L]{\Gamma, \forall x. A;\cdot \to C^+}{\Gamma, \forall x. A; A[t/x] \to C^+}$ where $t$ is term
 \end{tabular}
 \end{center}
-这里有两个感觉很奇怪的rules $L \exists$和$L \forall$，首先这和我们直觉上关于$\exists$和$\forall$的introduction rule不太一样，而$R \exists$和$R \forall$是符合我们直觉的. 我们从“怎么用这两个条件”来解释:
+这里有两个感觉很奇怪的rules $L \exists$和$L \forall$，首先这和我们第一直觉上关于$\exists$和$\forall$的introduction rule不太一样，而$R \exists$和$R \forall$是符合我们直觉的. 我们从“怎么用这两个条件”来解释:
 \begin{itemize}
-	\item 在一般情况下，如果我们有一个关于type $\tau$存在性命题，那么通常我们会假设其存在用某个symbol满足$\tau$同时满足当前命题，让prove过程进行下去，$L \exists$就是采用的这种直觉.
+	\item 在一般情况下，如果我们有一个关于type $\tau$存在性命题，那么通常我们会假设其存在用某个symbol满足$\tau$同时满足当前命题，让proving 过程进行下去，$L \exists$就是采用的这种直觉.
 	\item 而当存在一个关于type $\tau$全称命题的时候，那么我们会取一个任意满足$\tau$的term，来让prove过程进行下，同时keep这个全称命题，万一取错了，我们还可以再取. 
 \end{itemize}
-上面是我个人觉得比较合理的解释. 
+上面是我个人觉得比较合理的解释. 但是当你觉得上述解释make sense之后，你回过来看$ \exists R$和$\forall R$好像又有点不对劲，终于你会了解核心所在是因为$\exists$和$\forall$出现的位置不一样，出现在primise就是上面解释. 而当出现在conclusion之后，$\exists x$意味着我们需要一开始就找到符合命题的term, 最终才能得到正确的proof; $\forall x$意味我们$x$怎样取都可以，因此我们可以用一个free variable来代替. 
 \end{annotation}
 
 \begin{definition}
@@ -3592,6 +3591,9 @@ where aximos can of course be replaced by $\oc A$.
 	\infer[\multimap R]{locked, \oc T_1, \oc T_2, \oc T_3, \oc T_4 \to coin \multimap unlocked}{\infer[\oc L]{locked, \oc T_1, \oc T_2, \oc T_3, \oc T_4, coin \to unlocked}{\infer[\multimap L]{locked, T_1, \oc T_2, \oc T_3, \oc T_4, coin \to unlocked}{\infer[\otimes R]{locked, coin \to locked \otimes coin}{\infer[init]{locked \to locked}{} & \infer[init]{coin \to coin}{}} & \infer[\oc wL^* + init]{\oc T_2, \oc T_3, \oc T_4, unlocked \to unlocked}{}}}}
 \]
 \end{example}
+
+\newpage
+\subsection{Focused Linear logic}
 
 \newpage
 \section{More Delicate}
