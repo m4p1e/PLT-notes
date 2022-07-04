@@ -1958,14 +1958,14 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 \end{example}
 
 \newpage
-\subsection{Simplification}
+\subsection{G3ip}
 
 \begin{annotation}
 \rm 目的是去掉sequent calculus里面the duplication of main formula，因为这些main formula往往是冗余的. 为了区分simplified sequent，我们用$\to$代替$\Rightarrow$
 \end{annotation}
 
 \begin{definition}
-\rm \cite{15-317-rsc}Simplified sequent calculus defined as follow
+\rm \cite{15-317-rsc}The G3ip sequent calculus for intuitionistic logic is defined as follow
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline $\infer[\wedge L]{\Gamma, A \wedge B \to C}{\Gamma, A, B \to C}$  & $\infer[\wedge R]{\Gamma \to A \wedge B}{\Gamma \to A & \Gamma \to B}$ \rule{0em}{3em} \\
@@ -1983,8 +1983,14 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 %\infer[weakning]{\Gamma, A \supset B, B \vdash C}{\Gamma, B \vdash C} \quad\quad \infer[cut]{\Gamma, B \vdash C}{\infer[id]{\Gamma, A \supset B \vdash A \supset B}{} & \Gamma,A \supset B, B \vdash C}
 %\]
 \begin{annotation}
-\rm \redt{为什么implication emilination的left premise中的main formual没有去掉?} 这是值得探讨的问题，其中right premise能去掉因为$\vdash B \supset (A \supset B)$，即$B$本身就"包含"了$A \supset B$. 而当你思考想要将left primise变为$\Gamma \vdash A$之前，应当思考是否存在一个关于$A$的proof里面需要用到$A \supset B$? 我好像找不到这样proof td.
+\rm \redt{为什么implication emilination的left premise中的main formual没有去掉?} 这是值得探讨的问题，其中right premise能去掉因为$\vdash B \supset (A \supset B)$，即$B$本身就"包含"了$A \supset B$. 而当你思考想要将left primise变为$\Gamma \vdash A$之前，应当思考是否存在一个关于$A$的proof里面需要用到$A \supset B$? 我好像找不到这样proof td, 最终经过在MSE上提问得到了一个关于$\vdash \neg \neg (A \vee \neg A)$的proof:
+\[
+	\infer[\supset R]{\vdash \neg \neg (A \vee \neg A)}{\infer[\supset L]{\neg (A \vee \neg A) \vdash \perp}{\infer[\vee R_2]{(A \vee \neg A) \supset \, \perp \, \vdash A \vee \neg A}{\infer[\supset R]{(A \vee \neg A) \supset \, \perp \, \vdash \neg A}{\infer[\supset L]{(A \vee \neg A) \supset \, \perp \, ,A \vdash \perp}{\infer[\vee R_1]{(A \vee \neg A) \supset \, \perp \,,A \vdash A \vee \neg A}{\infer[init]{(A \vee \neg A) \supset \, \perp \,,A \vdash A}{}} & \infer[\perp L]{A, \perp \vdash \perp}{}}}} & \infer[\perp L]{\perp\, \vdash \perp}{} }}
+\]
+其中多次用到了$\neg A \equiv A \supset \perp$，这里$\supset L$用到了两次，如果丢掉它left primise中的$A \supset B$，显然我们会在$\vdash A \vee \neg A$卡住.  
 \end{annotation}
+
+%
 
 \begin{theorem}
 \rm Simplified sequent calculus is soundness and completeness, that is
