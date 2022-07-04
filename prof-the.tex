@@ -836,8 +836,7 @@ which means $J$ is derivable from $J_1, \cdots, J_n$.
 \begin{annotation}
 \rm \redt{Why indexed $u$} In the introduction rule, the antecedent named $u$ is discharged in the conclusion. This is a mechanism for delimiting the scope of the hypothesis: its sole reason for existence is to establish "$B~true$"; it cannot be used for any other purpose, and in particular, it cannot be used below the introduction.
 
-上面这段话出自natural deduction的wiki，这个$u$scope了assumption $A~true$的开端，因为$A\supset B$并不依赖$A~true$, 它描述只是if $A~true$ then $B~true$. 
-同时最后的introduction rule会将这个assumption $A~true$ discharged掉，表示scope在这里已经结束了. 而implication rule会将上述derivation直接总结得到一个结论，即
+上面这段话出自natural deduction的wiki，这个$u$指明了assumption $A~true$的作用域是从$A~true$到implications introducation inference line，直接说明了$A\supset B$并不依赖assumption $A~true$, 只是$B~true$依赖$A~true$. 这就是所谓的discharge，$A~true$在作用域以外是invisible的. 实际上这里的$\supset I$就是deduction theorem
 $$
 A \vdash B \Rightarrow \cdot\vdash A \to B. 
 $$
@@ -1115,15 +1114,15 @@ $$
 $$
 \neg A = (A \supset \perp) \Longrightarrow \infer[\neg I]{\neg A}{\deduce[\vdots]{\perp}{A}}
 $$
-We also can give the introduction rule of falsehood.
+We also can give the elimination rule of negation.
 $$
-\infer[\perp I]{\perp}{\neg A & A}
+\infer[\neg E]{\perp}{\neg A & A}
 $$
-so $\perp$ actually means any contradictions. moreover double negation is coming.
+so $\perp$ actually means any contradictions, moreover double negation is coming. NOTICE! if your add $\neg E$ to natural deduction, then we obtain the deduction system for classic propositional logic. its literally excluded middle. 
 \end{example}
 
 \begin{annotation}
-\rm notaional definition可以看做用已有的东西构造出一些东西. 与之对应的是我们可以直接符号化的给出某个新的定义，称之为symbolic definition. 
+\rm notaional definition可以看做用已有的东西构造出一些东西. 与之对应的是我们可以直接符号化的给出某个新的定义，称之为\redt{symbolic definition}. 
 \end{annotation}
 
 \newpage
@@ -1417,8 +1416,28 @@ $$
 \rm \redt{Quantifiers corresponse dependent types}.
 \end{annotation}
 
+\newpage
+\subsection{Misc}
+
+\begin{annotation}
+\rm 在Gentzen提出ND之前，存在一种\redt{Hilbert-style systems}, 或者叫\redt{axiomatic system}，它不同于ND完全是由general inference rules组成的，它只存在一种inherent rule:
+\[
+\infer{\vdash B}{\vdash A \supset B & \vdash A}
+\]
+其他的rules需要你自己给定，称其为axioms.
+\end{annotation}
 
 
+\begin{annotation}
+\rm The "\redt{BHK-conditions}" (for Brouwer-Heyting-Kolmogorov), which give the explanations of logical operations of propositional logic in terms of direct provability of propositions, can be put as follows:
+\begin{itemize}
+	\item A direct proof of the proposition $A \wedge B$ consists of proofs of the propositions $A$ and $B$.
+	\item A direct proof of the proposition $A \vee B$ consists of a proof of the proposition $A$ or a proof of the proposition $B$.
+	\item A direct proof of the proposition $A \supset B$ consists of a proof of the proposition $B$ from the assumption that there is a proof of the proposition $A$.
+	\item A direct proof of the proposition $\perp$ is impossible.
+\end{itemize}
+这样的思考方式使得ND完完全全展现了我们CS里面所需要的\redt{computability}.
+\end{annotation}
 
 \newpage
 \section{Proof Searching}
@@ -1453,7 +1472,10 @@ where $A_1,\cdots,A_n$ and $C$ are well-defined formulas.
 \end{definition}
 
 \begin{annotation}
-\rm (\redt{detail of correspondence}) 其中$\Gamma$是一个set of formulas，它可以是empty set. 思考上述sequent形式下的natural deduction，我们应该用bottom-up的视角来观察. 试想我们在没有additional assumptions证明一个formulas，在最开始$\Gamma$应该是empty的，随着我们不断apply上述规则过程中将不断的填充$\Gamma$. 那么什么时候证明算接结束了呢？ 在natural deduction中我们从下往上使用introduction rules，并添加相应的assumptions，再从上往下使用emilination rules，直到它们在中途相遇，这时候我们的证明就结束了，当证明结束的时候，此时所有的assumptions都应该被discharge了，这个操作对应到sequent形式下就是上述hyp rule，在利用sequent构造proof的时候，总是以hyp rule结束的.
+\rm (\redt{detail of correspondence}) 其中$\Gamma$是一个set of formulas，它可以是empty set. 思考上述sequent形式下的natural deduction，我们应该用bottom-up的视角来观察. 试想我们在没有additional assumptions证明一个formulas，在最开始$\Gamma$应该是empty的，随着我们不断apply上述规则过程中将不断的填充$\Gamma$. 那么什么时候证明算接结束了呢？ 在natural deduction中我们从下往上使用introduction rules，并添加相应的assumptions，再从上往下使用emilination rules，直到它们在中途相遇，这时候我们的证明就结束了，而且此时所有额外的assumptions都应该被discharge了，sequent calculus中并没有显式的discharge的操作，我们是通过把某个conclusion依赖的assumption都列出来代替的，在利用sequent构造proof的时候，总是以hyp rule结束的, 这个hyp rule实际上是一个特殊地discharge:
+\[
+	\infer[\supset I^u]{A \supset A}{A^u}
+\]
 
 显然sequent提供了一种更加优雅的收集assumptions的方式，我们总是将new assumption放在left side, 使得assumptions和需要证明的goal formula总是在一个level. 一旦某个assumption建立之后，以此往后的证明过程中这个assumption都是visible的，仔细想想这是对的，在natural deduction中，我们总是在最上面添加新的assumption. 
 \end{annotation}
@@ -1499,7 +1521,7 @@ $$
 \end{annotation}
 
 
-\begin{definition}
+\begin{definition}\label{vc-form-sq}
 \rm A sequent is a pariticular form of hypothetical judgement
 $$
 A_1~left,\cdots,A_n~left \vdash C~right. 
@@ -1544,9 +1566,20 @@ $\infer[\perp L]{\Gamma,\perp~left \vdash C~right}{}$ & \rule{0mm}{10mm}\\
 \end{annotation}
 
 \begin{annotation}
-\rm 这里frank给出的rules都有一个特点: conclusion里面的assumptions依然出现在了primises里面，这是因为"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的derivation中同样available. 那么你可能回想最后还留着这么多assumption，还怎么用init rule来close掉证明呢？ 这里不用担心，我们是可以一些structural rules来去掉这些冗余的assumption的. 
+\rm (\redt{关于duplication of main formula的解释}) 这 里frank给出的rules都有一个特点: conclusion里面的assumptions依然出现在了primises里面，这是因为"monotonicity of hypotheses"的概念: 在bottom-up形式下的proof中一旦建立某个assumption，那么它在后续的derivation中同样available. 那么你可能回想最后还留着这么多assumption，还怎么用init rule来close掉证明呢？ 这里不用担心，我们是可以用一些structural rules来去掉这些冗余的assumption的. 
 \end{annotation}
 
+\begin{annotation}
+\rm \redt{关于vertification calculus和sequent calculus对应关系} 它们最基本formula的关系在Definition \ref{{vc-form-sq}} 里面已经提到了. 这里还有一个关于inference rules关系: introduction rules in vertification calculus对应right rules in sequent calculus; elimination rules in vertification calculus对应left rules in sequent calculus.
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Subformula property}) All formulas in a sequent calculus derviration are subformulas of the endsequent of the derivation. 
+\end{lemma}
+
+\begin{annotation}
+\rm (\redt{初见proof-searching}) 现在你在sequent calculus里面做derivation，可以完全使用linear bottom-up手法来做，而不用像在natural deduction里面你要从分不同的方向使用introduction rules和elimination rules. 这是因为比如你现在手上现阶段要做derivation的formula为$\Gamma \Rightarrow A$, 一旦你确定了其中的principle formula是哪个，我们再直接选择一个inference rule，就可以唯一的确定primises. 
+\end{annotation}
 
 \begin{example}
 \rm The proof in sequent calculus.
@@ -1554,6 +1587,7 @@ $$
 \infer[\supset R]{\Rightarrow (A \supset B) \supset ((A\wedge C) \supset (B \wedge C) ) }{\infer[\supset R]{A \supset B \Rightarrow (A\wedge C) \supset (B \wedge C)}{\infer[\wedge R]{A \supset B,(A\wedge C) \Rightarrow  (B \wedge C)}{\infer[\supset\!\! L]{A \supset B,(A\wedge C) \Rightarrow B}{\infer[\wedge L_1]{A \supset B,(A\wedge C) \Rightarrow A}{\infer[init]{A \supset B,(A\wedge C), A \Rightarrow A}{}} & \infer[init]{A \supset B,(A\wedge C),B \Rightarrow B}{} } & \infer[\wedge L_2]{A \supset B,(A\wedge C) \Rightarrow C}{\infer[init]{A \supset B,(A\wedge C),C \Rightarrow C}{}}}}}
 $$
 \end{example}
+
 
 \begin{theorem}
 \rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
@@ -2161,6 +2195,31 @@ $$
 
 \begin{annotation}
 \rm 上述算法的核心我们称其为\redt{focuing}，它是proof search中非常重要的一个环节. 
+\end{annotation}
+
+\newpage
+\subsection{Structral Rules}
+
+\begin{definition}
+\rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
+\end{definition}
+
+\begin{definition}
+\rm The \redt{weakening rule} is defined as
+\[
+	\infer[weakening]{\Gamma, A \to C}{\Gamma \to C}
+\]
+\end{definition}
+
+\begin{definition}
+\rm The \redt{contraction rule} is defined as
+\[
+	\infer[contract]{\Gamma, A, \to C}{\Gamma, A, A \to C}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 在前面我们已经在频繁使用weakening和contraction rules了，这是完全是因为它们在之前定义的sequent calculus里面是admissible的. 
 \end{annotation}
 
 
@@ -3353,12 +3412,10 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \end{remark}
 
 \subsection{MALL}
-\begin{definition}
-\rm A \redt{structural rule} is an inference rule that does not refer to any \emph{logicial connective}. 
-\end{definition}
 
+%像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，
 \begin{annotation}
-\rm (\redt{初见linear logic}) 像我们之前见到几种操作: exchange (把judgement的某一端里面的成员交位置), contraction, weakening这些都属于structural rules. 后面我们即将提到的linear logic就和它们就有着密切的关系，linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和只拥有一个resource，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
+\rm (\redt{初见linear logic}) linear logic关注的对象是resources，或者更准确的说是resource availability. 现在假设拥有两个相同的resources和只拥有一个resource，在语境上是不一样的，这里nlab上用了一个形象的例子，假如我们有这样的sequent
 \[
 	\text{have cake} ~\vdash ~ \text{eat cake}
 \]
@@ -3374,7 +3431,7 @@ SLD里面规定resolvents的产生必须来自两个特别的clauses $C_1$和$C_
 \[
 	\text{if}~A~\text{and}~A \supset B,~\text{then}~B, ~\text{but}~A~\text{still holds}.
 \]
-可以看见两者在对premises处理上是不一样的，前者需要“消耗”premises(注意它和discharge是不一样的，discharge本质上一种identity)，而后者可以依然保持premises.
+可以看见两者在对premises处理上是不一样的，前者需要“消耗”premises(注意它和discharge是不一样的，discharge本质上一种identity)，而后者可以依然保持premises. 你可以预见structural rules将会在linear logic building过程中作为障碍出现. 
 \end{annotation}
 
 \begin{definition}
