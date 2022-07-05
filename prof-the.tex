@@ -1439,6 +1439,17 @@ $$
 这样的思考方式使得ND完完全全展现了我们CS里面所需要的\redt{computability}.
 \end{annotation}
 
+\begin{definition}
+\rm A deduction is in \redt{normal form} if there is no formula which is a conclusion of an introduction rule and the main premise of the elimination rule of the same connective.
+\end{definition}
+
+\begin{example}
+\rm 例如下面deduction就是不是normal form:
+\[
+	\infer[\wedge I]{A \wedge B}{\infer[\wedge E_1]{A}{A \wedge B} & \infer[\wedge E_2]{A}{A \wedge B}}
+\]
+\end{example}
+
 \newpage
 \section{Proof Searching}
 
@@ -1739,7 +1750,7 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 注意\emph{cut} rule是在用the vertification of $A$去替换the use of $A$，这和前面substitution of uses是不太一样的. 
+\rm 注意\emph{cut} rule是在用the vertification of $A$去替换the use of $A$，这和前面substitution of uses是不太一样的. 显然引入\emph{cut} rule将会破坏我们之前提到的sublformula property.
 \end{annotation}
 
 \begin{theorem}
@@ -2219,7 +2230,26 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 在前面我们已经在频繁使用weakening和contraction rules了，这是完全是因为它们在之前定义的sequent calculus里面是admissible的. 
+\rm 在前面我们已经在频繁使用weakening和contraction rules了，这是完全是因为它们在之前定义的sequent calculus里面是admissible的. 这里我们给出为什么它们是admissible的原因，或者说为什么不需要单独定义:
+\begin{itemize}
+	\item weakening: 因为我们的initial rule是
+	\[
+		\infer[init]{\Gamma, P \to P}{}
+	\]
+	而不是
+	\[
+		\infer[axiom]{P \to P}{}
+	\]
+	\item contraction: 因为我们定义的inference rules是shared contexts或者same contexts, 例如$\vee L$
+	\[
+		\infer[\vee L]{\Gamma, A \vee B \to C}{\Gamma, A \to C & \Gamma, B \to C}
+	\]
+	而不是
+	\[
+	\infer[\vee L]{\Gamma,\Delta, A \vee B \to C}{\Gamma, A \to C & \Delta, B \to C}
+	\]
+\end{itemize}
+这些variations在sequent calculus中非常常见，你要非常小心注意它们的出现是否会改变一些properties.
 \end{annotation}
 
 
