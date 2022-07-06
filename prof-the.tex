@@ -1419,7 +1419,7 @@ $$
 \newpage
 \subsection{Misc}
 
-\begin{annotation}
+\begin{annotation}\label{pre-H-system}
 \rm 在Gentzen提出ND之前，存在一种\redt{Hilbert-style systems}, 或者叫\redt{axiomatic system}，它不同于ND完全是由general inference rules组成的，它只存在一种inherent rule:
 \[
 \infer{\vdash B}{\vdash A \supset B & \vdash A}
@@ -2230,7 +2230,7 @@ $$
 \end{definition}
 
 \begin{annotation}
-\rm 在前面我们已经在频繁使用weakening和contraction rules了，这是完全是因为它们在之前定义的sequent calculus里面是admissible的. 这里我们给出为什么它们是admissible的原因，或者说为什么不需要单独定义:
+\rm 在前面我们已经在频繁使用weakening和contraction rules了，这是完全是因为它们在之前定义的sequent calculus里面是admissible的(\bluet{缺一个严格的proof! TODO}). 这里我们给出为什么它们是admissible的原因，或者说为什么不需要单独定义:
 \begin{itemize}
 	\item weakening: 因为我们的initial rule是
 	\[
@@ -2254,7 +2254,11 @@ $$
 
 
 \newpage
-\subsection{Contraction-free}
+\subsection{Terminating Sequent calculus}
+
+%\begin{remark}
+%\rm If a system is both \redt{cut-free and contraction-free}, it can have the property that the primises are proper parts of the conclusion. In this case, we have bottom-up proof search resulting in a tree that \redt{terminates}!
+%\end{remark}
 
 \begin{annotation}
 \rm 在simplified sequent calculus中left implication rule里面的left premise还是留着main formula, 即
@@ -2351,7 +2355,7 @@ $$
 \end{example}
 
 \begin{definition}
-\rm We call simplified sequent calculus with above compound left rules except original left implication \redt{G4ip: Contraction-free calculus for intuitionistic logic}.
+\rm We call simplified sequent calculus with above compound left rules except original left implication \redt{G4ip}, discovered by Hudelmaier and Dyckhoff(1992).
 \end{definition}
 
 \begin{theorem}
@@ -2426,6 +2430,25 @@ $$
 $$
 \end{case}
 \end{proof}
+
+\newpage
+\subsection{Misc}
+
+\begin{annotation}
+\rm (\redt{sequent-calculus扩展过程中的局限性}) Cut-elimination是一个sequent calculus里面一个非常强的技术，因为它可以很好保持subformula property. 但是在实际中如果我们想扩展sequent calculus，往里面加点mathematical axioms，这个时候可能derivations就无法继续保持cut-free了，例如加两个axioms:
+\[
+	\infer[axiom_1]{\to A \supset B}{} ~~~~~ \text{and} ~~~~~  \infer[axiom_2]{\to A}{}
+\]
+那么关于sequent $\to B$的derivation如下:
+\[
+	\infer[cut]{\to B}{\infer[axiom_1]{\to A}{} & \infer[cup]{A \to B}{\infer[axiom_2]{\to A \supset B}{} & \infer[\supset L]{A \supset B, A \to B }{\infer{init}{A\supset B, A \to A}{} &  \infer[init]{B \to B}{}}}}
+\]
+此时是没有办法去掉cut rule, 因为你根本找不到可以apply到$\to B$上的rules. 如果我们想继续保持cut-free怎么办呢？ 有一种办法就是只引入nonlogical inference rules，形如:
+\[
+	\infer{P \to C}{Q \to C}
+\]
+其中$P,Q$都是atomic formula. 
+\end{annotation}
 
  
 \newpage
@@ -3073,7 +3096,7 @@ completeness的证明咋一想还是不是那么显然，这里记录一下. 还
 \end{proof}
 
 \newpage
-\subsection{Resolution}
+\subsection{Resolution}\label{resolution}
 
 \begin{remark}
 \rm 这章的目的是证明某个classical first-logical formula \redt{$F$ is unsatisfiable}.
@@ -3846,6 +3869,40 @@ $$
 \begin{example}
 \rm Proof of $\square(A \supset B) \supset \Diamond A \supset \Diamond B$.
 \end{example}
+
+
+\newpage
+\section{Structural Proof analysis of Axiomatic Theories}
+
+\begin{remark}
+In this chapter, we give a method of adding axioms to sequent calculus, in the form of nonlogical rules of inference.
+\end{remark}
+
+\subsection{From Aximos to Inference Rules}
+
+\begin{definition}
+\rm In \redt{nonlogical rules}, the premises and conclusion are sequents that have atoms as main formulas in the antecedent and an arbitrary context in the succedent. The most general scheme with shared contexts, is 
+\[
+	\infer[\vn{reg}]{P_1, \cdots, P_m, \Gamma \to \Delta}{Q_1, \Gamma \to \Delta & \cdots & Q_n, \Gamma \to \Delta}
+\]
+where $\Gamma, \Delta$ are arbitrary multisets, $P_1,\cdots,P_m,Q_1,\cdots,Q_n$ are fixed atoms, and the number of premises $n$ can be zero. 
+\end{definition}
+
+\begin{definition}
+\rm The axioms always can be represented by $P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$.
+\end{definition}
+
+\begin{annotation}
+\rm 其中$P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$就是Section \ref{resolution}里面提到过的形式.
+\end{annotation}
+
+\begin{annotation}
+\rm 之前在\ref{pre-H-system}里面简单地提到了Hilbert-style system, 你有没有想过如何把它转换到sequent calculus里面来呢？ 我们得为此构造一个特殊sequent calculus，让它里面只包含一个之前我们提到rule
+\[
+	\infer{\to B}{\to A \supset B & \to A}
+\]
+对于每一个axiom $A$我们可以将其转换为$\infer{\to A}{}$. 类似地我们如果想要证明某个formula $C$, 只需要对$\to C$做derivation即可. 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}
