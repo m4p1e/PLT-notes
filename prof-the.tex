@@ -1743,6 +1743,46 @@ $$
 \end{proof}
 
 \begin{definition}
+\rm We call \redt{rank deduction} the rewriting operation that premutes the cut rule over other rules in a proof. 
+\end{definition}
+
+\begin{annotation}\label{permute-cut}
+\rm rank deduction = ? "premutes it up" 就是指将某个cut rule"往上移"， 例如rank deduction
+$$
+\begin{gathered}
+\infer[cut]{\Gamma, A \wedge B \Rightarrow C}{\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow A}{\infer[init]{\Gamma, A \wedge B,A \Rightarrow A}{}}  & \deduce{\Gamma, A \wedge B,A \Rightarrow C}{\mathcal{E}}}\\
+\mathrel{\rotatebox{270}{$\leadsto$}}\\
+\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\infer[cut]{F, A \wedge B, A \Rightarrow C}{\infer[init]{\Gamma, A \wedge B, A \Rightarrow A}{} & \deduce{\Gamma, A \wedge B, A, A \Rightarrow C}{\mathcal{E} + ~\text{weakening}}}}
+\end{gathered}
+$$
+再来看一个例子
+$$
+\begin{gathered}
+\infer[cut]{\Gamma \Rightarrow C}{\infer{\Gamma \Rightarrow A \wedge B}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma \Rightarrow B}{\mathcal{E}}} & \infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}} \\
+\rotatebox{270}{$\leadsto$}\\
+\infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \infer[cut]{\Gamma, A \Rightarrow C}{ \infer[\wedge R]{\Gamma, A \Rightarrow A \wedge B}{\deduce{\Gamma, A \Rightarrow A}{\mathcal{D}+~\text{weakening}} & \deduce{\Gamma,A \Rightarrow B}{\mathcal{E}+~\text{weakening}}}& \deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}}
+\end{gathered}
+$$
+此时\emph{cut rule}中的两个premises中的cut formula(main formula of \emph{cut} rule)同时也是apply在两个premise上rules的main formula，这种shape的cut我称为\redt{principal cases}.
+\end{annotation}
+
+\begin{definition}
+\rm We call \redt{grade reduction} the rewriting operation that transforms a cut on a formula into a cut on simple formulas(i.e, formulas with fewer connectives) or simpler proofs.
+\end{definition}
+
+\begin{annotation}
+\rm 在annotation \ref{permute-cut}中的第二个例子中两个\emph{cut}分别对应了grade reduction中的两种情况: 其中第一个\emph{cut}将原来的cut formula变得simpler了; 第二个\emph{cut}将原来的left branch proof变得更加simpler了. 注意这两个\emph{cut}都在和最初的那个比较. 
+\end{annotation}
+
+\begin{lemma}\label{permute-is-safe}
+\rm The \emph{cut} rule permutes up all other rules that do not operate on the cut formula.
+\end{lemma}
+
+\begin{proof}
+这个lemma简而言之就是不能在principal cases做rank deduction, 其他情况都能做.
+\end{proof}
+
+\begin{definition}
 \rm (\redt{another of substitution}) The rule of \redt{cut}
 $$
 \infer[cut]{\Gamma \vdash C~right}{\Gamma \vdash A~right & \Gamma, A~left \vdash C~right}
@@ -1758,7 +1798,7 @@ $$
 \end{theorem}
 
 \begin{proof}
-\rm 证明\emph{cut} rule是个技术活. 我们要做一个nested structure induction. 首先给定\emph{cut} rule的shape
+\rm 证明\emph{cut} rule is admissible是个技术活. 我们要做一个nested structure induction. 首先给定\emph{cut} rule的shape
 $$
 \infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma,A \Rightarrow C}{\mathcal{E}}}
 $$
@@ -1822,41 +1862,9 @@ $$
 \end{itemize} 
 \end{proof}
 
-\begin{definition}
-\rm We call \redt{rank deduction} the rewriting operation that premutes the cut rule over other rules in a proof. 
-\end{definition}
 
 \begin{annotation}
-\rm "premutes it up"是啥意思呢？ 就是指某个cut rule"往上移"， 例如
-$$
-\begin{gathered}
-\infer[cut]{\Gamma, A \wedge B \Rightarrow C}{\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow A}{\infer[init]{\Gamma, A \wedge B,A \Rightarrow A}{}}  & \deduce{\Gamma, A \wedge B,A \Rightarrow C}{\mathcal{E}}}\\
-\mathrel{\rotatebox{270}{$\leadsto$}}\\
-\infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\infer[cut]{F, A \wedge B, A \Rightarrow C}{\infer[init]{\Gamma, A \wedge B, A \Rightarrow A}{} & \deduce{\Gamma, A \wedge B, A, A \Rightarrow C}{\mathcal{E} + ~\text{weakening}}}}
-\end{gathered}
-$$
-此时cup拥有了smaller left branch，这其中为我们后续的nested induction hypothesis提供了途径. 再来看一个例子
-$$
-\begin{gathered}
-\infer[cut]{\Gamma \Rightarrow C}{\infer{\Gamma \Rightarrow A \wedge B}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma \Rightarrow B}{\mathcal{E}}} & \infer[\wedge L_1]{\Gamma, A \wedge B \Rightarrow C}{\deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}} \\
-\rotatebox{270}{$\leadsto$}\\
-\infer[cut]{\Gamma \Rightarrow C}{\deduce{\Gamma \Rightarrow A}{\mathcal{D}} & \infer[cut]{\Gamma, A \Rightarrow C}{ \infer[\wedge R]{\Gamma, A \Rightarrow A \wedge B}{\deduce{\Gamma, A \Rightarrow A}{\mathcal{D}+~\text{weakening}} & \deduce{\Gamma,A \Rightarrow B}{\mathcal{E}+~\text{weakening}}}& \deduce{\Gamma, A \wedge B, A \Rightarrow C}{\mathcal{F}}}}
-\end{gathered}
-$$
-此时\emph{cut rule}中的两个premises中的cut formula都是被apply了相应的rules，这种shape的cut我称为\redt{principal cases}，它和第一个例子不太相同. 此时下面这个cup拥有了smaller left branch, 而上面这个cup拥有了smaller right branch. 
-\end{annotation}
-
-\begin{lemma}\label{permute-is-safe}
-\rm The \emph{cut} rule permutes up all other rules that do not operate on the cut formula.
-\end{lemma}
-
-\begin{proof}
-换句话说就是对于任意的\emph{cut} rule，我们都可以重排它的primises，把cut放到right place. 那么这里分别要对它的primises应用sequent calculus的规则，两个primises就是20cases. td
-\end{proof}
-
-
-\begin{annotation}
-\rm \bluet{引入\emph{cut} rule不利于做proof search}. 
+\rm \bluet{引入\emph{cut} rule不利于做proof search}, 因为可能引入的$A$有很多种可能，其中部分可能并不是原来formula的subformula.   
 \end{annotation}
 
 
@@ -2050,7 +2058,6 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 \end{proof}
 
 
-
 \newpage
 \subsection{Invertibility}\label{invertible calculus}	
 
@@ -2207,6 +2214,28 @@ $$
 \begin{annotation}
 \rm 上述算法的核心我们称其为\redt{focuing}，它是proof search中非常重要的一个环节. 
 \end{annotation}
+
+\newpage
+\subsection{G3cp}
+
+\begin{definition}
+\rm \redt{G3cp} is invertiable sequent calculus for classical logic:
+\[
+	\begin{gathered}
+		\infer[init]{\Gamma, P \to P, \Delta}{} \\
+		\infer[\wedge L]{\Gamma, A \wedge B \to \Delta}{\Gamma, A, B \to \Delta} \quad \quad \infer[\wedge R]{\Gamma \to A \wedge B ,\Delta}{\Gamma \to A, \Delta & \Gamma \to B, \Delta}\\
+		\infer[\vee L]{\Gamma, A \vee B \to \Delta}{\Gamma, A \to \Delta, \Gamma, B \to \Delta} \quad \quad \infer[\vee R]{\Gamma \to A \vee B, \Delta}{\Gamma \to A ,B, \Delta}\\
+		\infer[\supset L]{\Gamma, A \supset B \to \Delta}{\Gamma \to A, \Delta & \Gamma, B \to \Delta} \quad\quad  	\infer[\supset R]{\Gamma \to A \supset B, \Delta}{\Gamma, A \to B, \Delta} \\
+		\infer[\perp L]{\Gamma, \perp \to \Delta}{} \quad\quad \infer[\top R]{\Gamma \to \top}{}	
+	\end{gathered}
+\] 
+\end{definition}
+
+\begin{theorem}
+\rm All rules of G3cp are invertible.
+\end{theorem}
+
+
 
 \newpage
 \subsection{Structral Rules}
