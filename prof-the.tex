@@ -1779,7 +1779,15 @@ $$
 \end{lemma}
 
 \begin{proof}
-这个lemma简而言之就是不能在principal cases做rank deduction, 其他情况都能做.
+这个lemma简而言之就是不能在principal cases做rank deduction, 其他情况都能做. 你得考虑\emph{cut} rule的premises可以被applied的所有rules. 试着做一个case的证明$\Gamma = \Gamma', B_1 \wedge B_2$:
+\[
+	\begin{gathered}
+	\infer[\vn{cut}]{\Gamma', B_1 \wedge B_2 \Rightarrow C}{\infer[\wedge L_1]{\Gamma', B_1 \wedge B_2 \Rightarrow A}{\deduce{\Gamma', B_1 \wedge B_2, B_1 \Rightarrow A}{\mathcal{D}}} & \deduce{\Gamma', B_1 \wedge B_2,A \Rightarrow C}{\mathcal{E}}} \\
+	\rotatebox{270}{$\leadsto$}\\
+	\infer[\wedge L_1]{\Gamma', B_1 \wedge B_2 \Rightarrow C}{\infer{\Gamma', B_1 \wedge B_2, B_1 \Rightarrow C}{\deduce{\Gamma', B_1 \wedge B_2, B_1 \Rightarrow A}{\mathcal{D}} & \deduce{\Gamma', B_1 \wedge B_2, B_1, A \Rightarrow C}{\mathcal{E} + ~\vn{weakening}}}}
+	\end{gathered}
+\]
+之前的$\wedge L_1$在\emph{cut}上面，这就是lemma里面想表明的，但是这还不够我们得把所有这样的rules都表达出来，所以还得做induction, 两个primises合起来就20个cases.. TD 
 \end{proof}
 
 \begin{definition}
