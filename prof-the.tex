@@ -1600,6 +1600,31 @@ $$
 \end{example}
 
 
+\newpage
+\subsection{Some Useful Tools}
+
+\begin{definition}
+\rm A \redt{derivation} in sequent calculus is either an \emph{init}, an instanse of $\perp L$, or an application of a logical rule to derivations concluding its premises. 
+\end{definition}
+
+\begin{definition}
+\rm The \redt{height of a derivation} is the greatest number of successive application of rules in it, where \emph{init} and $\perp L$ have height $0$.
+\end{definition}
+
+
+\begin{annotation}
+\rm 在height of derivation做induction是一个非常常见并且有用的方法，在后面我们会经常看见. 我可以使用下面这样的一个notation来让我们induction过程更加的清晰明了:
+\[
+	\vdash_n \Gamma \Rightarrow C
+\]
+它表示"the sequent $\Gamma \Rightarrow C$ in G3ip is derivable with a height of derivation at most $n$".
+\end{annotation}
+
+
+
+\newpage
+\subsection{Soundness and Completeness}
+
 \begin{theorem}
 \rm (\redt{from verifications to sequent calculus}) Given hypotheses $\Gamma = (A_1 \uparrow, \cdots, A_n \uparrow)$, it correpsonds to $\widehat{\Gamma} = (A_1~left,\cdots,A_n~left)$. Then we have
 \begin{enumerate}
@@ -2030,7 +2055,7 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline $\infer[\wedge L]{\Gamma, A \wedge B \to C}{\Gamma, A, B \to C}$  & $\infer[\wedge R]{\Gamma \to A \wedge B}{\Gamma \to A & \Gamma \to B}$ \rule{0em}{3em} \\
-\hline $\infer[\vee L]{\Gamma, A \vee B \to C}{\Gamma, A \to C & \Gamma, B \to C}$ & $\begin{aligned}\infer[\vee R_1]{\Gamma \to A \vee B}{A} \\ \infer[\vee R_2]{\Gamma\to A \vee B}{B} \end{aligned}$ \rule{0em}{3em}\\
+\hline $\infer[\vee L]{\Gamma, A \vee B \to C}{\Gamma, A \to C & \Gamma, B \to C}$ & $\begin{aligned}\infer[\vee R_1]{\Gamma \to A \vee B}{\Gamma \to A} \\ \infer[\vee R_2]{\Gamma\to A \vee B}{\Gamma \to B} \end{aligned}$ \rule{0em}{3em}\\
 \hline $\infer[\supset L]{\Gamma, A \supset B \to C}{\Gamma, A \supset B \to A & \Gamma, B \to C}$ & $\infer[\supset R]{\Gamma \to A \supset B}{\Gamma, A \to B}$ \rule{0em}{3em} \\
 \hline & $\infer[\top R]{\Gamma \to \top}{}$ \rule{0em}{2em}\\
 \hline $\infer[\perp L]{\Gamma, \perp \to C}{}$ & \rule{0em}{2em}\\
@@ -2110,13 +2135,37 @@ $$
 \begin{proof}
 \rm that is
 $$
-\infer[]{\Gamma, A \to B}{\Gamma, A \to A \supset B & \infer{\Gamma,A, A\supset B \to B}{\infer[init]{\Gamma, A, A \supset B \to A}{} & \infer[init]{\Gamma,A, B \to B}{}}}
+\infer[cut]{\Gamma, A \to B}{\Gamma, A \to A \supset B & \infer{\Gamma,A, A\supset B \to B}{\infer[init]{\Gamma, A, A \supset B \to A}{} & \infer[init]{\Gamma,A, B \to B}{}}}
 $$
 \end{proof}
 
 \begin{annotation}
-\rm \redt{为什么the left rule of implication is not invertible?} 因为从conclusion推不出left premise. 
+\rm \redt{为什么the left rule of implication is not invertible?} 因为从conclusion推不出left premise，但是right premise是可以推出来的. 
 \end{annotation}
+
+\begin{annotation}
+\rm 如果不\emph{cut} rule, 我们可以尝试我们前面提到的一种在height of derivation上做induction的方法来证明invertibility.  
+\end{annotation}
+
+\begin{lemma}
+\rm If $\vdash_n \Gamma, A \wedge B \to C$, then $\vdash_n \Gamma, A, B \to C$.
+\end{lemma}
+
+\begin{proof}
+\rm Base case: 当$n = 0$时
+\[
+	\infer[id]{\Gamma', C, A \wedge B \to C}{} \quad\quad \infer[\perp L]{\Gamma', \perp, A \wedge B \to C}{}
+\]
+其中$\Gamma = \Gamma', C$，这里我们用了\emph{id} rule (admissible)来\emph{init} rule这是一个小技巧，让我们不用再费力对$C$做induction. 显然上面两种情况都是可以得到$\vdash_0 \Gamma, A, B \Rightarrow C$. 我们假设当height $n$情况下成立. 
+
+Induction cases: 当$\vdash_{n+1} \Gamma, A \wedge B \to C$，这里要分两种情况:(1) 如果$A \wedge B$ is main formula for the last sequent, 那么
+\[
+	\infer{\Gamma, A \wedge B \to C}{\deduce{\Gamma, A, B \to C}{\mathcal{D}}}
+\]
+显然$\mathcal{D}$为$\vdash_n \Gamma, A, B \Rightarrow C$; (2)如果$A \wedge B$ is not main formula for the last sequent, 那么我们最多有whatever rules, there are most two primises for the last sequent, 设其为$\Gamma_1, A \wedge B \to C_1$和$\Gamma_2, A \wedge B \to C_2$, 这里我们再用一下induction hypothesis可以得到$\vdash_n \Gamma_1, A, B \to C_1$和$\vdash_n \Gamma_2, A, B \to C_2$. 最后我们再用一下the last rule即可得到所需要的结论.  
+\end{proof}
+
+
 
 \begin{definition}
 \rm \redt{Proof searching algorithm}. Assuming we want prove $\Gamma \to C$
