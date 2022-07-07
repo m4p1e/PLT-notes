@@ -2292,7 +2292,50 @@ $$
 \rm All rules of G3cp are invertible.
 \end{theorem}
 
+\begin{annotation}
+\rm 这章存在理由是因为有一个非常有趣的观点，通过proof-search我们可以来构造一些关于propositional formula的normal forms (i.e CNF, DNF). 对于任意一个formual $C$, 我们都可以对sequent $\to C$做derivation实际得到的是一个树, 其中$\to C$就是这个树的root. 当$\to C$ is vaild, 那么其所有的叶子结点都应该以\emph{init}或者$\perp L$. 如果$\to c$ is not vaild, 那么一定存在叶子结点是无法继续被decomposed. 首先我们来刻画一下所有可能的叶子结点处的sequents应该具有的形式. 
+\end{annotation}
 
+\begin{definition}
+\rm The form of topsequents of a proof-search:
+\[
+	P_1,\cdots,P_m,\perp,\cdots,\perp \to Q_1,\cdots,Q_n, \perp, \cdots,\perp
+\]
+where $P_i$ and $Q_j$ are atoms and the number of $\perp$ in the antecedent or succedent as well as $m$ or $n$ can be $0$.
+\end{definition}
+
+\begin{lemma}
+\rm The decomposition of a sequent $\Gamma \to \Delta$ into topsequents in G3cp is \redt{unique}.
+\end{lemma}
+
+\begin{definition}
+\rm A \redt{regular sequent} is a sequent of the form $P_1, \cdots, P_m \to Q_1, \cdots, Q_n, \perp, \cdots, \perp$ where for all $i,j$, $P_i \neq Q_j$, the antecedent is empty if $m = 0$, the succedent is $\perp$ if $n = 0$. The trace formula of a regular sequent is
+\begin{itemize}
+	\item if $m > 0, n > 0$, then $P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots \vee Q_n$.
+	\item if $m = 0, n > 0$, then $Q_1 \vee \cdots \vee Q_n$.
+	\item if $m > 0, n = 0$, then $\neg (P_1 \wedge \cdots \wedge P_m)$.
+	\item if $m=0, n=0$, then $\perp$.
+\end{itemize}
+where possible repetitions of the $P_i$ or $Q_j$ in the regular sequent are deleted. 
+\end{definition}
+
+\begin{annotation}
+\rm 上面展示的就是一种特殊的sequent到propositional form的对应关系，实际上就是在proof search中无法被close掉的topsequent.
+\end{annotation}
+
+\begin{theorem}
+\rm A propositioal formula $C$ is equivalent to the conjunction of the trace formulas of its decomposition inio regular sequents.
+\end{theorem}
+
+\begin{proof}
+\rm 假设decomposition(derivation) of $\to C$中topsquents为$\Gamma_1 \to \Delta_1, \cdots, \Gamma_m \to \Delta_m$，其中前$n$ ($m \geq n$)个为regular sequents，它们对应的trace formual为$C_1, \cdots, C_n$. 我们需要同时证明$C \supset C_1\wedge \cdots \wedge C_n$和$C_1\wedge \cdots \wedge C_n \supset C$，即证明$\to C \supset C_1 \wedge \cdots \wedge C_n$ and $\to C_1\wedge \cdots \wedge C_n \supset C$ are both valid.
+
+\bluet{$\to C \supset C_1\wedge \cdots \wedge C_n$} 我们给当前这个derivation里面所有的sequents的left side都加上$C$. 那么我们可以从$\Gamma_1, C \to \Delta_1, \cdots, \Gamma_m, C \to \Delta_m$沿着原来derivation的paths推出end sequent $C \to C$. 由于$C \to C$ is valid, 因此$\Gamma_1, C \to \Delta_1, \cdots, \Gamma_m, C \to \Delta_m$肯定也都是valid. 那么就是说$C \to C_i$ is valid，那么只需要重复$\wedge R$就能得到$C \to C_1 \wedge \cdots \wedge C_n$.
+
+\bluet{$\to C_1\wedge \cdots \wedge C_n \supset C$} 同理我们给当前这个derivation里面所有的sequent的left side都加上$C_1 \wedge \cdots \wedge C_n$，最后得到end sequent为$C_1\wedge \cdots \wedge C_n \to C$. 对于topsequents中的regular sequents我们都有$\Gamma_i, C_1\wedge \cdots \wedge C_n \to C_i$, 显然现在它们都是valid了, 因此$C_1\wedge \cdots \wedge C_n \to C$.
+
+这样的证明方式正确性来源于G3cp里面rules都是same contexts.
+\end{proof}
 
 \newpage
 \subsection{Structral Rules}
