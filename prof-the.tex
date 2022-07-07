@@ -2162,7 +2162,7 @@ Induction cases: 当$\vdash_{n+1} \Gamma, A \wedge B \to C$，这里要分两种
 \[
 	\infer{\Gamma, A \wedge B \to C}{\deduce{\Gamma, A, B \to C}{\mathcal{D}}}
 \]
-显然$\mathcal{D}$为$\vdash_n \Gamma, A, B \Rightarrow C$; (2)如果$A \wedge B$ is not main formula for the last sequent, 那么我们最多有whatever rules, there are most two primises for the last sequent, 设其为$\Gamma_1, A \wedge B \to C_1$和$\Gamma_2, A \wedge B \to C_2$, 这里我们再用一下induction hypothesis可以得到$\vdash_n \Gamma_1, A, B \to C_1$和$\vdash_n \Gamma_2, A, B \to C_2$. 最后我们再用一下the last rule即可得到所需要的结论.  
+显然$\mathcal{D}$为$\vdash_n \Gamma, A, B \Rightarrow C$; (2)如果$A \wedge B$ is not main formula for the end sequent, 那么我们最多有whatever rules, there are most two primises for the last sequent, 设其为$\Gamma_1, A \wedge B \to C_1$和$\Gamma_2, A \wedge B \to C_2$, 这里我们再用一下induction hypothesis可以得到$\vdash_n \Gamma_1, A, B \to C_1$和$\vdash_n \Gamma_2, A, B \to C_2$. 最后我们再用一下这个derivation里面的topmost rule即可得到所需要的结论.  
 \end{proof}
 
 
