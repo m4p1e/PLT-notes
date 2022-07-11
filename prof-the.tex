@@ -2324,7 +2324,7 @@ where possible repetitions of the $P_i$ or $Q_j$ in the regular sequent are dele
 \end{annotation}
 
 \begin{theorem}
-\rm A propositioal formula $C$ is equivalent to the conjunction of the trace formulas of its decomposition inio regular sequents.
+\rm (\redt{CNF}) A propositioal formula $C$ is equivalent to the conjunction of the trace formulas of its decomposition inio regular sequents.
 \end{theorem}
 
 \begin{proof}
@@ -3864,8 +3864,8 @@ where aximos can of course be replaced by $\oc A$.
 \]
 \end{example}
 
-\newpage
-\subsection{Focused Linear logic}
+%\newpage
+%\subsection{Focused Linear logic}
 
 \newpage
 \section{More Delicate}
@@ -4017,21 +4017,21 @@ In this chapter, we give a method of adding axioms to sequent calculus, in the f
 where $\Gamma, \Delta$ are arbitrary multisets, $P_1,\cdots,P_m,Q_1,\cdots,Q_n$ are fixed atoms, and the number of premises $n$ can be zero. 
 \end{definition}
 
-\begin{definition}
-\rm The axioms always can be represented by $P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$.
-\end{definition}
+%\begin{definition}
+%\rm The axioms always can be represented by $P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$.
+%\end{definition}
 
-\begin{annotation}
-\rm 其中$P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$就是Section \ref{resolution}里面提到过的形式.
-\end{annotation}
+%\begin{annotation}
+%\rm 其中$P_1 \wedge \cdots \wedge P_m \supset Q_1 \vee \cdots Q_n$就是Section \ref{resolution}里面提到过的形式.
+%\end{annotation}
 
-\begin{annotation}
-\rm 之前在\ref{pre-H-system}里面简单地提到了Hilbert-style system, 你有没有想过如何把它转换到sequent calculus里面来呢？ 我们得为此构造一个特殊sequent calculus，让它里面只包含一个之前我们提到rule
-\[
-	\infer{\to B}{\to A \supset B & \to A}
-\]
-对于每一个axiom $A$我们可以将其转换为$\infer{\to A}{}$. 类似地我们如果想要证明某个formula $C$, 只需要对$\to C$做derivation即可. 
-\end{annotation}
+%\begin{annotation}
+%\rm 之前在\ref{pre-H-system}里面简单地提到了Hilbert-style system, 你有没有想%过如何把它转换到sequent calculus里面来呢？ 我们得为此构造一个特殊sequent %calculus，让它里面只包含一个之前我们提到rule
+%\[
+%	\infer{\to B}{\to A \supset B & \to A}
+%\]
+%对于每一个axiom $A$我们可以将其转换为$\infer{\to A}{}$. 类似地我们如果想要证明某个formula $C$, 只需要对$\to C$做derivation即可. 
+%\end{annotation}
 
 \newpage
 \begin{thebibliography}{00}

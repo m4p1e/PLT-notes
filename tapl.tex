@@ -735,7 +735,7 @@ $$
 
 %why
 \begin{annotation}
-\rm 这里很重要是理解如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}，其中反向寻找合适的inference rule的方法是利用了所谓inversion lemma. 
+\rm 这里很重要的理解: 如果给定一个type relation $\termtype{\term{t}}{\text{T}}$，那么肯定是由上述inference rule推导出来的，所以我们会经常看到从conclude推premise的过程，也就是寻找合适的inference rule反向推导，这个过程我们称其为\bluet{derivation}，其中反向寻找合适的inference rule的方法是利用了所谓inversion lemma. 
 \end{annotation}
 
 \begin{theorem}
@@ -795,6 +795,10 @@ $$
 \text{safty} = \text{progress} + \text{preservation}.
 $$
 \end{definition}
+
+\begin{annotation}
+\rm (\redt{evaluation rules和typing rules的关系}) Progress和preservation两个theorem将evaluation和typing联系了起来. 想象如果对没有typing支持的finite string根据evaluation rule不断地做reduction，我们最终会得到怎样的一个结果呢？ 肯定是一个normal form, 除了前面提到的values: variables和lambda abstractions的，也许我们还可以得到$x y$其中$x$ is variable. 但有了typing之后我们就可以排除这样的东西，同时是否可以考虑将finite string推广至infinite呢？
+\end{annotation}
 
 
 \newpage
