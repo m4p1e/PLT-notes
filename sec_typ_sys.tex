@@ -1,0 +1,275 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+\usepackage{proof}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+
+\newcommand{\inl}[1]{\ensuremath{\text{inl}~#1}}
+\newcommand{\inr}[1]{\ensuremath{\text{inr}~#1}}
+\newcommand{\fold}[1]{\ensuremath{{fold}_{#1}}}
+\newcommand{\unfold}[1]{\ensuremath{{unfold}_{#1}}}
+\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp #2}} %lamx.y
+\newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
+\newcommand{\projone}[1]{\ensuremath{#1.1}}
+\newcommand{\projtwo}[1]{\ensuremath{#1.2}}
+\newcommand{\caseof}[3]{\ensuremath{{\textbf{case}}~#1~{\textbf{of}}~\inl{x_1}\mapsto #2\mid\inr{x_2}\mapsto #3}}
+\newcommand{\Lam}[2]{\ensuremath{\Lambda #1\ldotp #2}}
+\newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
+\newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
+\newcommand{\assign}[2]{\ensuremath{#1~\coloneqq~#2}}
+\newcommand{\singletype}[1]{\text{#1}}
+\newcommand{\termtype}[2]{\ensuremath{#1:#2}}
+\newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
+\newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
+\newcommand{\mat}[0]{\matgen{\alpha}{\tau}} %ua.t
+\newcommand{\fatgen}[2]{\ensuremath{\forall #1\ldotp#2}}
+\newcommand{\fat}[0]{\fatgen{\alpha}{\tau}}
+\newcommand{\eatgen}[2]{\ensuremath{\exists #1\ldotp#2}}
+\newcommand{\eat}[0]{\eatgen{\alpha}{\tau}}
+\newcommand{\fatgent}[2]{\ensuremath{\trgb{\forall} #1\ldotp#2}}
+\newcommand{\fatt}[0]{\fatgent{\alpt}{\tat}}
+\newcommand{\eatgent}[2]{\ensuremath{\trgb{\exists} #1\ldotp#2}}
+\newcommand{\eatt}[0]{\eatgent{\alpt}{\tat}}
+
+\newcommand{\fail}[0]{\mi{fail}}
+
+\newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
+\newcommand{\term}[1]{\ensuremath\mathsf{#1}}
+\newcommand{\true}{\term{true}}
+\newcommand{\false}{\term{false}}
+\newcommand{\ifelse}[3]{\ensuremath{\textbf{if}~#1~\textbf{then}~#2~\textbf{else}~#3}}
+\newcommand{\succt}[1]{\term{succ}~#1}
+\newcommand{\pred}[1]{\term{pred}~#1}
+\newcommand{\iszero}[1]{\term{iszero}~#1}
+\newcommand{\seq}[2]{#1;#2}
+\newcommand{\subtyp}[2]{#1<:#2}
+
+\newcommand{\dbracket}[1]{\ensuremath{\left\llbracket\,\vcenter{\hbox{$#1$}}\,\right\rrbracket}}
+
+\begin{document}
+\title{Type System + Security = ?}
+\author{枫聆}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+\subsection{Type System}
+
+\begin{definition}
+\rm A {\color{red} type system} is a tractable syntactic method for proving the absence of certain program behaviors by classlying phrases according to the kinds of value they compute \cite{TAPL}.
+\end{definition}
+
+\begin{annotation}
+\rm 个人的题外话: type system就是一种非常巧妙工具能帮你抓住那些你可以尽可能抓住的东西，这些东西就是指那些用types所刻画的我们感兴趣的properties. 我觉得这是一种艺术，一种难以言于笔下的艺术，凝聚了一代又一代计算理论先驱们的一种智慧“我们还可以做到更好，我们还可以往前再走一点...”，这些东西需要你慢慢地在他们的字里行间去感受. 
+\end{annotation}
+
+\begin{annotation}
+\rm 在computation里面有两个东西很重要: (1)怎么做encoding? i.e., 给定一些输入我们如何将其转换成我们当且system中可以接受的东西 (2)怎么做computing? i.e., 我们如何将输入转换成其对应的结果. 我们先用简单的untyped lambda calculus来慢慢说明. 
+\end{annotation}
+
+\begin{definition}
+\rm Let $\Lambda$ be the set of terms in lambda calculus, it is defined by the follow inductive process:
+\begin{itemize}
+	\item If $x$ is a variable, then $x \in \Lambda$.
+	\item If $x$ is a variable and $M \in \Lambda$, then $\lam{x}{M} \in \Lambda$.
+	\item If $M, N \in \Lambda$, then $(M N) \in \Lambda$.
+\end{itemize}
+\end{definition}
+
+\begin{annotation}
+\rm 上述关于lambda calculus的定义实际上就是一个encoding，其中$\lam{x}{M}$称其为abstraction. 如果我们从$\Lambda$任意地取一个term $t$出来如何对其对computing呢? 我们将赋予其两个重要的reductions $\beta$和$\eta$，其实分别对应我们常见的application (函数调用)和extensionality (函数等价).
+\end{annotation}
+
+\begin{definition}
+\rm if a variable $x$ is in such term $\lam{x}{M}$, then we call $x$ is bound, otherwise $x$ is free. 
+\end{definition}
+
+\begin{definition}
+\rm A term of the form $(\lam{x}{M})~N$ is called redex (reducible expression), and the operation of rewriting a redex according to the above rule is called $\beta$-reduction, written as
+\[
+	(\lam{x}{M})~N \to [x \mapsto N] M
+\]
+where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x$ in $M$ by $N$".
+\end{definition}
+
+\begin{definition}
+\rm Given a term $\lam{x}{M}$ in $\Lambda$, if $x$ is not free in $M$, then we have a $\eta$-reduction as follow:
+\[
+	\lam{x}{M} \to M
+\]  
+\end{definition}
+
+\begin{annotation}
+\rm 那么现在拿到一个term之后就可以尝试按照上面的规则来做reduction，实际上这个里面还缺一个$\alpha$-conversion, 它是用来处理variables重名冲突的. 最后我们可以也许另外一个新的term, 但是这个里面忽略了一个重要细节，就是当一个term里面存在多个地方可以应用上述规则的时候，我们应当如何选择应用顺序呢？ 这里就可以引出两个经典的reduction strategies: \emph{call by name}和\emph{call by value}.
+\end{annotation}
+
+\begin{definition}
+\rm In \emph{call by name} reduction strategy, the leftmost redex is always reduced first, and allows no reducations inside abstraction.  
+\end{definition}
+
+\begin{definition}
+\rm In \emph{call by value} reduction strategy, a redex is reduced only when its right hand side has reduced to a \emph{value} (varible and abstraction), and allows no reducation inside abstraction.
+\end{definition}
+
+\begin{annotation}
+\rm 注意这两个reducation strategies都是不允许在abstraction里面做reduction的，其实差异就是在做application的时候，call by name是agruments接把值替换到abstraction里面，而call by value是先对arguments做reduction. 当我们选择了一个reducation strategy，然后对一个finite term不断地做reduction，最终我们会得到一个已经无法再继续做reduction的term，这个term就称其为\emph{normal form}.
+\end{annotation}
+
+\begin{definition}
+\rm A term $N$ is in \emph{normal form} is no reduction rule applies to it.
+\end{definition}
+
+\begin{annotation}
+\rm 我们并不打算在先前的lambda calculus上建立一个完整的language，例如引入bool, natural number和test的定义等. lambda caculus的引入只是为了进一步说明evaluation过程中所需要的\emph{operational sementics}, 即small step $t_1 \to t_1'$. 下面我们将\emph{call by value}以inference rules巧妙地融入lambda calculus.
+\end{annotation}
+
+\begin{definition}
+\rm The untyped lambda calculus is defined as follow:
+\[
+	\begin{gathered}
+	\begin{aligned}
+	&t \Coloneqq x ~|~ \lam{x}{t} ~|~ t~t \\
+	&v \Coloneqq \lam{x}{t}
+	\end{aligned} \\[1em]
+	\infer[\textsc{E-App1}]{t_1~t_2 \to t_1'~t_2}{t_1 \to t_1'} \\
+	\infer[\textsc{E-App2}]{v_1~t_2' \to v_1~t_2'}{t_2 \to t_2'} \\
+	\infer[\textsc{E-AppAbs}]{(\lam{x}{t_1})~v_1 \to [x \mapsto v_1] t_1}{}
+	\end{gathered}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 关于对inference rule的理解，对初次接触它的人并不太好理解. 对于一个inference rule中间横线之上我们称为premises，横线之下我们称其为conclusion，通常premises可以有多个，而conclusion只有一个. 例如对于$\textsc{E-App1}$我们可以读作: $t_1~t_2 \to t_1'~t_2$ if $t_1 \to t_1$, 因此我们通常是从conclusion来考虑premises, 简单地说就是从下往上读, 这一点尤为重要，它是我们用inference rules做derivation的基础. 
+
+我们来简单地解释一下上面定义的untyped lambda calculus的operational sementics: 首先给出了terms和values(只有abstractions)的准确定义，这里只引入了$\beta$-reduction即\textsc{E-AppAbs} rule，并且将\emph{call by value}也融入了进去，这体现在\textsc{E-App1} rule规定要先对leftmost做reduction，直到leftmost变成了才能value，我们才可以继续使用\textsc{E-App1} rule往右做reduction. 后面我们就就将用evaluation来代替reduction在如今untyped lambda calculus中的使用.
+\end{annotation}
+
+\begin{definition}
+\rm A \emph{derivation} in up is either an the instance of \textsc{E-AppAbs} or an application of a evalution rule to derivations concluding its premises. 
+\end{definition}
+
+\begin{example}
+\rm 我们来举一个关于$(\lam{x}{x}~\lam{y}{y})~z \to (\lam{y}{y})~z$例子:
+\[
+	\infer[\textsc{E-App1}]{(\lam{x}{x}~\lam{y}{y})~z \to (\lam{y}{y})~z}{\infer[\textsc{E-AppAbs}]{\lam{x}{x}~\lam{y}{y} \to \lam{y}{y}}{}}
+\] 
+再想想我们是否能得到关于$(\lam{x}{x}~\lam{y}{y}) z \to z$的derivation呢?
+\[
+	\infer[?]{(\lam{x}{x}~\lam{y}{y})~z \to z}{?}
+\]
+显然这里没有合适的evaluation rule可以apply，这就是前面定义untyped calculus lambda的精髓，我们只能做small step. 
+\end{example}
+
+\begin{annotation}
+\rm 我们现在来思考另外一个问题: 如果给定一个$\lam{x}{x \lam{y}{y}}~z$，其中$x,y,z$均为variables. 我们对其做evaluation会得到:
+\[
+	\lam{x}{x~\lam{y}{y}} z \to z~\lam{y}{y} 
+\]
+最后的结果奇怪，这并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会在像前面推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
+\end{annotation}
+
+\begin{definition}
+\rm The pure simply typed lambda-caculus is defined as follow:
+\[
+	\begin{gathered}
+	\begin{aligned}
+	&t \Coloneqq x ~|~ \lam{\termtype{x}{\tau}}{t} ~|~ t~t \\
+	&v \Coloneqq \lam{\termtype{x}{\tau}}{t} \\[1em]
+	&\tau \Coloneqq \tau \to \tau \\
+	&\Gamma \Coloneqq \emptyset ~|~ \Gamma, \termtype{x}{\tau}
+	\end{aligned} \\[1em]
+	\infer[\textsc{E-App1}]{t_1~t_2 \to t_1'~t_2}{t_1 \to t_1'} \\
+	\infer[\textsc{E-App2}]{v_1~t_2' \to v_1~t_2'}{t_2 \to t_2'} \\
+	\infer[\textsc{E-AppAbs}]{(\lam{\termtype{x}{t}}{t_1})~v_1 \to [x \mapsto v_1] t_1}{} \\[1em]
+	\infer[\textsc{T-Var}]{\Gamma \vdash \termtype{x}{\tau}}{\termtype{x}{\tau} \in \Gamma} \\
+	\infer[\textsc{T-Abs}]{\Gamma \vdash \termtype{\lam{\termtype{x}{\tau_1}}{t}}{\tau_1 \to \tau_2}}{\Gamma, \termtype{x}{\tau_1} \vdash \termtype{t}{\tau_2}} \\
+	\infer[\textsc{T-App}]{\Gamma \vdash \termtype{t_1~t_2}{\tau_2}}{\Gamma \vdash \termtype{t_1}{\tau_1 \to \tau_2} & \Gamma \vdash \termtype{t_2}{\tau_1}}
+	\end{gathered}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 相比于untyped lambda calculus多了关于type $\tau$, 所有terms在$\Lambda$都可以看做一个abstraction，它对应的type就是$\tau \to \tau$. 其中$\Gamma$表示contexts, i.e., 我们需要某个term里面所有free variables的types才能进一步推导term它具有什么type, 它是可以为empty set的, 题外话$\Gamma$实际上也是可以看做multi-set的，即$\Gamma_1, \Gamma_2$. 这里judgement(也可以叫sequent) $\Gamma \vdash t:\tau$表示term $t$在contexts $\Gamma$下具有type $\tau$，中间这个$\vdash$叫turnstile. 如果我们要验证这个judgement是valid，就需要一个关于它的derivation(这里derivation的定义和前面类似)，这里derivation就需要按照我们这里最下面的三个typing rules. 这里我给的解释是比较简单，但是对于初次接触的人来说并没有那么容易，我将配合几个例子帮助你理解. 
+\end{annotation}
+
+\begin{example}
+\rm 我们可以尝试推一下关于$\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}$, 其中$c$表示一个type为$\tau_2$的constant:
+\[
+	\infer[\textsc{T-Abs}]{\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}}{\infer[\textsc{T-Var}]{\termtype{c}{\tau_2},\termtype{x}{\tau_1} \vdash \termtype{c}{\tau_2}}{}}
+\]
+这里其实隐藏关于context permutation的structural rule在里面，虽然它看起来还是很自然的，但是我们必须提醒一下未来需要小心的注意这些structural rule，有可能很显然的structural rule，你直接引入或者消去你将会得到可能与原来并不等价的system.  
+\end{example}
+
+\begin{annotation}
+\rm 那么我们将如何把typing rules和evaluation rules联系起来呢？ 我将通过两个非常非常重要的theorems: \emph{perservation theorem} and \emph{progess theorem}来说明它们的联系
+\end{annotation}
+
+\subsection{Information Flow}
+
+\subsection{Noninterference}
+
+\begin{thebibliography}{9}
+\bibitem{TAPL}
+Benjamin C. Pierce. Types and Programming Languages.
+\end{thebibliography}
+\end{document}
