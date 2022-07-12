@@ -96,6 +96,8 @@
 \newcommand{\true}{\term{true}}
 \newcommand{\false}{\term{false}}
 \newcommand{\ifelse}[3]{\ensuremath{\textbf{if}~#1~\textbf{then}~#2~\textbf{else}~#3}}
+\newcommand{\newwhiledo}[2]{\ensuremath{\textbf{while}~#1~\textbf{do}~#2}}
+\newcommand{\letvar}[2]{\ensuremath{\textbf{letvar}~#1~\textbf{in}~#2}}
 \newcommand{\succt}[1]{\term{succ}~#1}
 \newcommand{\pred}[1]{\term{pred}~#1}
 \newcommand{\iszero}[1]{\term{iszero}~#1}
@@ -316,13 +318,28 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 	\begin{aligned}
 	&(phrases) && p \Coloneqq e~|~c \\
 	&(expressions) && e \Coloneqq x ~|~ l ~|~ n ~|~ e_1 + e_2 ~|~ e_1 - e_2 ~|~ e_1 = e_2 ~|~ e_1 < e_2 \\
-	&(command) && c ::= e_1 \coloneqq e_2 ~|~ c_1;c_2 ~|~ \ifelse{e}{c_1}{c_2} \\
+	&(command) && c ::= e_1 \coloneqq e_2 ~|~ c_1;c_2 ~|~ \ifelse{e}{c_1}{c_2} ~|~ \newwhiledo{e}{c} ~| \\
+	&&&\quad\quad~ \letvar{x \coloneqq e}{c}
 	\end{aligned}
 	\end{gathered}
 \]
 where $x$ ranges over variables, $l$ over locations, and $n$ over integer literals. Integers are the obly values. We use 0 for false and 1 for true, and assume that locations are well ordered \cite{DGC}.
 \end{definition}
 
+\begin{definition}
+\rm We define the evalution rules for above language as follow:
+\[
+	\begin{gathered}
+	\infer[base]{\mu \vdash n \Rightarrow n}{} \quad\quad \infer[contents]{\mu \vdash l \Rightarrow \mu(l)}{l \in dom(\mu)} \\[0.5em]
+	\infer[add]{\mu \vdash e_1 + e_2 \Rightarrow n_1 + n_2}{\mu \vdash e_1 \Rightarrow n_1 & \mu \vdash e_1 \Rightarrow n_2} \\[0.5em]
+	\infer[update]{\mu \vdash l \coloneqq e \Rightarrow \mu[l \mapsto n]}{\mu \vdash e \Rightarrow n & l \in dom(\mu)} \quad \infer[sequence]{\mu \vdash c_1;c_2 \Rightarrow \mu_2}{\mu \vdash c_1 \Rightarrow \mu_1 & \mu_1 \vdash \mu_2} \\[0.5em]
+	\infer[branch_1]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_1}{\mu \vdash e \Rightarrow 1 & \mu \vdash c_1 \Rightarrow u_1} \quad\quad \infer[branch_2]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_2}{\mu \vdash e \Rightarrow 0 & \mu \vdash c_2 \Rightarrow u_2} \\[0.5em]
+	\infer[loop_1]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u}{\mu \vdash e \Rightarrow 0} \quad\quad \infer[loop_2]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u_2}{\mu \vdash e \Rightarrow 1 & \mu \vdash c \Rightarrow \mu_1 & \mu_1 \vdash \newwhiledo{e}{c} \Rightarrow \mu_2}\\[0.5em]
+	\infer[letvar]{\mu \vdash \letvar{x \coloneqq e}{c} \Rightarrow \mu_1}{\mu \vdash e \Rightarrow n & \mu[l \mapsto n] \vdash [l \mapsto x]c \Rightarrow \mu_1}
+	\end{gathered}
+\]
+where $\func{\mu}{locations}{values}$ is a memeory map, using $\mu \vdash e \Rightarrow n$ for producing value (that is expression has no side-effect) and $\mu \vdash c \Rightarrow \mu_1$ for producing new memeory map, $\mu[l \Rightarrow n]$ means $\mu(l) = n$ and otherwise $\mu[l \Rightarrow n](l') = \mu(l')$, and $[l \mapsto x]c$ means that replacing all occurences of $x$ in $c$.
+\end{definition}
 
 
 \subsection{Typing Rules}
