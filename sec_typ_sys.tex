@@ -225,7 +225,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\lam{x}{x~\lam{y}{y}} z \to z~\lam{y}{y} 
 \]
-最后的结果奇怪，这并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会在像前面推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
+最后的结果依然是一个normal form，准确地说是一个neutral form，即它最左边并不是一个abstraction. 但这并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会在像前面推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
 \end{annotation}
 
 \begin{definition}
@@ -257,19 +257,85 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\infer[\textsc{T-Abs}]{\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}}{\infer[\textsc{T-Var}]{\termtype{c}{\tau_2},\termtype{x}{\tau_1} \vdash \termtype{c}{\tau_2}}{}}
 \]
-这里其实隐藏关于context permutation的structural rule在里面，虽然它看起来还是很自然的，但是我们必须提醒一下未来需要小心的注意这些structural rule，有可能很显然的structural rule，你直接引入或者消去你将会得到可能与原来并不等价的system.  
+这里其实隐藏关于context permutation的structural rule在里面，虽然它看起来还是很自然的，但是我们必须提醒一下未来需要小心的注意这些structural rule，因为有可能很显然的structural rule，你直接引入或者消去将会得到可能与原来并不等价的system.  
 \end{example}
 
 \begin{annotation}
-\rm 那么我们将如何把typing rules和evaluation rules联系起来呢？ 我将通过两个非常非常重要的theorems: \emph{perservation theorem} and \emph{progess theorem}来说明它们的联系
+\rm 那么我们将如何把typing rules和evaluation联系起来呢？ 那就不得不提到两个非常非常重要的theorems: \emph{progess theorem} and \emph{perservation theorem}. 前者是说如果某个term是well-typed, 那么它是可以继续evaluation或者它本身是一个value. 后者是就更进一步了, 同时这个term在evaluation的过程中，它将继续保持对应type. 有了这两个theorems，我们就可以在一开始就做refuse (i.e., some terms are not well-typed)，这也是一开始就说到的type system可以用来抓住我们想要的某些properties. 它们形式化地表示如下.
 \end{annotation}
 
-\subsection{Information Flow}
+\begin{theorem}
+\rm Suppose $t$ is well-typed term (this is $\vdash \termtype{t}{\tau}$), then either $t$ is value or else there is some $t'$ with $t \to t'$. 
+\end{theorem}
+
+\begin{theorem}
+\rm If $\Gamma \vdash \termtype{t}{\tau}$ and $t \to t'$, then $\Gamma \vdash \termtype{t'}{\tau}$. 
+\end{theorem}
+
+\begin{annotation}
+\rm 我并不打算来严格证明的它们，因为会花费很多篇幅，同时你可能还需要证明其他的一些lemma, 例如一些some structural rules are admissible和substitution lemma等等. 有兴趣的同学可以直接去研究一下，总体上过程还是非常straightforward的. 但是我还是提一下关于证明这些类似structural proof结论的时候，经常会用到一种structural induction的方法: 首先给出height of derivation (the greatest number of successive application of rules in it, where \textsc{T-Var} have height $0$), 然后我们在height上做induction. 再者如果涉及到更精细地证明方式，我们还会定义weight of term，然后在它上面做induction，这一类的induction可以在证明cut-elimination的地方看见. 
+
+好了以上就是你在继续往下读所要的关于type system的预备知识，或许很简单，又或许不太简单，但是我相信一定会给那些第一次接触到它的人打开另一扇窗. 
+\end{annotation}
+
+\subsection{Secure Information Flow}
+
+\begin{annotation}
+\rm Information flow是指程序执行的过程中信息流动，那么secure information flow就是指信息在流动的过程中遵守一些policies, i.e., 信息我们可以根据sensitivity分为两个部分low和high, 简称$L$和$H$, 我们允许$L$往$H$流动，而不允许$H$往$L$流动, 因为$L$往往是假设是可以被观察的，因此$H$往$L$流动就意味着敏感信息泄露. 同样的思路我们也可以用来描述信息的integrity分为trusted和untrusted吗, 简称为$T$和$U$, 我们允许$T$往$U$流动, 而不允许$U$往$T$流动. 那么一个很自然地问题就是如何model information flow policy? 这也是我们最为感兴趣的地方. 
+
+我们将owners of imformation表示为程序中的variables. 对于任意一个variable $x$, 我们用$\overline{x}$表示其所具有的the set of security classes，其中包含我们前面提到的sensitivity和integrity. 假设$\overline{x} = \{H,U\}$，而$\overline{y} = \{L, T\}$, 在现有policies下我们是运行$y$到$x$的流动, 因为我们分别比较了对应security proporties. 如果某个expression$z$里面包含$x$与$y$, 那么我们也可以计算出$\overline{z} = \{H,U\}$. 这样的思路已经非常明显地对应了用lattice来分析问题. 首先我们可以定义一个两个partial order分别包含$L \leq H$和$T \leq U$, 然后再利用前面这两个poset定义一个product partial order:
+\[
+	(a_1, b_1) \leq (a_2, b_2) \iff a_1 \leq a_2 ~\text{and}~b_1 \leq b_2 
+\]
+\end{annotation}
+
+\begin{definition}
+\rm Information flow policies are defined by a lattice $(SC, \leq)$, where $SC$ is a finite set of security classes partially ordered by $\leq$.
+\end{definition}
+
 
 \subsection{Noninterference}
+
+\begin{definition}
+\rm We say that a command $c$ satisfies noninterference if equivalent initial memories produce equivalent final memories \cite{noninterference}.
+\end{definition}
+
+\begin{annotation}
+\rm 简而言之就是说一段程序在等价的初始状态下，总可以得到等价的结束状态. 其中等价状态和在程序执行过程状态的变化，使我们需要刻画的东西. 在某种程度上它可以作为验证analysis的correctness，因为我们在做analysis时候总是伴随这一些assumptions, 我们需要验证时在在一些特定的assumptions下我们总能得到正确结果，而不受其他的因素影响. 
+\end{annotation}
+
+\newpage
+\section{Type System for Secure Information flow analysis}
+
+\subsection{Operational Semantics}
+
+\begin{definition}
+\rm We consider a simply common language described below:
+\[
+	\begin{gathered}
+	\begin{aligned}
+	&(phrases) && p \Coloneqq e~|~c \\
+	&(expressions) && e \Coloneqq x ~|~ l ~|~ n ~|~ e_1 + e_2 ~|~ e_1 - e_2 ~|~ e_1 = e_2 ~|~ e_1 < e_2 \\
+	&(command) && c ::= e_1 \coloneqq e_2 ~|~ c_1;c_2 ~|~ \ifelse{e}{c_1}{c_2} \\
+	\end{aligned}
+	\end{gathered}
+\]
+where $x$ ranges over variables, $l$ over locations, and $n$ over integer literals. Integers are the obly values. We use 0 for false and 1 for true, and assume that locations are well ordered \cite{DGC}.
+\end{definition}
+
+
+
+\subsection{Typing Rules}
+
 
 \begin{thebibliography}{9}
 \bibitem{TAPL}
 Benjamin C. Pierce. Types and Programming Languages.
+
+\bibitem{noninterference}
+Andrew Myers. Proving noninterference for a while-language using small-step. operational semantics.
+
+\bibitem{DGC}
+Dennis Volpano, Geoffrey Smith, Cynthia Irvine. A sound system for secure flow analysis.
 \end{thebibliography}
 \end{document}
