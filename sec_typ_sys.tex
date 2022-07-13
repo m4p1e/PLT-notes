@@ -108,7 +108,7 @@
 
 \begin{document}
 \title{Type System + Security = ?}
-\author{枫聆}
+\author{枫聆 (maplegra)}
 \maketitle
 \tableofcontents
 \newpage
@@ -122,7 +122,7 @@
 \end{definition}
 
 \begin{annotation}
-\rm 个人的题外话: type system就是一种非常巧妙工具能帮你抓住那些你可以尽可能抓住的东西，这些东西就是指那些用types所刻画的我们感兴趣的properties. 我觉得这是一种艺术，一种难以言于笔下的艺术，凝聚了一代又一代计算理论先驱们的一种智慧“我们还可以做到更好，我们还可以往前再走一点...”，这些东西需要你慢慢地在他们的字里行间去感受. 
+\rm 个人的题外话: type system就是一种非常巧妙工具能帮你抓住那些你可以尽可能抓住的东西，这些东西就是指那些可以用types所刻画的我们感兴趣的properties. 我觉得这是一种艺术，一种难以言于笔下的艺术，凝聚了一代又一代计算理论先驱们的一种智慧“我们还可以做到更好，我们还可以往前再走一点...”，这些东西需要你慢慢地在他们的字里行间去感受. 
 \end{annotation}
 
 \begin{annotation}
@@ -162,7 +162,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 那么现在拿到一个term之后就可以尝试按照上面的规则来做reduction，实际上这个里面还缺一个$\alpha$-conversion, 它是用来处理variables重名冲突的. 最后我们可以也许另外一个新的term, 但是这个里面忽略了一个重要细节，就是当一个term里面存在多个地方可以应用上述规则的时候，我们应当如何选择应用顺序呢？ 这里就可以引出两个经典的reduction strategies: \emph{call by name}和\emph{call by value}.
+\rm 那么现在拿到一个term之后就可以尝试按照上面的规则来做reduction，实际上这里面还缺一个$\alpha$-conversion, 它是用来处理variables重名冲突的. 最后我们也许可以得到另外一个新的term, 但是这个里面隐藏了一个重要细节，就是当一个term里面存在多个地方可以应用上述规则的时候，我们应当如何选择应用顺序呢？ 这里就可以引出两个经典的reduction strategies: \emph{call by name}和\emph{call by value}.
 \end{annotation}
 
 \begin{definition}
@@ -174,7 +174,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 注意这两个reducation strategies都是不允许在abstraction里面做reduction的，其实差异就是在做application的时候，call by name是agruments接把值替换到abstraction里面，而call by value是先对arguments做reduction. 当我们选择了一个reducation strategy，然后对一个finite term不断地做reduction，最终我们会得到一个已经无法再继续做reduction的term，这个term就称其为\emph{normal form}.
+\rm 注意这两个reducation strategies都是不允许在abstraction里面做reduction的，其两者根本差异就是在做application的时候，call by name是agruments接把值替换到abstraction里面，而call by value是先对arguments做reduction. 当我们选择了一个reducation strategy之后，就可以对一个finite term不断地做reduction，最终我们会得到一个已经无法再继续做reduction的term，这个term就称其为\emph{normal form}.
 \end{annotation}
 
 \begin{definition}
@@ -182,7 +182,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 我们并不打算在先前的lambda calculus上建立一个完整的language，例如引入bool, natural number和test的定义等. lambda caculus的引入只是为了进一步说明evaluation过程中所需要的\emph{operational sementics}, 即small step $t_1 \to t_1'$. 下面我们将\emph{call by value}以inference rules巧妙地融入lambda calculus.
+\rm 我们并不打算在先前的lambda calculus上建立一个完整的language，例如引入用pure function来刻画的bool, natural number和test等. lambda caculus的引入只是为了进一步说明evaluation过程中所需要的\emph{operational sementics}, 例如small step $t_1 \to t_1'$. 下面我们将\emph{call by value}以inference rules巧妙地融入lambda calculus.
 \end{annotation}
 
 \begin{definition}
@@ -201,13 +201,13 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 关于对inference rule的理解，对初次接触它的人并不太好理解. 对于一个inference rule中间横线之上我们称为premises，横线之下我们称其为conclusion，通常premises可以有多个，而conclusion只有一个. 例如对于$\textsc{E-App1}$我们可以读作: $t_1~t_2 \to t_1'~t_2$ if $t_1 \to t_1$, 因此我们通常是从conclusion来考虑premises, 简单地说就是从下往上读, 这一点尤为重要，它是我们用inference rules做derivation的基础. 
+\rm 关于对inference rule的理解，对初次接触它的人并不太友好，因为我们直觉总是告诉我们从上往下看. 对于一个inference rule中间横线之上的东西我们称为premises，横线之下我们称其为conclusion，通常premises可以有多个，而conclusion只有一个. 例如对于$\textsc{E-App1}$我们可以读作: $t_1~t_2 \to t_1'~t_2$ if $t_1 \to t_1$, 因此我们通常是从conclusion来考虑premises, 简单地说就是从下往上读, 这一点尤为重要，它是我们用inference rules做derivation的基础. 
 
-我们来简单地解释一下上面定义的untyped lambda calculus的operational sementics: 首先给出了terms和values(只有abstractions)的准确定义，这里只引入了$\beta$-reduction即\textsc{E-AppAbs} rule，并且将\emph{call by value}也融入了进去，这体现在\textsc{E-App1} rule规定要先对leftmost做reduction，直到leftmost变成了才能value，我们才可以继续使用\textsc{E-App1} rule往右做reduction. 后面我们就就将用evaluation来代替reduction在如今untyped lambda calculus中的使用.
+我们来简单地解释一下上面定义的untyped lambda calculus的operational sementics: 首先给出了terms和values(只有abstractions)的准确定义，这里只引入了$\beta$-reduction即\textsc{E-AppAbs} rule，并且将\emph{call by value}也融入了进去，这体现在\textsc{E-App1} rule规定要先对leftmost做reduction，直到leftmost变成了才能value，我们才可以继续使用\textsc{E-App2} rule往右做reduction. 后面我们就将用evaluation来代替reduction在如今untyped lambda calculus中的使用.
 \end{annotation}
 
 \begin{definition}
-\rm A \emph{derivation} in up is either an the instance of \textsc{E-AppAbs} or an application of a evalution rule to derivations concluding its premises. 
+\rm A \emph{derivation} in untyped lambda calculas is either an the instance of \textsc{E-AppAbs} or an application of a evalution rule to derivations concluding its premises. 
 \end{definition}
 
 \begin{example}
@@ -219,7 +219,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\infer[?]{(\lam{x}{x}~\lam{y}{y})~z \to z}{?}
 \]
-显然这里没有合适的evaluation rule可以apply，这就是前面定义untyped calculus lambda的精髓，我们只能做small step. 
+显然这里没有合适的evaluation rule可以apply，这就是前面定义untyped calculus lambda的精髓之处，我们只能做small step. 
 \end{example}
 
 \begin{annotation}
@@ -227,7 +227,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\lam{x}{x~\lam{y}{y}} z \to z~\lam{y}{y} 
 \]
-最后的结果依然是一个normal form，准确地说是一个neutral form，即它最左边并不是一个abstraction. 但这并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会在像前面推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
+最后的结果依然是一个normal form，准确地说是一个neutral form，即它最左边并不是一个abstraction. 但这可能并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会再像前面一样慢慢地推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
 \end{annotation}
 
 \begin{definition}
@@ -251,7 +251,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 相比于untyped lambda calculus每个term现在是有一个type $\tau$标签了, 特别地，abstraction的type形如$\tau \to \tau$. 我们这里可能与你经常看见的typed lambda calculus不太一样，我们给abstraction的arguments加上了annotation，这样可以省去了type inference，实际上这里也不需要. 其中$\Gamma$表示contexts, i.e., 我们需要某个term里面所有free variables的types才能进一步推导term它具有什么type, 它是可以为empty set的, 题外话$\Gamma$实际上也是可以看做multi-set的，即$\Gamma = \Gamma_1\cup \Gamma_2$. 这里judgement(也可以叫sequent) $\Gamma \vdash t:\tau$表示term $t$在contexts $\Gamma$下具有type $\tau$，中间这个$\vdash$叫turnstile. 如果我们要验证这个judgement是valid，就需要一个关于它的derivation(这里derivation的定义和前面类似)，这里derivation就需要按照我们这里最下面的三个typing rules. 这里我给的解释是比较简单，但是对于初次接触的人来说并没有那么容易，我将配合几个例子帮助你理解. 
+\rm 相比于untyped lambda calculus每个term现在是有一个type $\tau$标签了, 特别地，abstraction的type形如$\tau \to \tau$. 我们这里可能与你经常看见的typed lambda calculus不太一样，我们给abstraction的arguments加上了annotations，这样可以省去type inference带来的额外考虑. 其中$\Gamma$表示contexts, i.e., 我们需要某个term里面所有free variables的types才能进一步推导term它具有什么type, 它是可以为empty set的, 题外话$\Gamma$实际上也是可以看做multi-set的，即$\Gamma = \Gamma_1\cup \Gamma_2$. 这里judgement(也可以叫sequent) $\Gamma \vdash t:\tau$表示term $t$在contexts $\Gamma$下具有type $\tau$，中间这个$\vdash$叫turnstile. 如果我们要验证这个judgement是valid，就需要一个关于它的derivation(这里derivation的定义和前面类似)，这里derivation就需要按照我们这里最下面的三个typing rules来得到. 这里我给的解释是比较简单，但是对于初次接触的人来说并没有那么容易，我将配合几个例子帮助你理解. 
 \end{annotation}
 
 
@@ -261,23 +261,23 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\infer[\textsc{T-Abs}]{\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}}{\infer[\textsc{T-Var}]{\termtype{c}{\tau_2},\termtype{x}{\tau_1} \vdash \termtype{c}{\tau_2}}{}}
 \]
-这里其实隐藏关于context permutation的structural rule在里面，虽然它看起来还是很自然的，但是我们必须提醒一下未来需要小心的注意这些structural rule，因为有可能很显然的structural rule，你直接引入或者消去将会得到可能与原来并不等价的system.  
+这里最上面一层derivation其实隐藏了一个关于context permutation的structural rule(if $\Gamma,\termtype{x_1}{\tau_1},\termtype{x_2}{\tau_2} \vdash \vdash \termtype{t}{\tau}$, then $\Gamma,\termtype{x_2}{\tau_2},\termtype{x_1}{\tau_1} \vdash  \termtype{t}{\tau}$)的应用，虽然它看起来还是很自然的，但是我们必须时刻小心这些structural rules，因为有可能你看起来很显然的structural rules，你直接拿来用或者从system中去掉将会得到一个可能与原来并不等价的system.  
 \end{example}
 
 \begin{annotation}
-\rm 那么我们将如何把typing rules和evaluation联系起来呢？ 那就不得不提到两个非常非常重要的theorems: \emph{progess theorem} and \emph{perservation theorem}. 前者是说如果某个term是well-typed, 那么它是可以继续evaluation或者它本身是一个value. 后者是就更进一步了, 同时这个term在evaluation的过程中，它将继续保持对应type. 有了这两个theorems，我们就可以在一开始就做refuse (i.e., some terms are not well-typed)，这也是一开始就说到的type system可以用来抓住我们想要的某些properties. 它们形式化地表示如下.
+\rm 那么我们将如何把typing rules和evaluation联系起来呢？ 那就不得不提到两个非常非常重要的theorems: \emph{progess theorem} and \emph{perservation theorem}. 前者是说如果某个term是well-typed, 那么它是可以继续evaluation或者它本身已经是一个value了. 后者就更进一步了, 同时告诉我们这个term在evaluation的过程中，它将继续保持对应type. 有了这两个theorems，我们就可以在一开始就做refuse (i.e., refuse some terms that are not well-typed)，这也是一开始就说到的type system可以用来抓住我们想要的某些properties. 它们形式化地表示如下.
 \end{annotation}
 
 \begin{theorem}
-\rm Suppose $t$ is well-typed term (this is $\vdash \termtype{t}{\tau}$), then either $t$ is value or else there is some $t'$ with $t \to t'$. 
+\rm (Progess Theorem) Suppose $t$ is well-typed term (this is $\vdash \termtype{t}{\tau}$), then either $t$ is value or else there is some $t'$ with $t \to t'$. 
 \end{theorem}
 
 \begin{theorem}
-\rm If $\Gamma \vdash \termtype{t}{\tau}$ and $t \to t'$, then $\Gamma \vdash \termtype{t'}{\tau}$. 
+\rm (Perservation Theorem) If $\Gamma \vdash \termtype{t}{\tau}$ and $t \to t'$, then $\Gamma \vdash \termtype{t'}{\tau}$. 
 \end{theorem}
 
 \begin{annotation}
-\rm 我并不打算来严格证明的它们，因为会花费很多篇幅，同时你可能还需要证明其他的一些lemma, 例如some structural rules are admissible和substitution lemma等等. 有兴趣的同学可以直接去研究一下，总体上过程还是非常straightforward的. 但是我还是简要地提一下关于证明这些类似structural proof结论的时候，经常会用到一种structural induction的方法: 首先给出height of derivation (the greatest number of successive application of rules in it, where \textsc{T-Var} have height $0$), 然后我们在height上做induction. 再者如果涉及到更精细地证明方式，我们还会定义weight of term，然后在它上面做induction，这一类的induction可以在证明cut-elimination的地方看见. 最后我们简单的来提及一下关于\emph{subtype polymorphism}概念. 
+\rm 我并不打算来严格地证明它们，因为会花费很多篇幅，同时你可能还需要证明其他的一些lemma, 例如some structural rules are admissible(i.e., weakening, contraction)和substitution lemma等等. 有兴趣的同学可以自己去研究一下，总体上过程还是非常straightforward的. 但是我还是简要地提一下关于证明这些类似structural proof结论的时候，会经常用到一种structural induction的方法: 首先给出height of derivation (the greatest number of successive application of rules in it, where \textsc{T-Var} have height $0$ in our current case), 然后我们在这个height上做induction. 再者如果涉及到更精细地证明方式，我们还会定义weight of term，然后在它上面做induction，这一类的induction可以在证明cut-elimination的过程中看见. 最后我们简单地来提及一下关于\emph{subtype polymorphism}概念. 
 \end{annotation}
 
 
@@ -307,15 +307,15 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{annotation}
 
 \begin{annotation}
-\rm 好了以上就是你在继续往下读所需要的关于type system的预备知识，或许很简单，又或许不太简单，但是我相信一定会给那些第一次接触到它的人打开另一扇窗. 
+\rm 好了以上就是你在继续往下读所需要的关于type system的预备知识，或许很简单，又或许不太简单，但是我相信它一定会给那些第一次接触到的人打开另一扇窗. 
 \end{annotation}
 
 \subsection{Secure Information Flow}
 
 \begin{annotation}
-\rm Information flow是指程序执行的过程中信息流动，那么secure information flow就是指信息在流动的过程中遵守一些policies, i.e., 信息我们可以根据sensitivity分为两个部分low和high, 简称$L$和$H$, 我们允许$L$往$H$流动，而不允许$H$往$L$流动, 因为$L$往往是假设是可以被观察的，因此$H$往$L$流动就意味着敏感信息泄露. 同样的思路我们也可以用来描述信息的integrity分为trusted和untrusted吗, 简称为$T$和$U$, 我们允许$T$往$U$流动, 而不允许$U$往$T$流动. 那么一个很自然地问题就是如何model information flow policy? 这也是我们最为感兴趣的地方. 
+\rm Information flow是指程序执行的过程中信息流动，那么secure information flow就是指信息在流动的过程中遵守一些policies, i.e., 信息我们可以根据sensitivity分为两个部分low和high, 简称$L$和$H$, 我们允许$L$往$H$流动，而不允许$H$往$L$流动, 因为$L$往往是假设是可以被观测的，因此$H$往$L$流动就意味着敏感信息泄露. 同样的思路我们也可以用来描述信息的integrity分为trusted和untrusted吗, 简称为$T$和$U$, 我们允许$T$往$U$流动, 而不允许$U$往$T$流动. 那么一个很自然地问题就是如何model information flow policy? 这也是我们最为感兴趣的地方. 
 
-我们将owners of imformation表示为程序中的variables. 对于任意一个variable $x$, 我们用$\overline{x}$表示其所具有的the set of security classes，其中包含我们前面提到的sensitivity和integrity. 假设$\overline{x} = \{H,U\}$，而$\overline{y} = \{L, T\}$, 在现有policies下我们是运行$y$到$x$的流动, 因为我们分别比较了对应security proporties. 这样的思路已经非常明显地对应了用lattice来分析问题\cite{DL}. 首先我们可以定义一个两个partial order分别包含$L \leq H$和$T \leq U$, 然后再利用前面这两个poset定义一个product partial order:
+我们将owners of imformation表示为程序中的variables. 对于任意一个variable $x$, 我们用$\overline{x}$表示其所具有的the set of security classes，其中包含我们前面提到的sensitivity和integrity. 假设$\overline{x} = \{H,U\}$，而$\overline{y} = \{L, T\}$, 在现有policies下我们是允许$y$到$x$的流动, 因为我们分别比较了对应security proporties. 这样的思路已经非常明显地对应了用lattice来分析问题\cite{DL}. 首先我们可以定义一个两个partial order分别包含$L \leq H$和$T \leq U$, 然后再利用前面这两个poset定义一个product partial order:
 \[
 	(a_1, b_1) \leq (a_2, b_2) \iff a_1 \leq a_2 ~\text{and}~b_1 \leq b_2 
 \]
@@ -346,7 +346,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{definition}
-\rm We can give a programming certification condition for representing the information flow policy as follows:
+\rm We can give a program certification condition for representing the information flow policy such that
 \[
 	\overline{e} ~\leq~ \overline{c}.
 \]
@@ -359,7 +359,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 简而言之就是说一段程序在等价的初始状态下，总可以得到等价的结束状态. 其中等价状态和在程序执行过程状态的变化，使我们需要刻画的东西. 在某种程度上它可以作为验证analysis的correctness，因为我们在做analysis时候总是伴随这一些assumptions, 而我们的验证思路是在一些特定的assumptions下我们总能得到正确结果，而不受其他的因素影响. 
+\rm 简而言之就是说一段程序在等价的初始状态下运行，总可以得到等价的结束状态. 其中等价状态和在程序执行过程状态的变化，使我们需要刻画的东西. 在某种程度上它可以作为验证analysis的correctness，因为我们在做analysis时候总是伴随这一些assumptions, 因此我们的验证思路是在一些特定的assumptions下我们总能得到正确结果，而不受其他的因素影响. 
 \end{annotation}
 
 \newpage
@@ -398,7 +398,7 @@ where $\func{\mu}{locations}{values}$ is a memeory map, using $\mu \vdash e \Rig
 \end{definition}
 
 \begin{annotation}
-\rm 上述关于operational semantics是比较清楚的，值得一提是letvar中重新构造了一个fresh location来替换掉了原来的local variable，这样做的好处是省去了构造local variable的环节. 
+\rm 上述描述的operational semantics是比较清楚的，值得一提是letvar中重新构造了一个fresh location来替换掉了原来的local variable，这样做的好处是省去了构造local variable的环节. 
 \end{annotation}
 
 \subsection{Typing Rules}
@@ -470,7 +470,7 @@ where $\Gamma$ is the context of location typing and $\Delta$ is the context of 
 \end{lemma}
 
 \begin{proof}
-\rm 我们可以根据$e$的structure来讨论，核心还是在height of derivation上做induction. 
+\rm 我们可以根据$e$的structures来讨论，核心还是在height of derivation上做induction. 
 
 \textsc{Base case}: 分别对last rules为\textsc{T-Int}, \textsc{T-Var}和\textsc{T-Loc}，这些结果都是显然的.
 
@@ -540,7 +540,7 @@ where $\Gamma$ is the context of location typing and $\Delta$ is the context of 
 \[
 	\infer[\textsc{T-Assign*}]{\Gamma, \Delta \vdash \termtype{e_1 \coloneqq e_2}{\tau_1~cmd}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau_2~var} & \Gamma, \Delta \vdash \termtype{e_2}{\tau_2} & \tau_1 \leq \tau_2}
 \]
-这样我们的选择就变成确定了. 这里不这样做也没有关系，无法就是把\textsc{T-Sub}提出来再证一次就行. 设$\rho = \tau_1~cmd$. 若last typing rule均为\textsc{T-Assign}
+这样我们的选择就变成确定的了. 不过这里不这样做也没有关系，无法就是把\textsc{T-Sub}提出来再证一次就行. 设$\rho = \tau_1~cmd$. 若last typing rule均为\textsc{T-Assign}
 \[
 	\infer[\textsc{T-Assign}]{\Gamma, \Delta \vdash \termtype{l \coloneqq e}{\tau_1~cmd}}{\Gamma, \Delta \vdash \termtype{l}{\tau_1~var} & \Gamma, \Delta \vdash \termtype{e}{\tau_1}}	
 \]
