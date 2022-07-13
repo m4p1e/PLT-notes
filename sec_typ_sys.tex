@@ -155,7 +155,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{definition}
-\rm Given a term $\lam{x}{M}$ in $\Lambda$, if $x$ is not free in $M$, then we have a $\eta$-reduction as follow:
+\rm Given a term $\lam{x}{M}$ in $\Lambda$, if $x$ is not free in $M$, then we have a $\eta$-reduction as follows:
 \[
 	\lam{x}{M} \to M
 \]  
@@ -186,7 +186,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{annotation}
 
 \begin{definition}
-\rm The untyped lambda calculus is defined as follow:
+\rm The untyped lambda calculus is defined as follows:
 \[
 	\begin{gathered}
 	\begin{aligned}
@@ -231,7 +231,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{annotation}
 
 \begin{definition}
-\rm The pure simply typed lambda-caculus is defined as follow:
+\rm The pure simply typed lambda-caculus is defined as follows:
 \[
 	\begin{gathered}
 	\begin{aligned}
@@ -251,8 +251,10 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 相比于untyped lambda calculus多了关于type $\tau$, 所有terms在$\Lambda$都可以看做一个abstraction，它对应的type就是$\tau \to \tau$. 其中$\Gamma$表示contexts, i.e., 我们需要某个term里面所有free variables的types才能进一步推导term它具有什么type, 它是可以为empty set的, 题外话$\Gamma$实际上也是可以看做multi-set的，即$\Gamma_1, \Gamma_2$. 这里judgement(也可以叫sequent) $\Gamma \vdash t:\tau$表示term $t$在contexts $\Gamma$下具有type $\tau$，中间这个$\vdash$叫turnstile. 如果我们要验证这个judgement是valid，就需要一个关于它的derivation(这里derivation的定义和前面类似)，这里derivation就需要按照我们这里最下面的三个typing rules. 这里我给的解释是比较简单，但是对于初次接触的人来说并没有那么容易，我将配合几个例子帮助你理解. 
+\rm 相比于untyped lambda calculus每个term现在是有一个type $\tau$标签了, 特别地，abstraction的type形如$\tau \to \tau$. 我们这里可能与你经常看见的typed lambda calculus不太一样，我们给abstraction的arguments加上了annotation，这样可以省去了type inference，实际上这里也不需要. 其中$\Gamma$表示contexts, i.e., 我们需要某个term里面所有free variables的types才能进一步推导term它具有什么type, 它是可以为empty set的, 题外话$\Gamma$实际上也是可以看做multi-set的，即$\Gamma = \Gamma_1\cup \Gamma_2$. 这里judgement(也可以叫sequent) $\Gamma \vdash t:\tau$表示term $t$在contexts $\Gamma$下具有type $\tau$，中间这个$\vdash$叫turnstile. 如果我们要验证这个judgement是valid，就需要一个关于它的derivation(这里derivation的定义和前面类似)，这里derivation就需要按照我们这里最下面的三个typing rules. 这里我给的解释是比较简单，但是对于初次接触的人来说并没有那么容易，我将配合几个例子帮助你理解. 
 \end{annotation}
+
+
 
 \begin{example}
 \rm 我们可以尝试推一下关于$\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}$, 其中$c$表示一个type为$\tau_2$的constant:
@@ -275,9 +277,37 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{theorem}
 
 \begin{annotation}
-\rm 我并不打算来严格证明的它们，因为会花费很多篇幅，同时你可能还需要证明其他的一些lemma, 例如一些some structural rules are admissible和substitution lemma等等. 有兴趣的同学可以直接去研究一下，总体上过程还是非常straightforward的. 但是我还是提一下关于证明这些类似structural proof结论的时候，经常会用到一种structural induction的方法: 首先给出height of derivation (the greatest number of successive application of rules in it, where \textsc{T-Var} have height $0$), 然后我们在height上做induction. 再者如果涉及到更精细地证明方式，我们还会定义weight of term，然后在它上面做induction，这一类的induction可以在证明cut-elimination的地方看见. 
+\rm 我并不打算来严格证明的它们，因为会花费很多篇幅，同时你可能还需要证明其他的一些lemma, 例如some structural rules are admissible和substitution lemma等等. 有兴趣的同学可以直接去研究一下，总体上过程还是非常straightforward的. 但是我还是简要地提一下关于证明这些类似structural proof结论的时候，经常会用到一种structural induction的方法: 首先给出height of derivation (the greatest number of successive application of rules in it, where \textsc{T-Var} have height $0$), 然后我们在height上做induction. 再者如果涉及到更精细地证明方式，我们还会定义weight of term，然后在它上面做induction，这一类的induction可以在证明cut-elimination的地方看见. 最后我们简单的来提及一下关于\emph{subtype polymorphism}概念. 
+\end{annotation}
 
-好了以上就是你在继续往下读所要的关于type system的预备知识，或许很简单，又或许不太简单，但是我相信一定会给那些第一次接触到它的人打开另一扇窗. 
+
+\begin{definition}
+\rm Let $\tau_1,\tau_2$ be any types in a system, $\tau_1$ is a \emph{subtype} of $\tau_2$ if any term of type $\tau_1$ can safely be used in context where a term of type $\tau_2$ is expected, simply written $\tau_1 <: \tau_2$.
+\end{definition}
+
+\begin{example}
+\rm 例如我们有这样一个term $t = \{x_1:int, x_2:int\}$ (tuple) 和一个abstraction $f = \lam{z:\{x_1:int\}}{z.1}$, 其中$z.1$表示fetch tuple中的第一个元素，即这就是$x_1$元素. 那么application $f~t$是well-typed的吗？ 显然是的，因为$t$完全可以被当做type $\{x_1:int\}$来用，即$\{x_1:int, x_2:int\} <: \{x_1:int\}$. 前面的思路就是subtyping中最重要的一个想法\emph{subsumption}.
+\end{example}
+
+\begin{definition}
+\rm The Subsumpting rule defined as:
+\[
+	\infer[\textsc{T-Sub}]{\Gamma \vdash \termtype{t}{\tau_2}}{\Gamma \vdash \termtype{t}{\tau_1} & \tau_1 <: \tau_2}
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 其中$\tau_1 <: \tau_2$表示一个subtype relation，这是需要我们额外地来定义，前面例子中提到的tuple就是根据它的width来定义的，同理你也可以来定义其他data structures之间的相关内容. subtype relation有几个比较明显的性质例如: reflexivity和transitivity，这都是很容易证明的. 
+\
+还有一个比较有趣的是关于abstractions之间的subtype relation定义:
+\[
+	\infer[]{\tau_1 \to \tau_2 <: \tau_1' \to \tau_2'}{\tau_1' <: \tau_1 & \tau_2 <: \tau_2'}
+\]
+这就是所谓的"the function arguments are contravariant and the function results are covariant".
+\end{annotation}
+
+\begin{annotation}
+\rm 好了以上就是你在继续往下读所需要的关于type system的预备知识，或许很简单，又或许不太简单，但是我相信一定会给那些第一次接触到它的人打开另一扇窗. 
 \end{annotation}
 
 \subsection{Secure Information Flow}
@@ -285,16 +315,42 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \begin{annotation}
 \rm Information flow是指程序执行的过程中信息流动，那么secure information flow就是指信息在流动的过程中遵守一些policies, i.e., 信息我们可以根据sensitivity分为两个部分low和high, 简称$L$和$H$, 我们允许$L$往$H$流动，而不允许$H$往$L$流动, 因为$L$往往是假设是可以被观察的，因此$H$往$L$流动就意味着敏感信息泄露. 同样的思路我们也可以用来描述信息的integrity分为trusted和untrusted吗, 简称为$T$和$U$, 我们允许$T$往$U$流动, 而不允许$U$往$T$流动. 那么一个很自然地问题就是如何model information flow policy? 这也是我们最为感兴趣的地方. 
 
-我们将owners of imformation表示为程序中的variables. 对于任意一个variable $x$, 我们用$\overline{x}$表示其所具有的the set of security classes，其中包含我们前面提到的sensitivity和integrity. 假设$\overline{x} = \{H,U\}$，而$\overline{y} = \{L, T\}$, 在现有policies下我们是运行$y$到$x$的流动, 因为我们分别比较了对应security proporties. 如果某个expression$z$里面包含$x$与$y$, 那么我们也可以计算出$\overline{z} = \{H,U\}$. 这样的思路已经非常明显地对应了用lattice来分析问题. 首先我们可以定义一个两个partial order分别包含$L \leq H$和$T \leq U$, 然后再利用前面这两个poset定义一个product partial order:
+我们将owners of imformation表示为程序中的variables. 对于任意一个variable $x$, 我们用$\overline{x}$表示其所具有的the set of security classes，其中包含我们前面提到的sensitivity和integrity. 假设$\overline{x} = \{H,U\}$，而$\overline{y} = \{L, T\}$, 在现有policies下我们是运行$y$到$x$的流动, 因为我们分别比较了对应security proporties. 这样的思路已经非常明显地对应了用lattice来分析问题\cite{DL}. 首先我们可以定义一个两个partial order分别包含$L \leq H$和$T \leq U$, 然后再利用前面这两个poset定义一个product partial order:
 \[
 	(a_1, b_1) \leq (a_2, b_2) \iff a_1 \leq a_2 ~\text{and}~b_1 \leq b_2 
 \]
 \end{annotation}
 
 \begin{definition}
-\rm Information flow policies are defined by a lattice $(SC, \leq)$, where $SC$ is a finite set of security classes partially ordered by $\leq$.
+\rm Information flow policies are defined by a lattice $(SC, \vee, \wedge)$, where $SC$ is a finite set of security classes partially ordered by $\leq$. For any $a,b \in SC$, we define $\vee$ and $\wedge$ as follows
+\[
+	\begin{gathered}
+	b = a \vee b ~\text{if}~  a \leq b \\
+	a = a \wedge b ~\text{if}~  a \leq b	
+	\end{gathered}
+\]
 \end{definition}
 
+\begin{definition}
+\rm We define the set of security classes $\overline{e}$ for expression $e$ such that 
+\[
+\overline{e} = \bigvee\limits_{\text{$x$ is free varible in $e$}} \overline{x}
+\]
+\end{definition}
+
+\begin{definition}
+\rm We define the set of security classes $\overline{c}$ for command $c$ as follows:
+\[
+	\overline{c} = \bigwedge\limits_{\text{$x$ is assigned to in $c$}} \overline{x}
+\]
+\end{definition}
+
+\begin{definition}
+\rm We can give a programming certification condition for representing the information flow policy as follows:
+\[
+	\overline{e} ~\leq~ \overline{c}.
+\]
+\end{definition}
 
 \subsection{Noninterference}
 
@@ -303,7 +359,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{definition}
 
 \begin{annotation}
-\rm 简而言之就是说一段程序在等价的初始状态下，总可以得到等价的结束状态. 其中等价状态和在程序执行过程状态的变化，使我们需要刻画的东西. 在某种程度上它可以作为验证analysis的correctness，因为我们在做analysis时候总是伴随这一些assumptions, 我们需要验证时在在一些特定的assumptions下我们总能得到正确结果，而不受其他的因素影响. 
+\rm 简而言之就是说一段程序在等价的初始状态下，总可以得到等价的结束状态. 其中等价状态和在程序执行过程状态的变化，使我们需要刻画的东西. 在某种程度上它可以作为验证analysis的correctness，因为我们在做analysis时候总是伴随这一些assumptions, 而我们的验证思路是在一些特定的assumptions下我们总能得到正确结果，而不受其他的因素影响. 
 \end{annotation}
 
 \newpage
@@ -317,37 +373,197 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 	\begin{gathered}
 	\begin{aligned}
 	&(phrases) && p \Coloneqq e~|~c \\
-	&(expressions) && e \Coloneqq x ~|~ l ~|~ n ~|~ e_1 + e_2 ~|~ e_1 - e_2 ~|~ e_1 = e_2 ~|~ e_1 < e_2 \\
+	&(expressions) && e \Coloneqq x ~|~ l ~|~ n ~|~ e_1 \oplus e_2 \\
 	&(command) && c ::= e_1 \coloneqq e_2 ~|~ c_1;c_2 ~|~ \ifelse{e}{c_1}{c_2} ~|~ \newwhiledo{e}{c} ~| \\
 	&&&\quad\quad~ \letvar{x \coloneqq e}{c}
 	\end{aligned}
 	\end{gathered}
 \]
-where $x$ ranges over variables, $l$ over locations, and $n$ over integer literals. Integers are the obly values. We use 0 for false and 1 for true, and assume that locations are well ordered \cite{DGC}.
+where $x$ ranges over variables, $l$ over locations, and $n$ over integer literals, and $\oplus$ includes binary operators $+,-,=,<$. Integers are the obly values. We use 0 for false and 1 for true, and assume that locations are well ordered \cite{DGC}.
 \end{definition}
 
 \begin{definition}
-\rm We define the evalution rules for above language as follow:
+\rm We define the evalution rules for above language as follows:
 \[
 	\begin{gathered}
-	\infer[base]{\mu \vdash n \Rightarrow n}{} \quad\quad \infer[contents]{\mu \vdash l \Rightarrow \mu(l)}{l \in dom(\mu)} \\[0.5em]
-	\infer[add]{\mu \vdash e_1 + e_2 \Rightarrow n_1 + n_2}{\mu \vdash e_1 \Rightarrow n_1 & \mu \vdash e_1 \Rightarrow n_2} \\[0.5em]
-	\infer[update]{\mu \vdash l \coloneqq e \Rightarrow \mu[l \mapsto n]}{\mu \vdash e \Rightarrow n & l \in dom(\mu)} \quad \infer[sequence]{\mu \vdash c_1;c_2 \Rightarrow \mu_2}{\mu \vdash c_1 \Rightarrow \mu_1 & \mu_1 \vdash \mu_2} \\[0.5em]
-	\infer[branch_1]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_1}{\mu \vdash e \Rightarrow 1 & \mu \vdash c_1 \Rightarrow u_1} \quad\quad \infer[branch_2]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_2}{\mu \vdash e \Rightarrow 0 & \mu \vdash c_2 \Rightarrow u_2} \\[0.5em]
-	\infer[loop_1]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u}{\mu \vdash e \Rightarrow 0} \quad\quad \infer[loop_2]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u_2}{\mu \vdash e \Rightarrow 1 & \mu \vdash c \Rightarrow \mu_1 & \mu_1 \vdash \newwhiledo{e}{c} \Rightarrow \mu_2}\\[0.5em]
-	\infer[letvar]{\mu \vdash \letvar{x \coloneqq e}{c} \Rightarrow \mu_1}{\mu \vdash e \Rightarrow n & \mu[l \mapsto n] \vdash [l \mapsto x]c \Rightarrow \mu_1}
+	\infer[\textsc{E-Base}]{\mu \vdash n \Rightarrow n}{} \quad\quad \infer[\textsc{E-Contents}]{\mu \vdash l \Rightarrow \mu(l)}{l \in dom(\mu)} \\[0.5em]
+	\infer[\textsc{E-Add}]{\mu \vdash e_1 \oplus e_2 \Rightarrow n_1 \oplus n_2}{\mu \vdash e_1 \Rightarrow n_1 & \mu \vdash e_1 \Rightarrow n_2} \\[0.5em]
+	\infer[\textsc{E-Update}]{\mu \vdash l \coloneqq e \Rightarrow \mu[l \mapsto n]}{\mu \vdash e \Rightarrow n & l \in dom(\mu)} \quad \infer[\textsc{E-Seq}]{\mu \vdash c_1;c_2 \Rightarrow \mu_2}{\mu \vdash c_1 \Rightarrow \mu_1 & \mu_1 \vdash \mu_2} \\[0.5em]
+	\infer[\textsc{E-Branch}_1]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_1}{\mu \vdash e \Rightarrow 1 & \mu \vdash c_1 \Rightarrow u_1} \quad\quad \infer[\textsc{E-Branch}_2]{\mu \vdash \ifelse{e}{c_1}{c_2} \Rightarrow \mu_2}{\mu \vdash e \Rightarrow 0 & \mu \vdash c_2 \Rightarrow u_2} \\[0.5em]
+	\infer[\textsc{E-Loop}_1]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u}{\mu \vdash e \Rightarrow 0} \quad\quad \infer[\textsc{E-Loop}_2]{\mu \vdash \newwhiledo{e}{c} \Rightarrow u_2}{\mu \vdash e \Rightarrow 1 & \mu \vdash c \Rightarrow \mu_1 & \mu_1 \vdash \newwhiledo{e}{c} \Rightarrow \mu_2}\\[0.5em]
+	\infer[\textsc{E-Letvar}]{\mu \vdash \letvar{x \coloneqq e}{c} \Rightarrow \mu_1-l}{\mu \vdash e \Rightarrow n & \text{$l$ is the fresh location not in $dom(\mu)$} & \mu[l \coloneqq n] \vdash [l \mapsto x]c \Rightarrow \mu_1}
 	\end{gathered}
 \]
-where $\func{\mu}{locations}{values}$ is a memeory map, using $\mu \vdash e \Rightarrow n$ for producing value (that is expression has no side-effect) and $\mu \vdash c \Rightarrow \mu_1$ for producing new memeory map, $\mu[l \Rightarrow n]$ means $\mu(l) = n$ and otherwise $\mu[l \Rightarrow n](l') = \mu(l')$, and $[l \mapsto x]c$ means that replacing all occurences of $x$ in $c$.
+where $\func{\mu}{locations}{values}$ is a memeory map, using $\mu \vdash e \Rightarrow n$ for producing value by expression (that is expression has no side-effect) and $\mu \vdash c \Rightarrow \mu_1$ for producing new memeory map by command, $\mu[l \coloneqq n]$ means $\mu(l) = n$ and otherwise $\mu[l \Rightarrow n](l') = \mu(l')$, $\mu-l$ is new meomery map without $l \in dom(\mu)$ and $[l \mapsto x]c$ means that replacing all occurences of $x$ in $c$ with $l$.
+\end{definition}
+
+\begin{annotation}
+\rm 上述关于operational semantics是比较清楚的，值得一提是letvar中重新构造了一个fresh location来替换掉了原来的local variable，这样做的好处是省去了构造local variable的环节. 
+\end{annotation}
+
+\subsection{Typing Rules}
+
+\begin{definition}
+\rm The types of above lanaguge are defined as follows:
+\[
+	\begin{gathered}
+	\begin{aligned}
+	&(data types) && \tau \Coloneqq s \\
+	&(phrase types) && \rho \Coloneqq \tau ~|~ \tau~var ~|~ \tau~cmd 
+	\end{aligned}
+	\end{gathered}
+\]
+where $s$ range over the sef of $SC$ of security classes, which is assumed to be partially ordered by $\leq$. Type $\tau~var$ is the type of a variable and $\tau~cmd$ is the type of a command. 
+\end{definition}
+
+\begin{definition}
+\rm The typing judgements have the form
+\[
+	\Gamma, \Delta \vdash p: \rho
+\]
+where $\Gamma$ is the context of location typing and $\Delta$ is the context of variable typing. The judgement means that phrase $p$ has type $\rho$ under $\Gamma$ for typing free location in $p$ and $\Delta$ for typing free variable in $p$.
+\end{definition}
+
+\begin{definition}
+\rm The tpying rules of above language are defined as follows:
+\[
+	\begin{gathered}
+	\infer[\textsc{T-Int}]{\Gamma, \Delta \vdash \termtype{n}{\tau}}{} \quad\quad \infer[\textsc{T-Var}]{\Gamma, \Delta \vdash \termtype{x}{\tau~var}}{\termtype{x}{\tau} \in \Delta} \quad\quad \infer[\textsc{T-Loc}]{\Gamma, \Delta \vdash \termtype{l}{\tau~var}}{\termtype{l}{\tau} \in \Gamma} \\[0.5em]
+	\infer[\textsc{T-Arith}]{\Gamma, \Delta \vdash \termtype{e_1 \oplus e_2}{\tau}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau} & \Gamma, \Delta \vdash \termtype{e_2}{\tau}} \quad\quad \infer[\textsc{T-RVal}]{\Gamma, \Delta \vdash \termtype{e}{\tau}}{\Gamma, \Delta \vdash \termtype{e}{\tau~var}} \\[0.5em]
+	\infer[\textsc{T-Assign}]{\Gamma, \Delta \vdash \termtype{e_1 \coloneqq e_2}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau~var} & \Gamma, \Delta \vdash \termtype{e_2}{\tau}} \quad\quad \infer[\textsc{T-Seq}]{\Gamma, \Delta \vdash \termtype{c_1;c_2}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{c_1}{\tau~cmd} & \Gamma, \Delta \vdash \termtype{c_2}{\tau}} \\[0.5em]
+	\infer[\textsc{T-If}]{\Gamma, \Delta \vdash \termtype{\ifelse{e}{c_1}{c_2}}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e}{\tau} & \Gamma, \Delta \vdash \termtype{c_1}{\tau~cmd} & \Gamma, \Delta \vdash \termtype{c_2}{\tau}}  \\[0.5em]
+	\infer[\textsc{T-While}]{\Gamma, \Delta \vdash \termtype{\newwhiledo{e}{c}}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e}{\tau} & \Gamma, \Delta \vdash \termtype{c}{\tau~cmd}}  \\[0.5em]
+	\infer[\textsc{T-Letvar}]{\Gamma, \Delta \vdash \termtype{\letvar{x \coloneqq e}{c}}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e}{\tau_1} & \Gamma, \Delta, \termtype{x}{\tau_1} \vdash \termtype{c}{\tau~cmd}} \\[1em]
+	\infer[\textsc{T-Base}]{\vdash \tau_1 <: \tau_2}{\tau_1 \leq \tau_2} \\[0.5em]
+	\infer[\textsc{T-Cmd}^-]{\vdash \tau_1~cmd <: \tau_2~cmd}{\tau_2 <: \tau_1}\\[0.5em]
+	\infer[\textsc{T-Sub}]{\Gamma, \Delta \vdash \termtype{p}{\rho_2}}{\Gamma, \Delta \vdash \termtype{p}{\rho_1} & \rho_1 <: \rho_2}
+	\end{gathered}
+\]
 \end{definition}
 
 
-\subsection{Typing Rules}
+\begin{annotation}
+\rm 这里我们实际上仅仅是将secure information flow analysis的算法转换称了typing rules，最终构成了一个type system，后面我们将在这个type system下研究一些有趣的性质. 
+\end{annotation}
+
+\subsection{Soundness}
+
+\begin{lemma}
+\rm (\redt{Structural Subtyping}) If $\vdash \rho_1 <: \rho_2$, then either
+\begin{itemize}
+	\item if $\rho_1$ is of the form $\tau_1$ and $\rho_2$ is of the form $\tau_2$, then $\tau_1 \leq \tau_2$;
+	\item if $\rho_1$ is of the form $\tau_1~var$ and $\rho_2$ is of the form $\tau_2~var$, then $\tau_1 = \tau_2$;
+	\item if $\rho_1$ is of the form $\tau_1~cmd$ and $\rho_2~cmd$ is of the form $\tau_2~cmd$, then $\tau_2 \leq \tau_1$;
+\end{itemize}
+\end{lemma}
+
+\begin{annotation}
+\rm 我并不打算证明上面的\emph{structural subtyping lemma}, 因为比较简单但是比较啰嗦，只需要使用subtyping rules即可. 但是它是比较有用的，可以用来帮我们close掉$\rho_1 <: \rho_2$所在branch的proof，后续是可以看见的.
+\end{annotation}
+
+\begin{annotation}
+\rm 第一个\emph{simple security lemma}严格证明了well-typed expression $\termtype{e}{\tau}$和前面提到的$\overline{e}$是等价的. 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Simple Security}) If $\Gamma,\Delta \vdash \termtype{e}{\tau}$, then for every location $l$ in $e$ and $\termtype{l}{\tau_1} \in \Gamma$, we have $\tau_1 \leq \tau$. 
+\end{lemma}
+
+\begin{proof}
+\rm 我们可以根据$e$的structure来讨论，核心还是在height of derivation上做induction. 
+
+\textsc{Base case}: 分别对last rules为\textsc{T-Int}, \textsc{T-Var}和\textsc{T-Loc}，这些结果都是显然的.
+
+\textsc{Induction case}: 若$e = e_1 \oplus e_2$, 并且其last rule为\textsc{T-Assign}:
+\[
+	\infer[\textsc{T-Arith}]{\Gamma, \Delta \vdash \termtype{e_1 \oplus e_2}{\tau}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau} & \Gamma, \Delta \vdash \termtype{e_2}{\tau}}
+\]
+对其两个primises使用induction hypothesis得到命题中结论. 同理last rule为\text{T-RVal}也一样证明. 
+
+特别地，我们最后考虑一下last rule为\textsc{T-Sub}的case:
+\[
+	\infer[\textsc{T-Sub}]{\Gamma, \Delta \vdash \termtype{e}{\tau}}{\Gamma, \Delta \vdash \termtype{e}{\tau_1} & \tau_1 <: \tau}
+\]
+其right side primise我们可以用\emph{structural subtyping lemma}来close掉， 因此满足$\tau_1 \leq \tau$，然后继续对left side做derivation回到了前面的cases.
+\end{proof}
+
+\begin{annotation}
+\rm 第二个\emph{confinement lemma}严格证明了well-typed command $\termtype{c}{\tau}$和前面提到的$\overline{c}$是等价的. 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Confinement}) If $\Gamma,\Delta \vdash \termtype{c}{\tau}$, then for every location $l$ assigned to in $c$ and $\termtype{l}{\tau_1} \in \Gamma$, we have $\tau_1 \geq \tau$.
+\end{lemma}
+
+\begin{proof}
+\rm 和证明\emph{simple security lemma}做structural induction, 这里只记录一下几个代表性的cases:
+\begin{itemize}
+	\item 若$c = e_1 \coloneqq e_2$, 若last rule为apply \textsc{T-Assign}:
+	\[
+		\infer[\textsc{T-Assign}]{\Gamma, \Delta \vdash \termtype{e_1 \coloneqq e_2}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau~var} & \Gamma, \Delta \vdash \termtype{e_2}{\tau}}
+	\]
+	注意left side primise，只有\textsc{T-Var}可以对其apply, 这意味着当assignment左边被确定之后，它的type是不能被更改，这是一个小细节(从structural typing lemma的第二个case也能看出来)，再对其用一下induction hypothesis即有命题中的结论. 	
+	\item 若$c = \ifelse{e}{c_1}{c_1}$, 若last rule为apply \textsc{T-If}:
+\[
+	\infer[\textsc{T-If}]{\Gamma, \Delta \vdash \termtype{\ifelse{e}{c_1}{c_2}}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e}{\tau} & \Gamma, \Delta \vdash \termtype{c_1}{\tau~cmd} & \Gamma, \Delta \vdash \termtype{c_2}{\tau}}
+\]
+	显然assignment只可能存在于$c_1$或者$c_2$, 再对后面两个primise使用一下induction hypothesis即可得到命题结论.
+	\item 若直接apply \textsc{T-Sub}:
+	\[
+		\infer[\textsc{T-Sub}]{\Gamma, \Delta \vdash \termtype{c}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{c}{\tau_1~cmd} & \tau_1 <: \tau~cmd}
+	\]
+	对其中right side primise用一下\emph{structural typing lemma}可以得到$\tau \leq \tau_1$, left side primise又回到了前面的cases. 
+\end{itemize}
+\end{proof}
+
+\begin{definition}
+\rm We write $\mu_1 \approx_\tau \mu_2$ to mean $\mu_1(l) = \mu_2(l)$ that for all $\termtype{l}{\tau_1} \in \Gamma$ such that $\tau_1 \leq \tau$, where $\mu_1$ and $\mu_2$ are memory maps with same domain. 
+\end{definition}
+
+\begin{theorem}
+\rm \redt{(Type Soundness)} Suppose $\Gamma \vdash c:\rho$, for any evaluation $\mu_1 \vdash c \Rightarrow \mu_1', \mu_2 \vdash c \Rightarrow \mu_2'$ and $\mu_1 \approx_\tau \mu_2$, then $\mu_1' \approx_\tau \mu_2'$. 
+\begin{center}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAB12BbJgfQEYQAX1LpMufIRQAmclVqMWbTjwEByYaJAZseAkTL959Zq0QdufaZrG7JRWUeoml5lVY1D5MKAHN4RKAAZgBOEFxIZCA4EEj8zopmIADGINQMdABGMAwACuJ6UiAMMEE4NiCh4ZHUMUiyCqbK7HRoaGEAHrycOHRMacVZOfl2+uYhWL4AFuXUUzB0UGyQYKzpWKtsUBBMmSUVVRGI8dGxiADMCU1uLW2d3ey9-elDeQX25iVlA-OLywRrYobJLbXb7ETBMJHBp1C5XVwpAYZbJvUZFL7lLxCIA
+\begin{tikzcd}
+\mu_1 \arrow[rr, "c"] \arrow[d, "\approx_\tau"', Rightarrow, no head] &  & \mu_1' \arrow[d, "\approx_\tau", Rightarrow, no head,] \\
+\mu_2 \arrow[rr, "c"]                                                 &  & \mu_2'                                               
+\end{tikzcd}
+\end{center}
+\end{theorem}
+
+\begin{proof}
+\rm 这个证明过程和我们最前面在pure STLC中progress和preservation是非常相似的. 也得先证明一下progress，你才能对$c$做structural induction. progress是显然的，假设progress已经被证明了，我们来证一下这里preservation中的一个case: 若$c = l \coloneqq e$, 并且last evaluation rule为\textsc{E-Update}. 那么
+\[
+	\infer[\textsc{E-Update}]{\mu_1 \vdash l \coloneqq e \Rightarrow \mu_1[l \mapsto n_1]}{\mu_1 \vdash e \Rightarrow n_1 & l \in dom(\mu_1)} \quad\quad \infer[\textsc{E-Update}]{\mu_2 \vdash l \coloneqq e \Rightarrow \mu_2[l \mapsto n_2]}{\mu_2 \vdash e \Rightarrow n_2 & l \in dom(\mu_2)}
+\]
+这里有一个不太方便的地方，就是在给$c$选typing rules的时候，总有两种选择:(1 选\textsc{T-Assign} (2 选\textsc{T-Sub}. 在原文章\cite{DGC}里面，作者把我们前面介绍的typing rules精炼了一下，构造出了一个等价的machine-orient typing system. 就是subtyping rule不再单独存在, 而是直接放到了其余的typing rules里面, 例如\textsc{T-Assign}就变成了
+\[
+	\infer[\textsc{T-Assign*}]{\Gamma, \Delta \vdash \termtype{e_1 \coloneqq e_2}{\tau_1~cmd}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau_2~var} & \Gamma, \Delta \vdash \termtype{e_2}{\tau_2} & \tau_1 \leq \tau_2}
+\]
+这样我们的选择就变成确定了. 这里不这样做也没有关系，无法就是把\textsc{T-Sub}提出来再证一次就行. 设$\rho = \tau_1~cmd$. 若last typing rule均为\textsc{T-Assign}
+\[
+	\infer[\textsc{T-Assign}]{\Gamma, \Delta \vdash \termtype{l \coloneqq e}{\tau_1~cmd}}{\Gamma, \Delta \vdash \termtype{l}{\tau_1~var} & \Gamma, \Delta \vdash \termtype{e}{\tau_1}}	
+\]
+因为命题中我们不考虑$\Delta$, 因此这里assignment的左边只有locations，这里我们需要分两种情况:
+\begin{itemize}
+	\item $\tau_1 \leq \tau$, 由$\mu_1 \approx_\tau \mu_2$显然有$\mu_1[l \mapsto n_1]\approx_\tau \mu_2[l \mapsto n_2]$. 因为两个memory maps都分别新增了一个type为$\tau_1$的$l$.
+	\item $\tau_1 \nleq \tau$, 和上面情况一样，也有$\mu_1[l \mapsto n_1]\approx_\tau \mu_2[l \mapsto n_2]$, 只不过现在两个memory maps都新增了一个不影响命题判断的location $l$，因为我们只care memory map上type"小于" $\tau$的locations.
+\end{itemize}  
+
+若last typing rule均为\textsc{T-Sub}, 即
+\[
+	\infer[\textsc{T-Sub}]{\Gamma, \Delta \vdash \termtype{l \coloneqq e}{\tau_1~cmd}}{\Gamma, \Delta \vdash \termtype{l \coloneqq e}{\tau_2~cmd} & \infer[\textsc{T-Cmd}^-]{\tau_2~cmd <: \tau_1~cmd}{\tau_1 \leq \tau_2}}
+\]
+依然是分两种情况讨论$\tau_2$和$\tau$的关系. 这里有比较有趣的情况是一个last rule为\textsc{T-Assign}，另一个为\textsc{T-Sub}. 或者两个都last rule都是\textsc{T-Sub},但是上面的$\tau_2$不一样. 这两个情况我们都可以通过$\tau_1$配合subtyping relation transitivity来做.
+\end{proof}
 
 
 \begin{thebibliography}{9}
 \bibitem{TAPL}
 Benjamin C. Pierce. Types and Programming Languages.
+
+\bibitem{DL}
+D. Bell, L. LaPadula, Secure Computer System: Mathematical Foundations and Model.
 
 \bibitem{noninterference}
 Andrew Myers. Proving noninterference for a while-language using small-step. operational semantics.
