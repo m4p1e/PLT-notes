@@ -2,6 +2,7 @@
 
 \usepackage{ctex}
 \usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
 \usetikzlibrary{cd}
 
 \usepackage{amsthm}
@@ -131,7 +132,7 @@
 
 \section{Equivalence of Program}
 
-\subsection{Bisimulation}
+\subsection{Reactive Systems}
 
 \begin{definition}
 \rm A labelled transition system is a tuple $(S, \Lambda, \to)$ where $S$ is set of states, $\Lambda$ is set of labels, and $\to$ is relation of labelled transitions (i.e., a subset of $S \times \Lambda \times S$).  A $(p,\alpha,q) \in \to$ is written as $p  \xrightarrow{\alpha} q$. 
@@ -143,7 +144,7 @@
 
 
 \begin{definition}
-\rm Let $T=(S,\Lambda,\to)$ be a labelled transition system. The set of traces $\vn{Tr}(s)$, for $s \in S$ is the minimal set satisfying
+\rm Let $T=(S,\Lambda,\to)$ be a labelled transition system. The set of \redt{traces} $\vn{Tr}(s)$, for $s \in S$ is the minimal set satisfying
 \begin{itemize}
 	\item $\varepsilon \in \vn{Tr}(s)$.
 	\item $\alpha~\sigma \in \vn{Tr}(s)$ if $\Set{s' \in S}{s~ \xrightarrow{\alpha}~s' ~\text{and}~\sigma \in \vn{Tr}(s')}$. 
@@ -151,9 +152,98 @@
 \end{definition}
 
 \begin{definition}
-\rm A binary relation between state transition systems, associating systems that behave in the same way in that one system simulates the other and vice versa.
+\rm Two states $p,q$ are trace equivalent iff $\vn{Tr}(p) = \vn{Tr}(q)$.
 \end{definition}
 
+\begin{definition}
+\rm (\redt{Simultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a simulation iff, for all $(p,q) \in R$ and $\alpha \in \lambda$ satisfies
+\[
+	\text{for any}~p \xrightarrow{\alpha}_1 p', ~\text{then there exists}~ q'~\text{such that}~q \xrightarrow{\alpha}_2 q'~\text{and}~(p',q') \in R 	
+\]
+\begin{center}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRDRAF9T1Nd9CKACzkqtRizZoA5Fx7s+eAkTIBmMfWatEIAI5ze2JYOQj11TZJ27ZnMTCgBzeEVAAzAE4QAtkjIgcCCQARgsJbRAAHUjGNAALOgMQTx8kACZqQKRVMK02aNiEkGoGOgAjGAYABUUBNg8sRzicYpAGLDAIuAh2qCSU30R-LMQMto6IqDo4OIdW2bo+xDAmBgZcqxAAJVbSiura5R0GppbMuiwGNkhO-q9B0ICgxBzx250pmbnqBaWVtY2ER2dk4QA
+\begin{tikzcd}
+p \arrow[rrrr, "\alpha"] \arrow[ddd, "R"', dashed] &  &  &  & p' \arrow[ddd, "R", dashed] \\
+                                                   &  &  &  &                             \\
+                                                   &  &  &  &                             \\
+q \arrow[rrrr, "\alpha"']                          &  &  &  & q'                         
+\end{tikzcd}
+\end{center}
+\end{definition}
 
+\begin{definition}
+\rm We say $q$ simulates $p$ if there exists a simulation $R$ includes $(p,q)$ (i.e., $(p,q) \in R$).
+\end{definition}
+
+\begin{lemma}
+\rm The simulation is reflexive and transitive. 
+\end{lemma}
+
+\begin{annotation}
+\rm \bluet{最有意思的是我们应该如何找到这样simulation来满足$(p,q) \in R$, 更一步我们更希望找到the minimal relation}.
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{Bisimultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a bisimulation iff both $R$ and its converse $\overline{R}$ are simulations, for all $(p,q) \in R$ and $\alpha \in \lambda$ satisfies
+\[
+	\begin{gathered}
+	\text{for any}~p \xrightarrow{\alpha}_1 p', ~\text{then there exists}~ q'~\text{such that}~q \xrightarrow{\alpha}_2 q'~\text{and}~(p',q') \in R \\
+	\text{for any}~q \xrightarrow{\alpha}_2 q', ~\text{then there exists}~ p'~\text{such that}~p \xrightarrow{\alpha}_1 p'~\text{and}~(p',q') \in R
+	\end{gathered} 	
+\]
+\end{definition}
+
+%\begin{definition}
+%\rm A binary relation between state transition systems, associating systems that behave in the same way in that one system simulates the other and vice versa.
+%\end{definition}
+
+\begin{example}
+\rm 一些bisimulation的例子
+\begin{center}
+\begin{tikzpicture}
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\node[state] (p1) {$p_1$};
+	\node[state, below left of=p1, node distance=3cm] (p2) {$p_2$};
+	\node[state, below right of=p1, node distance=3cm] (p3) {$p_3$};
+	\node[state, right of=p1, node distance=6cm] (q1) {$q_1$};
+	\node[state, below of=q1, node distance=2cm] (q2) {$q_2$};
+	
+	\draw (p1) edge[above] node{$a$} (p2)
+	(p1) edge[above] node{$a$} (p3)
+	(p2) edge[above] node{$c$} (p3)
+	(p3) edge[loop right] node{$c$} (p3)
+	(q1) edge[right] node{$a$} (q2)
+	(q2) edge[loop right] node{$c$} (q2);
+\end{tikzpicture}
+\end{center}
+关于上面两个transition system的bisimultaion为$R=\{(p_1,q_1), (p_2,q_2), (p_3,q_2)\}$. 还有一个比较有特点的例子
+\begin{center}
+\begin{tikzpicture}
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\node[state] (p1) {$p_1$};
+	\node[state, right of=p1, node distance=3cm] (p2) {$p_2$};
+	\node[state, right of=p2, node distance=3cm] (p3) {$p_3$};
+	\node[right of=p3, node distance=3cm] (p4) {$\cdots$};
+	\node[state, right of=p4, node distance=3cm] (q1) {$q_1$};
+	
+	\draw (p1) edge[above] node{$a$} (p2)
+	(p2) edge[above] node{$a$} (p3)
+	(p3) edge[above] node{$a$} (p4)
+	(q1) edge[loop right] node{$a$} (q1);
+\end{tikzpicture}
+\end{center}
+\end{example}
 
 \end{document}
