@@ -106,6 +106,22 @@
 
 \newcommand{\dbracket}[1]{\ensuremath{\left\llbracket\,\vcenter{\hbox{$#1$}}\,\right\rrbracket}}
 
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}\PackageWarning{TODO:}{#1!}}
+
+%variable name
+\ExplSyntaxOn 
+\NewDocumentCommand{\vn}{m}
+ {
+   \seq_set_split:Nnn \l_tmpa_seq { ~ } { #1 }
+   \int_compare:nTF { \seq_count:N \l_tmpa_seq > 1 }
+    {
+     \seq_set_map:NNn \l_tmpb_seq \l_tmpa_seq { \exp_not:N \mathit { ##1 } }
+     (\seq_use:Nn \l_tmpb_seq { \  })
+    }
+    { \mathop{}\!\mathit{#1} }
+ }
+\ExplSyntaxOff
+
 \begin{document}
 \title{关于Maple Algebra的这一路}
 \author{枫聆 (maplegra)}
@@ -116,6 +132,23 @@
 \section{Equivalence of Program}
 
 \subsection{Bisimulation}
+
+\begin{definition}
+\rm A labelled transition system is a tuple $(S, \Lambda, \to)$ where $S$ is set of states, $\Lambda$ is set of labels, and $\to$ is relation of labelled transitions (i.e., a subset of $S \times \Lambda \times S$).  A $(p,\alpha,q) \in \to$ is written as $p  \xrightarrow{\alpha} q$. 
+\end{definition}
+
+\begin{annotation}
+\rm \todo{categorical semantics: $F$-coalgebra}
+\end{annotation}
+
+
+\begin{definition}
+\rm Let $T=(S,\Lambda,\to)$ be a labelled transition system. The set of traces $\vn{Tr}(s)$, for $s \in S$ is the minimal set satisfying
+\begin{itemize}
+	\item $\varepsilon \in \vn{Tr}(s)$.
+	\item $\alpha~\sigma \in \vn{Tr}(s)$ if $\Set{s' \in S}{s~ \xrightarrow{\alpha}~s' ~\text{and}~\sigma \in \vn{Tr}(s')}$. 
+\end{itemize}
+\end{definition}
 
 \begin{definition}
 \rm A binary relation between state transition systems, associating systems that behave in the same way in that one system simulates the other and vice versa.
