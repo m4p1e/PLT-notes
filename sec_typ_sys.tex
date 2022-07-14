@@ -223,9 +223,9 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{example}
 
 \begin{annotation}
-\rm 我们现在来思考另外一个问题: 如果给定一个$\lam{x}{x \lam{y}{y}}~z$，其中$x,y,z$均为variables. 我们对其做evaluation会得到:
+\rm 我们现在来思考另外一个问题: 如果给定一个$(\lam{x}{x~\lam{y}{y}})~z$，其中$x,y,z$均为variables. 我们对其做evaluation会得到:
 \[
-	\lam{x}{x~\lam{y}{y}} z \to z~\lam{y}{y} 
+	(\lam{x}{x~\lam{y}{y}})~z \to z~\lam{y}{y} 
 \]
 最后的结果依然是一个normal form，准确地说是一个neutral form，即它最左边并不是一个abstraction. 但这可能并不是我们想要的东西，因为我们通常希望evaluation的结果是一个value. 这就是涉及到我们是否可以在一开始就refuse掉可能会产生一个我们不期望的看到的结果呢? 而不是在evaluation进行到一半的时候，才恍然大悟. 这时候type system将会作为一个最有利的工具来帮助我们完成这个工作. 为了更清晰说明问题，我们还是先给出一个常见的\emph{pure simply typed lambda calculus}，这就是我们常说的STLC的简化版. 我们会直接给出定义，不会再像前面一样慢慢地推出untyped lambda calculus那样，因为整个过程是相似的，清晰的.  
 \end{annotation}
@@ -261,7 +261,7 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \[
 	\infer[\textsc{T-Abs}]{\termtype{c}{\tau_2}\vdash \termtype{\lam{\termtype{x}{\tau_1}}{c}}{\tau_2}}{\infer[\textsc{T-Var}]{\termtype{c}{\tau_2},\termtype{x}{\tau_1} \vdash \termtype{c}{\tau_2}}{}}
 \]
-这里最上面一层derivation其实隐藏了一个关于context permutation的structural rule(if $\Gamma,\termtype{x_1}{\tau_1},\termtype{x_2}{\tau_2} \vdash \vdash \termtype{t}{\tau}$, then $\Gamma,\termtype{x_2}{\tau_2},\termtype{x_1}{\tau_1} \vdash  \termtype{t}{\tau}$)的应用，虽然它看起来还是很自然的，但是我们必须时刻小心这些structural rules，因为有可能你看起来很显然的structural rules，你直接拿来用或者从system中去掉将会得到一个可能与原来并不等价的system.  
+这里最上面一层derivation其实隐藏了一个关于context permutation的structural rule(if $\Gamma,\termtype{x_1}{\tau_1},\termtype{x_2}{\tau_2} \vdash \termtype{t}{\tau}$, then $\Gamma,\termtype{x_2}{\tau_2},\termtype{x_1}{\tau_1} \vdash  \termtype{t}{\tau}$)的应用，虽然它看起来还是很自然的，但是我们必须时刻小心这些structural rules，因为有可能你看起来很显然的structural rules，你直接拿来用或者从system中去掉将会得到一个可能与原来并不等价的system.  
 \end{example}
 
 \begin{annotation}
@@ -290,16 +290,14 @@ where $[x \mapsto N]$ is substitution means "replacing all free occurences of $x
 \end{example}
 
 \begin{definition}
-\rm The Subsumpting rule defined as:
+\rm The Subsumpting rule is defined as follows:
 \[
 	\infer[\textsc{T-Sub}]{\Gamma \vdash \termtype{t}{\tau_2}}{\Gamma \vdash \termtype{t}{\tau_1} & \tau_1 <: \tau_2}
 \]
 \end{definition}
 
 \begin{annotation}
-\rm 其中$\tau_1 <: \tau_2$表示一个subtype relation，这是需要我们额外地来定义，前面例子中提到的tuple就是根据它的width来定义的，同理你也可以来定义其他data structures之间的相关内容. subtype relation有几个比较明显的性质例如: reflexivity和transitivity，这都是很容易证明的. 
-\
-还有一个比较有趣的是关于abstractions之间的subtype relation定义:
+\rm 其中$\tau_1 <: \tau_2$表示一个subtype relation，这是需要我们额外地来定义，前面例子中提到的tuple就是根据它的width来定义的，同理你也可以来定义其他data structures之间的相关内容. subtype relation有几个比较明显的性质例如: reflexivity和transitivity，这都是很容易证明的. 还有一个比较有趣的是关于abstractions之间的subtype relation定义:
 \[
 	\infer[]{\tau_1 \to \tau_2 <: \tau_1' \to \tau_2'}{\tau_1' <: \tau_1 & \tau_2 <: \tau_2'}
 \]
@@ -503,12 +501,12 @@ where $\Gamma$ is the context of location typing and $\Delta$ is the context of 
 		\infer[\textsc{T-Assign}]{\Gamma, \Delta \vdash \termtype{e_1 \coloneqq e_2}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e_1}{\tau~var} & \Gamma, \Delta \vdash \termtype{e_2}{\tau}}
 	\]
 	注意left side primise，只有\textsc{T-Var}可以对其apply, 这意味着当assignment左边被确定之后，它的type是不能被更改，这是一个小细节(从structural typing lemma的第二个case也能看出来)，再对其用一下induction hypothesis即有命题中的结论. 	
-	\item 若$c = \ifelse{e}{c_1}{c_1}$, 若last rule为apply \textsc{T-If}:
+	\item 若$c = \ifelse{e}{c_1}{c_2}$, 若last rule为apply \textsc{T-If}:
 \[
 	\infer[\textsc{T-If}]{\Gamma, \Delta \vdash \termtype{\ifelse{e}{c_1}{c_2}}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{e}{\tau} & \Gamma, \Delta \vdash \termtype{c_1}{\tau~cmd} & \Gamma, \Delta \vdash \termtype{c_2}{\tau}}
 \]
 	显然assignment只可能存在于$c_1$或者$c_2$, 再对后面两个primise使用一下induction hypothesis即可得到命题结论.
-	\item 若直接apply \textsc{T-Sub}:
+	\item 若last rule为\textsc{T-Sub}:
 	\[
 		\infer[\textsc{T-Sub}]{\Gamma, \Delta \vdash \termtype{c}{\tau~cmd}}{\Gamma, \Delta \vdash \termtype{c}{\tau_1~cmd} & \tau_1 <: \tau~cmd}
 	\]

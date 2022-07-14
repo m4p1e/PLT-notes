@@ -1,0 +1,126 @@
+\documentclass{article}
+
+\usepackage{ctex}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+\usepackage{proof}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+%\usepackage{unicode-math}
+
+\usepackage{hyperref} %url
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\usepackage[textwidth=18cm]{geometry} % 设置页宽=18
+
+\usepackage{blindtext}
+\usepackage{bm}
+\parindent=0pt
+\setlength{\parindent}{2em} 
+\usepackage{indentfirst}
+
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
+\titleformat{\subsection}[hang]{\color{red}\Large\bfseries}{}{0em}{}
+%\setcounter{secnumdepth}{1} %section 序号
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{annotation}[theorem]{Annotation}
+
+\newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
+\newcommand\SET[2]{\Set{#1}{\text{#2}}} %
+
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\abracket}[1]{\ensuremath{\left< #1 \right>}}
+
+\newcommand*{\xfunc}[4]{{#2}\colon{#3}{#1}{#4}}
+\newcommand*{\func}[3]{\xfunc{\to}{#1}{#2}{#3}}
+
+
+\newcommand{\inl}[1]{\ensuremath{\text{inl}~#1}}
+\newcommand{\inr}[1]{\ensuremath{\text{inr}~#1}}
+\newcommand{\fold}[1]{\ensuremath{{fold}_{#1}}}
+\newcommand{\unfold}[1]{\ensuremath{{unfold}_{#1}}}
+\newcommand{\lam}[2]{\ensuremath{\lambda #1\ldotp #2}} %lamx.y
+\newcommand{\pair}[1]{\ensuremath{\left\langle#1\right\rangle}}
+\newcommand{\projone}[1]{\ensuremath{#1.1}}
+\newcommand{\projtwo}[1]{\ensuremath{#1.2}}
+\newcommand{\caseof}[3]{\ensuremath{{\textbf{case}}~#1~{\textbf{of}}~\inl{x_1}\mapsto #2\mid\inr{x_2}\mapsto #3}}
+\newcommand{\Lam}[2]{\ensuremath{\Lambda #1\ldotp #2}}
+\newcommand{\pack}[3]{\ensuremath{{pack}~\pair{#1,#2}~{as}~#3}}
+\newcommand{\unpack}[4]{\ensuremath{{unpack}~#1~{as}~\pair{#2,#3}~{in}~#4}}
+\newcommand{\assign}[2]{\ensuremath{#1~\coloneqq~#2}}
+\newcommand{\singletype}[1]{\text{#1}}
+\newcommand{\termtype}[2]{\ensuremath{#1:#2}}
+\newcommand{\type}[3]{\ensuremath{ \left\{#1:#2\relmiddle|#3 \right\}}}
+\newcommand{\matgen}[2]{\ensuremath{\mu #1\ldotp#2}} %ux.y
+\newcommand{\mat}[0]{\matgen{\alpha}{\tau}} %ua.t
+\newcommand{\fatgen}[2]{\ensuremath{\forall #1\ldotp#2}}
+\newcommand{\fat}[0]{\fatgen{\alpha}{\tau}}
+\newcommand{\eatgen}[2]{\ensuremath{\exists #1\ldotp#2}}
+\newcommand{\eat}[0]{\eatgen{\alpha}{\tau}}
+\newcommand{\fatgent}[2]{\ensuremath{\trgb{\forall} #1\ldotp#2}}
+\newcommand{\fatt}[0]{\fatgent{\alpt}{\tat}}
+\newcommand{\eatgent}[2]{\ensuremath{\trgb{\exists} #1\ldotp#2}}
+\newcommand{\eatt}[0]{\eatgent{\alpt}{\tat}}
+
+\newcommand{\fail}[0]{\mi{fail}}
+
+\newcommand{\bnfdef}[0]{\ensuremath{\mathrel{::=}}} %::=
+\newcommand{\term}[1]{\ensuremath\mathsf{#1}}
+\newcommand{\true}{\term{true}}
+\newcommand{\false}{\term{false}}
+\newcommand{\ifelse}[3]{\ensuremath{\textbf{if}~#1~\textbf{then}~#2~\textbf{else}~#3}}
+\newcommand{\newwhiledo}[2]{\ensuremath{\textbf{while}~#1~\textbf{do}~#2}}
+\newcommand{\letvar}[2]{\ensuremath{\textbf{letvar}~#1~\textbf{in}~#2}}
+\newcommand{\succt}[1]{\term{succ}~#1}
+\newcommand{\pred}[1]{\term{pred}~#1}
+\newcommand{\iszero}[1]{\term{iszero}~#1}
+\newcommand{\seq}[2]{#1;#2}
+\newcommand{\subtyp}[2]{#1<:#2}
+
+\newcommand{\dbracket}[1]{\ensuremath{\left\llbracket\,\vcenter{\hbox{$#1$}}\,\right\rrbracket}}
+
+\begin{document}
+\title{关于Maple Algebra的这一路}
+\author{枫聆 (maplegra)}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Equivalence of Program}
+
+\subsection{Bisimulation}
+
+\begin{definition}
+\rm A binary relation between state transition systems, associating systems that behave in the same way in that one system simulates the other and vice versa.
+\end{definition}
+
+
+
+\end{document}
