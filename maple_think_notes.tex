@@ -222,7 +222,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	(q2) edge[loop right] node{$c$} (q2);
 \end{tikzpicture}
 \end{center}
-关于上面两个transition system的bisimultaion为$R=\{(p_1,q_1), (p_2,q_2), (p_3,q_2)\}$. 还有一个比较有特点的例子
+关于上面两个transition system的bisimultaion为$R=\{(p_1,q_1), (p_2,q_2), (p_3,q_2)\}$. 还有一个比较有点特别的例子
 \begin{center}
 \begin{tikzpicture}
 \tikzset{
@@ -244,6 +244,9 @@ initial text=$ $, % sets the text that appears on the start arrow
 	(q1) edge[loop right] node{$a$} (q1);
 \end{tikzpicture}
 \end{center}
+如果关于上图这样bisimulation $R$存在，那么$(p_i,q_1) \in R$ for every $i$.
 \end{example}
+
+
 
 \end{document}
