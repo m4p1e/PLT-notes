@@ -15,7 +15,7 @@
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 
 %\usepackage{unicode-math}
-
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
 \usepackage{hyperref} %url
 \hypersetup{
     colorlinks=true,
@@ -135,7 +135,7 @@
 \subsection{Reactive Systems}
 
 \begin{definition}
-\rm A labelled transition system is a tuple $(S, \Lambda, \to)$ where $S$ is set of states, $\Lambda$ is set of labels, and $\to$ is relation of labelled transitions (i.e., a subset of $S \times \Lambda \times S$).  A $(p,\alpha,q) \in \to$ is written as $p  \xrightarrow{\alpha} q$. 
+\rm A labelled transition system (LTS) is a tuple $(S, \Lambda, \to)$ where $S$ is set of states, $\Lambda$ is set of labels, and $\to$ is relation of labelled transitions (i.e., a subset of $S \times \Lambda \times S$).  A $(p,\alpha,q) \in \to$ is written as $p  \xrightarrow{\alpha} q$. 
 \end{definition}
 
 \begin{annotation}
@@ -144,7 +144,7 @@
 
 
 \begin{definition}
-\rm Let $T=(S,\Lambda,\to)$ be a labelled transition system. The set of \redt{traces} $\vn{Tr}(s)$, for $s \in S$ is the minimal set satisfying
+\rm \cite{ITLTS}Let $T=(S,\Lambda,\to)$ be a labelled transition system. The set of \redt{traces} $\vn{Tr}(s)$, for $s \in S$ is the minimal set satisfying
 \begin{itemize}
 	\item $\varepsilon \in \vn{Tr}(s)$.
 	\item $\alpha~\sigma \in \vn{Tr}(s)$ if $\Set{s' \in S}{s~ \xrightarrow{\alpha}~s' ~\text{and}~\sigma \in \vn{Tr}(s')}$. 
@@ -172,16 +172,13 @@ q \arrow[rrrr, "\alpha"']                          &  &  &  & q'
 \end{definition}
 
 \begin{definition}
-\rm We say $q$ simulates $p$ if there exists a simulation $R$ includes $(p,q)$ (i.e., $(p,q) \in R$).
+\rm We say $q$ simulates $p$ if there exists a simulation $R$ includes $(p,q)$ (i.e., $(p,q) \in R$), written $p < q$.
 \end{definition}
 
-\begin{lemma}
-\rm The simulation is reflexive and transitive. 
-\end{lemma}
+%\begin{lemma}
+%\rm The simulation is reflexive and transitive. 
+%\end{lemma}
 
-\begin{annotation}
-\rm \bluet{最有意思的是我们应该如何找到这样simulation来满足$(p,q) \in R$, 更一步我们更希望找到the minimal relation}.
-\end{annotation}
 
 \begin{definition}
 \rm (\redt{Bisimultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a bisimulation iff both $R$ and its converse $\overline{R}$ are simulations, for all $(p,q) \in R$ and $\alpha \in \lambda$ satisfies
@@ -244,9 +241,80 @@ initial text=$ $, % sets the text that appears on the start arrow
 	(q1) edge[loop right] node{$a$} (q1);
 \end{tikzpicture}
 \end{center}
-如果关于上图这样bisimulation $R$存在，那么$(p_i,q_1) \in R$ for every $i$.
+如果关于上图这样bisimulation $R$存在，那么$(p_i,q_1) \in R$ for every $i$. 再看一个不是bisimulation的例子
+\begin{center}
+\begin{tikzpicture}
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\node[state] (p1) {$p_1$};
+	\node[state, below left of=p1, node distance=3cm] (p2) {$p_2$};
+	\node[state, below right of=p1, node distance=3cm] (p3) {$p_3$};
+	\node[state, below of=p2, node distance=3cm] (p4) {$p_4$};
+	\node[state, below of=p3, node distance=3cm] (p5) {$p_5$};
+	\node[state, right of=p1, node distance=7cm] (q1) {$q_1$};
+	\node[state, below of=q1, node distance=2cm] (q2) {$q_2$};
+	\node[state, below left of=q2, node distance=4.395cm] (q3) {$q_3$};
+	\node[state, below right of=q2, node distance=4.395cm] (q4) {$q_4$};
+	
+	\draw (p1) edge[above] node{$a$} (p2)
+	(p1) edge[above] node{$a$} (p3)
+	(p2) edge[left] node{$c$} (p4)
+	(p3) edge[right] node{$c$} (p5)
+	(q1) edge[right] node{$a$} (q2)
+	(q2) edge[above] node{$c$} (q3)
+	(q2) edge[above] node{$b$} (q4);
+\end{tikzpicture}
+\end{center}
+这里不满足$(p_3, q_2) \notin R$.
 \end{example}
 
 
+\begin{definition}
+\rm (\redt{Bisimilarity}) Given two states $p$ and $q$ in $S$, $p$ is bisimilar to $q$, written $p \sim q$,  if and only if there is a bisimulation $R$ such that $(p,q) \in R$.
+\end{definition}
 
+\begin{lemma}
+\rm The bisimulation has some properties:
+\begin{itemize}
+	\item The identity relation $\vn{id}$ is a bisimulation(with two same LTS).
+	\item The empty relation $\perp$ is a bisimulation.
+	%\item The relation composition $R_1 \circ R_2$ of two bisimulation $R_1$ and $R_2$ is a bisimulation.
+	\item (\redt{closed under union}) The $\bigcup_{i \in I} R_i$ of a family of bisimulations $(R_i)_{i \in I}$ is a bisimulation.
+\end{itemize}
+\end{lemma}
+
+\begin{lemma}
+\rm \cite{AITBAC} The bisimilarity relation $\sim$ is equivalence relation (i.e., reflexivity, symmetry, transitivity).
+\end{lemma}
+
+\begin{proof}
+\rm 其中reflexivity, symmetry是比较显然的. Transitivity稍微麻烦一点，我们用relation composition定义新的relation$R_3 = R_1;R_2$, 此时有$(p,q) \in R_3$，因此只要证明$R_3$ is bisimulation足够了. 取任意一个$(p_1, q_1) \in R_3$，那么按照$R_3$的定义, 存在$(p_1, r_1) \in R_1$和$(r_1, q_1)$. 由$p_1 \sim r_1$那么对于任意的$p_1 \xrightarrow{\alpha} p_1'$, 存在$r_1 \xrightarrow{\alpha} r_1'$满足$(p_1',r_1') \in R_1$. 再由$r_1 \sim q_1$, 存在$q_1 \xrightarrow{\alpha} q_1'$满足$(r_1',q_1') \in R_2$. 于是按照$R_3$的定义也有$(p_1', q_1') \in R_3$. 再由$R_2$ is bisimulation, 从$(r_1,q_1) \in R_2$按照上述的思路往回证明即可，最终$R_3$ is bisimulation.
+\end{proof}
+
+\begin{annotation}
+\rm \bluet{对于LTS的一些想法}:
+\begin{itemize}
+	\item 如果你想用transition system来做reasoning可以考虑把它和Kripke frame联系起来，同时要构造一些modality来设计方便做reasoning的calculus.
+	\item 对于两个特别的states来说，我们应该如何找到这样bisimulation来满足$(p,q) \in R$?
+	\item 对于两个特别的LTS来说，我们怎样以bisimulation思考它们是否equivalent?
+\end{itemize}
+\end{annotation}
+
+
+\begin{thebibliography}{9}
+\bibitem{ITLTS}
+Introduction to labelled transition systems. \newline\url{http://wiki.di.uminho.pt/twiki/pub/Education/MFES1617/AC/AC1617-2-LTS.pdf}
+
+\bibitem{AITBAC}
+An Introduction to Bisimulation and Coinduction. \newline\url{https://homes.cs.washington.edu/~djg/msr_russia2012/sangiorgi.pdf}
+
+\bibitem{mLTS}
+Labelled transition systems. \newline\url{https://www.mcrl2.org/web/user_manual/articles/lts.html}
+
+\end{thebibliography}
 \end{document}
