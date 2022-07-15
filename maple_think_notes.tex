@@ -296,6 +296,30 @@ initial text=$ $, % sets the text that appears on the start arrow
 \rm 其中reflexivity, symmetry是比较显然的. Transitivity稍微麻烦一点，我们用relation composition定义新的relation$R_3 = R_1;R_2$, 此时有$(p,q) \in R_3$，因此只要证明$R_3$ is bisimulation足够了. 取任意一个$(p_1, q_1) \in R_3$，那么按照$R_3$的定义, 存在$(p_1, r_1) \in R_1$和$(r_1, q_1)$. 由$p_1 \sim r_1$那么对于任意的$p_1 \xrightarrow{\alpha} p_1'$, 存在$r_1 \xrightarrow{\alpha} r_1'$满足$(p_1',r_1') \in R_1$. 再由$r_1 \sim q_1$, 存在$q_1 \xrightarrow{\alpha} q_1'$满足$(r_1',q_1') \in R_2$. 于是按照$R_3$的定义也有$(p_1', q_1') \in R_3$. 再由$R_2$ is bisimulation, 从$(r_1,q_1) \in R_2$按照上述的思路往回证明即可，最终$R_3$ is bisimulation.
 \end{proof}
 
+\begin{definition}
+\rm \cite{mLTS} An LTS is called \redt{deterministic} if for every state $p$ and action $\alpha$, there is at most one state $q$ such that $p \xrightarrow{\alpha} q$.
+\end{definition}
+
+\begin{lemma}
+\rm In a deterministic LTS, two states are bisimilar if and only if they are trace equivalent,
+\[
+	s_1 \sim s_2 \iff \vn{Tr}(s_1)=\vn{Tr}(s_2)
+\]
+\end{lemma}
+
+\begin{proof}
+\rm 
+
+先证$\Rightarrow$, 设满足$s_1 \sim s_2$($(s_1,s_2) \in R$ and $R$ is bisimultaion), 设$\sigma_{s_1} \in \vn{Tr}(s_1)$, 其中$\sigma_{s_1}$为sequence $(\alpha_i)_{i \in I}$ where $I$ is a indexed famliy. 由于$s_1 \sim s_2$, 那么对于$s_1 \xrightarrow{\alpha_1} s_1'$, 存在$s_2 \xrightarrow{\alpha_1} s_2'$, 于是$(s_1',s_2') \in R$, 根据$\sigma$长度做induction可以证明$\sigma_{s_1} \in \vn{Tr}(q)$. 再反过来证明$\sigma_{s_2} \in \vn{Tr}(s_2)$也同样有$\sigma_{s_2} \in \vn{Tr}(s_1)$. 最终$\vn{Tr}(s_1)=\vn{Tr}(s_2)$.
+
+对于$\Leftarrow$, 我们可以用$\vn{Tr}(s_1) = \vn{Tr}(s_2)$构造一个bisimulation, 定义relation $R$为
+\[
+ 	\vn{Tr}(s_1) = \vn{Tr}(s_2) \iff (s_1,s_2) \in R.
+\]
+只要能证明$R$ bisimulation即可. 首先我们来说明在deterministic限制下一个比较好性质: 若$\vn{Tr}(s_1) = \vn{Tr}(s_2)$且当$s_1 \xrightarrow{\alpha} s_1', s_2 \xrightarrow{\alpha} s_2'$, 那么$\vn{Tr}(s_1') = \vn{Tr}(s_2')$. 这样对于任意地$(s_1,s_2) \in R$, 它们accept相同action对应的transition $(s_1', s_2') \in R$. 因此$s_1 \sim s_2$. 
+\end{proof}
+
+
 \begin{annotation}
 \rm \bluet{对于LTS的一些想法}:
 \begin{itemize}
@@ -306,6 +330,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 \end{annotation}
 
 
+\newpage
 \begin{thebibliography}{9}
 \bibitem{ITLTS}
 Introduction to labelled transition systems. \newline\url{http://wiki.di.uminho.pt/twiki/pub/Education/MFES1617/AC/AC1617-2-LTS.pdf}
