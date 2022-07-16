@@ -132,7 +132,9 @@
 
 \section{Equivalence of Program}
 
-\subsection{Reactive Systems}
+\subsection{Graph Ismorphism}
+
+\subsection{Bisimulation and Observation Equivalence}
 
 \begin{definition}
 \rm A labelled transition system (LTS) is a tuple $(S, \Lambda, \to)$ where $S$ is set of states, $\Lambda$ is set of labels, and $\to$ is relation of labelled transitions (i.e., a subset of $S \times \Lambda \times S$).  A $(p,\alpha,q) \in \to$ is written as $p  \xrightarrow{\alpha} q$. 
@@ -181,7 +183,7 @@ q \arrow[rrrr, "\alpha"']                          &  &  &  & q'
 
 
 \begin{definition}
-\rm (\redt{Bisimultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a bisimulation iff both $R$ and its converse $\overline{R}$ are simulations, for all $(p,q) \in R$ and $\alpha \in \lambda$ satisfies
+\rm (\redt{Bisimultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a bisimulation iff both $R$ and its converse $\overline{R}$ are simulations, for all $(p,q) \in R$ and $\alpha \in \Lambda$ satisfies
 \[
 	\begin{gathered}
 	\text{for any}~p \xrightarrow{\alpha}_1 p', ~\text{then there exists}~ q'~\text{such that}~q \xrightarrow{\alpha}_2 q'~\text{and}~(p',q') \in R \\
@@ -275,7 +277,11 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 
 \begin{definition}
-\rm (\redt{Bisimilarity}) Given two states $p$ and $q$ in $S$, $p$ is bisimilar to $q$, written $p \sim q$,  if and only if there is a bisimulation $R$ such that $(p,q) \in R$.
+\rm (\redt{Bisimilarity}) Given two states $p$ and $q$ in $S$, $p$ is bisimilar to $q$, written $p \sim q$,  if and only if there is a bisimulation $R$ such that $(p,q) \in R$. 
+\end{definition}
+
+\begin{definition}
+\rm The bisimilarity relation $\sim$ is the union of all bisimulations.
 \end{definition}
 
 \begin{lemma}
@@ -320,14 +326,28 @@ initial text=$ $, % sets the text that appears on the start arrow
 \end{proof}
 
 
+\begin{definition}
+\rm (\redt{Weak Bisimultation}) Given two labelled transition system $(S_1, \Lambda, \to_1)$ and $(S_2, \Lambda, \to_2)$, relation $R \subseteq S_1 \times S_2$ is a bisimulation iff both $R$ and its converse $\overline{R}$ are simulations, for all $(p,q) \in R$ and $\alpha \in \Lambda \cup \{\tau\}$ satisfies
+\[
+	\begin{gathered}
+	\text{for any}~p \xrightarrow{\alpha}_1 p', ~\text{then there exists}~ q'~\text{such that}~q \xrightarrow{\tau*~\alpha~\tau*}_2^* q'~\text{and}~(p',q') \in R \\
+	\text{for any}~q \xrightarrow{\alpha}_2 q', ~\text{then there exists}~ p'~\text{such that}~p \xrightarrow{\tau*~\alpha~\tau*}_1^* p'~\text{and}~(p',q') \in R
+	\end{gathered} 	
+\]
+where $\xrightarrow{}^*$ is multi-transition.
+\end{definition}
+
+
 \begin{annotation}
 \rm \bluet{对于LTS的一些想法}:
 \begin{itemize}
 	\item 如果你想用transition system来做reasoning可以考虑把它和Kripke frame联系起来，同时要构造一些modality来设计方便做reasoning的calculus.
-	\item 对于两个特别的states来说，我们应该如何找到这样bisimulation来满足$(p,q) \in R$?
-	\item 对于两个特别的LTS来说，我们怎样以bisimulation思考它们是否equivalent?
+	\item (\emph{bisimulation proof method}) 对于两个特别的states来说，我们应该如何找到这样bisimulation来满足$(p,q) \in R$?
+	\item 对于两个特别的LTS来说，我们怎样以bisimulation思考它们是否equivalent? bisimulation的最初定义应该叫做strong bisimulation, 它建立的是一种strong equivalence, 而weak bisimulation建立是一种observation equivalence.
 \end{itemize}
 \end{annotation}
+
+
 
 
 \newpage
