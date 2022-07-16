@@ -130,9 +130,32 @@
 \tableofcontents
 \newpage
 
+\section{Language}
+
+\subsection{language equation and Arden's Rule}
+
+\begin{theorem}
+\rm The set $A^* \cdot B$ is the smallest language that is a solution for $X$ in the linear equation 
+\[
+	X = A \cdot X + B
+\]
+where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreover, If the set $A$ does not contain the empty word, then the solution is unique.
+\end{theorem}
+
+\begin{annotation}
+\rm \bluet{Arden's rule can be used to help convert some finite automatons to regular expressions}.
+\end{annotation}
+
+\newpage
 \section{Equivalence of Program}
 
 \subsection{Graph Ismorphism}
+
+\subsection{Accepted Language Equivalentce}
+
+\begin{annotation}
+\rm \cite{CCS} Chapter 1.
+\end{annotation}
 
 \subsection{Bisimulation and Observation Equivalence}
 
@@ -347,8 +370,9 @@ where $\xrightarrow{}^*$ is multi-transition.
 \end{itemize}
 \end{annotation}
 
-
-
+\begin{annotation}
+\rm  \todo{CCS(calculus of communicating systems) and mCRL2}.
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{9}
@@ -360,6 +384,10 @@ An Introduction to Bisimulation and Coinduction. \newline\url{https://homes.cs.w
 
 \bibitem{mLTS}
 Labelled transition systems. \newline\url{https://www.mcrl2.org/web/user_manual/articles/lts.html}
+
+
+\bibitem{CCS}
+A Calculus of Communicating Systems. Robin Milner. 
 
 \end{thebibliography}
 \end{document}
