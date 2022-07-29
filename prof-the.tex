@@ -167,6 +167,8 @@
  }
 \ExplSyntaxOff
 
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}\PackageWarning{TODO:}{#1!}}
+
 \begin{document}
 \title{Proof Theory}
 \author{枫聆}
@@ -4034,6 +4036,36 @@ where $\Gamma, \Delta$ are arbitrary multisets, $P_1,\cdots,P_m,Q_1,\cdots,Q_n$ 
 %\end{annotation}
 
 \newpage
+\section{Proof of Program}
+
+\subsection{Hoare Logic}
+
+\begin{definition}
+\rm The \redt{Hoare triple} is of the form 
+\[
+	\{P\}C\{Q\}
+\]
+where $P$ and $Q$ are assertions(predicates) and $C$ is a command. $P$ is named the precondition and $Q$ is named the postcondition, that is when we start executing $C$ in a state satisfying $P$ the any final state will satisfy $Q$.
+\end{definition}
+
+\todo{Partial and total correctness}
+
+\todo{Some basic aximos: skip, assignment, composition...}
+
+\subsection{Weakest Preconditions and Strongest Postconditions}
+
+\begin{definition}
+\rm Given a command $C$ with postcondition $Q$, the \redt{weakest precondition} $P$ for $\{C\}Q$ is a predicate such that for any precondition $P'$ satisfying $P'\{C\}Q$ if and only if $P' \supset P$, written as $\vn{wp}(C,Q) = P$.
+\end{definition}
+
+\begin{definition}
+\rm Given a command $C$ with precondition $P$, the \redt{strongest postcondition} $Q$ for $P\{C\}$ is a predicate such that for any precondition $Q'$ satifies $P\{C\}Q'$ if and only if $Q \supset Q'$, written as $\vn{sp}(C,P) = Q$.
+\end{definition}
+
+\begin{annotation}
+\rm 如何理解weakest和strongest? 单纯从logic上理解: 若$P \supset Q$, 那么$P$ is stronger than $Q$, 或者说$Q$ is weaker than $P$. 再来回答第二个问题: 为什么只有weakest precondition而没有strongest precondition? \cite{15-414-post} 想想falsehood $\perp$, 按照定义它可以是任意$C\{Q\}$的precondition, 你可以找到一个比它还强的precondition吗? 显然只能是它自己, 因此这样strongest precondition实际上trivial的. 同理, truth $\top$可以是任意的$\{P\}C$的postcondition, 比它还弱的也只能是它自己.   
+\end{annotation}
+\newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
 \bibitem{discharged-stack} The relation between deduction theorem and discharged. \newline\url{https://math.stackexchange.com/questions/3527285/what-does-discharging-an-assumption-mean-in-natural-deduction}
@@ -4063,5 +4095,7 @@ Completeness for Natural Deduction.
 \newline\url{http://logic.stanford.edu/intrologic/notes/chapter_12.html}
 \bibitem{proof-theory-development} Chapter 12, Resolution.
 \newline\url{https://plato.stanford.edu/entries/proof-theory-development/#SeqCalLatDev}
+\bibitem{15-414-post} Lecture Notes on Weakest Preconditions and Strongest Postconditions.
+\newline\url{https://www.cs.cmu.edu/~15414/lectures/11-post.pdf}
 \end{thebibliography}
 \end{document}
