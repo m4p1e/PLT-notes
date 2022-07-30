@@ -382,7 +382,7 @@ where $\xrightarrow{}^*$ is multi-transition.
 \subsection{Some Reasoning}
 
 \begin{example}
-\rm 这是来自\cite{BMGM15}的一个小例子, 我们尝试用bounded model checking来做一些reasoning, 也就是unfolding loop. 
+\rm \redt{Symbolic reachability analysis} 这是来自\cite{BMGM15}的一个小例子, 我们尝试用bounded model checking来做一些reasoning, 也就是unfolding loop. 
 \begin{minted}[tabsize=4,linenos, frame=single, fontsize=\small]{c}
 #define VALVE_KO(status) status == -1 
 #define TOLERANCE 2  
@@ -417,7 +417,7 @@ int checkValves(int wait1, int wait2) {
 	while(wait2 > 0) wait2--; 
 		return count;
 \end{minted}
-\cite{BMGM15}提到了一个symbolic reachability analysis, 实际上就是给定一个postcondition沿着control flow往后推. 例如我们想进入L29所在的branch, 那么one-step induction如下:
+\cite{BMGM15}提到了一个symbolic reachability analysis, 它和我们常见的symbolic execution是不一样的, 它可以看做给定一个postcondition沿着control flow往后推. 例如我们想进入L29所在的branch, 那么one-step induction如下:
 \begin{minted}[mathescape=true, tabsize=4, frame=single, fontsize=\small]{c}
 // $P_{28} = count > 2$
 {L28: count > 2}
@@ -426,6 +426,7 @@ int checkValves(int wait1, int wait2) {
 可以看到precondition是weakest的, 后面推导依然保持这个性质. 继续往后推导我们需要尝试得resolve掉L19-L26的while, 这里可能就有infinitely many paths, 例如执行$0,1,2,\cdots$次这个loop. 顺着这个思路来选择路径往后做symbolic execution, 路径直到function entry为结束.
 \begin{minted}[mathescape=true, tabsize=4, frame=single, fontsize=\small]{c}
 //Path_1: L15-> L16 -> L17 -> L18 -> L19 -> L28
+
 // $P_{18} = count > 2 \wedge i \geq size \wedge 0 > 2 \wedge 0 > size \equiv false$
 {L18: count = 0, i = 0; }
 // $Q_{18} = count > 2 \wedge i \geq size$
@@ -438,17 +439,33 @@ int checkValves(int wait1, int wait2) {
 \end{minted}
 在$P_{18}$这里得到了一个contradiction, 这就意味着上面选择的path是infeasible的，那么到这里我们就不能往后再继续推理了. 现在我们给用$Ln_{a}, Ln_{b},\cdots$的形式来表示对同一statement $Ln$ 的多次执行.
 \begin{minted}[mathescape=true, tabsize=4, frame=single, fontsize=\small]{c}
-//Path_1: $\cdots$ -> L$19_c$ -> L$20_c$ -> L$22_c$ -> L$23_c$ -> L$25_c$ -> L$19_b$ -> L$20_b$ -> L$22_b$ -> L$23_b$ -> L$25_b$ -> L$19_a$ -> L28
-// $P_{18} = count > 2 \wedge i \geq size \wedge 0 > 2 \wedge 0 > size \equiv false$
-{L18: count = 0, i = 0; }
-// $Q_{18} = count > 2 \wedge i \geq size$
-// $P_{19} = count > 2 \wedge i \geq size$
-{L19: i >= size}
-// $Q_{19} = count > 2$ 
+//Path_2: $\cdots$ -> L$19_b$ -> L$20_b$ -> L$22_b$ -> L$23_b$ -> L$25_b$ -> L$19_a$ -> L28
+
+...
+// $P_{19b} = count > 1 \wedge i = size-1 \wedge i \geq 0 \wedge valvesStatus[i] = -1 \wedge i < size$
+{L19b: i < size}
+// $Q_{20b} = count > 1 \wedge i = size-1 \wedge i \geq 0 \wedge valvesStatus[i] = -1$
+// $P_{20b} = (count > 1 \wedge i \geq size -1 \wedge i \geq 0 \wedge i < size \wedge valvesStatus[i] = -1) \equiv$
+// $(count > 1 \wedge i = size-1 \wedge i \geq 0 \wedge valvesStatus[i] = -1)$
+{L20b: int status = getStatusOfValve(i);}
+// $Q_{20b} = count > 1 \wedge i \geq size -1 \wedge status = -1$
+// $P_{22b} = count > 1 \wedge i \geq size -1 \wedge status = -1$
+{L22b: status == -1}
+// $Q_{22b} = count > 1 \wedge i \geq size -1$
+// $P_{23b} = (count+1 > 2 \wedge i \geq size -1) \equiv (count > 1 \wedge i \geq size -1)$
+{L23b: count++}
+// $Q_{23b} = count > 2 \wedge i \geq size-1$
+// $P_{25b} = (count > 2 \wedge i+1 \geq size) \equiv (count > 2 \wedge i \geq size-1)$ 
+{L25b: i++; }
+// $Q_{25b} = count > 2 \wedge i \geq size$
+// $P_{19a} = count > 2 \wedge i \geq size$
+{L19a: i >= size}
+// $Q_{19a} = count > 2$ 
 // $P_{28} = count > 2$
 {L28: count > 2}
 // $Q_{28} = true$
 \end{minted}
+上面就是执行了最后一次循环并且在这次循环中进入了L23所在的branch，主要需要注意一下$P_{20b}$这里设计到了inter-analysis. 
 \end{example}
 
 \newpage
