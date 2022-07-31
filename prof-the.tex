@@ -4065,6 +4065,9 @@ where $P$ and $Q$ are assertions(predicates) and $C$ is a command. $P$ is named 
 \begin{annotation}
 \rm 如何理解weakest和strongest? 单纯从logic上理解: 若$P \supset Q$, 那么$P$ is stronger than $Q$, 或者说$Q$ is weaker than $P$. 再来回答第二个问题: 为什么只有weakest precondition而没有strongest precondition? \cite{15-414-post} 想想falsehood $\perp$, 按照定义它可以是任意$C\{Q\}$的precondition, 你可以找到一个比它还强的precondition吗? 显然只能是它自己, 因此这样strongest precondition实际上trivial的. 同理, truth $\top$可以是任意的$\{P\}C$的postcondition, 比它还弱的也只能是它自己.   
 \end{annotation}
+
+
+\todo{weakest precondition calculus}
 \newpage
 \begin{thebibliography}{00}
 \bibitem{tln} John Slaney. The Logic Notes. \newline\url{http://users.cecs.anu.edu.au/~jks/LogicNotes/}
