@@ -382,7 +382,7 @@ where $\xrightarrow{}^*$ is multi-transition.
 \subsection{Some Reasoning}
 
 \begin{example}
-\rm \redt{Symbolic reachability analysis} 这是来自\cite{BMGM15}的一个小例子, 我们尝试用bounded model checking来做一些reasoning, 也就是unfolding loop. 
+\rm \redt{Symbolic reachability analysis} 这是来自\cite{BMGM15}的一个小例子, 我们尝试用dynamic symbolic execution做一些reasoning. 
 \begin{minted}[tabsize=4,linenos, frame=single, fontsize=\small]{c}
 #define VALVE_KO(status) status == -1 
 #define TOLERANCE 2  
@@ -417,7 +417,9 @@ int checkValves(int wait1, int wait2) {
 	while(wait2 > 0) wait2--; 
 		return count;
 \end{minted}
-\cite{BMGM15}提到了一个symbolic reachability analysis, 它和我们常见的symbolic execution是不一样的, 它可以看做给定一个postcondition沿着control flow往后推. 例如我们想进入L29所在的branch, 那么one-step induction如下:
+\cite{BMGM15}提到了一个symbolic reachability analysis, 它和我们常见的symbolic execution是不一样的, 它可以看做给定一个postcondition沿着control flow往后推. 这种方法在解决一些branch condition indirectly related to input, 可能会有一些帮助. 例如L29所在branch condition, 它并不是直接依赖input. 如果我们将这个while展开，那么每次在某条路径上做symoblic execution到L28时, count都是一个concrete value, 如果想尝试在L28这里开分支是做不到的.    
+
+例如我们想进入L29所在的branch, 那么one-step induction如下:
 \begin{minted}[mathescape=true, tabsize=4, frame=single, fontsize=\small]{c}
 // $P_{28} = count > 2$
 {L28: count > 2}
