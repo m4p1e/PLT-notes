@@ -3551,6 +3551,16 @@ N = \{\sim Q(x_5,x_6,x_2), \sim Q(x_1,x_6,x_3), Q(y_1, h(y_1,y_2), y_2)\},
 \rm (\redt{subsumption theorem}) If $S$ is any finite set of clauses, and $D$ is any clause in $S$ which is subsumed by some clauses in $S - \{D\}$, then $S$ is satisfiable if and only if $S-\{D\}$ is satisfiable.
 \end{definition}
 
+\begin{definition}
+\rm Simple sequent calculus for propostional resolution:
+$$
+\begin{aligned}
+\infer{\Gamma \vdash C}{C \in \Gamma} \quad\quad \infer{\Gamma \vdash C_i \cup C_j}{\Gamma \vdash C_i \cup \{p\} & \Gamma \vdash C_j \cup \{\overline{p}\}}
+\end{aligned}
+$$
+A refutation of $\Gamma$ is a derivation ending in $\Gamma \vdash \emptyset$ where $\emptyset$ is empty clause.
+\end{definition}
+
 \newpage
 \subsection{SLD Resolution}
 
