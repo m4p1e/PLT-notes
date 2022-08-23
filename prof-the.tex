@@ -3455,7 +3455,7 @@ And we call $\left<C_1,C_2,N\right>$ is a \redt{key triple} of pair $(C,D)$.
 
 特别地，再解释一下$N$的取法，直觉上我们希望的是这样的过程
 \[
-	\infer[\vn{resolution}]{(C_i \cup C_j)\sigma}{C_i \cup \{p\} & C_i \cup \{\overline{p'}\}}
+	\infer[\vn{resolution}]{(C_i \cup C_j)\sigma}{C_i \cup \{p\} & C_j \cup \{\overline{p'}\}}
 \]
 其中$\sigma$是关于$p$和$p'$的most general unifier. 但是$N$却直接取了一堆atoms出来，这里面实际上蕴含这样一个过程
 \[
