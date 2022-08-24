@@ -1329,11 +1329,11 @@ $$
 $$
 显然我们无法在现有type system构造出一个合理的abstraction使得$(A \to B) \to (B \to A)$.
 
-迎面走来的问题是: 给定一个proposition true, 是否有其他的term with type和它对应呢？ 显然是有的，
+还是前面那个true proposition, 对应type不变, 用$\eta$ conversion把前面的term换一下
 $$
-\lam{z}{\lam{x}{\left<\lam{y}{\pi_1(x~y)},\lam{y}{\pi_2(x~y)} \right>}}z'
+\lam{z}{\lam{x}{\left<\lam{y}{\pi_1(x~y)},\lam{y}{\pi_2(x~y)} \right>}}z
 $$
-那这是不是违反Curry-Howard isomorphsim了呢？ 其实并不是，这里的对应是指proof terms和deduction of proposition true,  显然deduction变了，对应的proof terms也要变. 
+那这是不是违反Curry-Howard isomorphsim了呢？ 其实并不是，这里的对应是指proof terms和program terms, 显然program typing过程变了，对应的proof deduction也要变. 所以这里衍生出一个有趣的问题, $\eta$ conversation和$\beta$ conversation对应到proof deduction过程上是什么呢?  
 \end{example}
 
 \begin{annotation}
