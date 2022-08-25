@@ -2076,6 +2076,8 @@ where $\redt{\equiv}$ means the systems are equivalent, $\redt{\Updownarrow}$ me
 	\infer[\supset R]{\vdash \neg \neg (A \vee \neg A)}{\infer[\supset L]{\neg (A \vee \neg A) \vdash \perp}{\infer[\vee R_2]{(A \vee \neg A) \supset \, \perp \, \vdash A \vee \neg A}{\infer[\supset R]{(A \vee \neg A) \supset \, \perp \, \vdash \neg A}{\infer[\supset L]{(A \vee \neg A) \supset \, \perp \, ,A \vdash \perp}{\infer[\vee R_1]{(A \vee \neg A) \supset \, \perp \,,A \vdash A \vee \neg A}{\infer[init]{(A \vee \neg A) \supset \, \perp \,,A \vdash A}{}} & \infer[\perp L]{A, \perp \vdash \perp}{}}}} & \infer[\perp L]{\perp\, \vdash \perp}{} }}
 \]
 其中多次用到了$\neg A \equiv A \supset \perp$，这里$\supset L$用到了两次，如果丢掉它left primise中的$A \supset B$，显然我们会在$\vdash A \vee \neg A$卡住.  
+
+这个结论实际很有趣，我们并不能在intuitionistic logic证明law of execluded middle，但是它的double negation却可以证明.
 \end{annotation}
 
 %
