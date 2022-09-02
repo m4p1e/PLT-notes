@@ -160,6 +160,21 @@ where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreov
 \rm \bluet{Arden's rule can be used to help convert some finite automatons to regular expressions}.
 \end{annotation}
 
+\subsection{Higher-order logic}
+
+\begin{annotation}
+\rm Second-order logic在first-order logic的基础上，给其中的谓词也加上了量词. 给谓词加量词意义是什么呢？答案是引入了variables之间的relations. 
+
+想想在first-order logic对于一个variable $x$，它可以被一个量词bound.  例如:
+\[
+	\forall x. A(x).
+\]
+这个assertion是说所有的$x$都有$A(x)$, 现在换个assertion是说存在一个满足$A(x)$的所有$x$组成的集合，那应该怎么表示呢？ 这里前面所提到的relation就在这里体现出来了，这个集合里面的所有元素都满足$A(x)$. 现在最关键是这个集合如何表示？ 我们可以用一个新的谓词来表示这个集合
+\[
+	\exists P. \forall x. P(x) \leftrightarrow A(x) \equiv \exists P. \forall x. (P(x) \to A(x) \wedge A(x) \to P(x))
+\]
+\end{annotation}
+
 \subsection{Misc}
 
 \begin{definition}
