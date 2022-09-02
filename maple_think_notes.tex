@@ -146,7 +146,7 @@
 
 \section{Language}
 
-\subsection{language equation and Arden's Rule}
+\subsection{Language equation and Arden's Rule}
 
 \begin{theorem}
 \rm The set $A^* \cdot B$ is the smallest language that is a solution for $X$ in the linear equation 
@@ -159,6 +159,25 @@ where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreov
 \begin{annotation}
 \rm \bluet{Arden's rule can be used to help convert some finite automatons to regular expressions}.
 \end{annotation}
+
+\subsection{Misc}
+
+\begin{definition}
+\rm A set of logical connectives is called \redt{functionally complete} if every boolean expression is equivalent to one involving only these connectives.
+\end{definition}
+
+\begin{definition}
+\rm 简而言之，如果任意的logical formula都可以只用给定的一些logical connectives来构造一个等价的新的logical formula, 我们就说这些这些logical connectives组成的system是functionally complete. 
+\end{definition}
+
+\begin{example}
+\rm 列举一些在classic logic下functionally complete的system:
+\begin{itemize}
+	\item $\{\downarrow\}$, $\{\uparrow\}$, 其中$\downarrow$表示$A \downarrow B = \neg (A \vee B)$， $\uparrow$表示$A \uparrow B = \neg (A \wedge B)$.
+	\item $\{\vee ,\neg \}$, $\{\wedge ,\neg \}$, etc.
+	\item $\{\land ,\lor ,\rightarrow \}$, etc.
+\end{itemize}
+\end{example}
 
 \newpage
 \section{Equivalence of Program}
