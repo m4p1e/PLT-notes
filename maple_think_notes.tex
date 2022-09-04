@@ -8,7 +8,7 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{stmaryrd}
+%\usepackage{stmaryrd}
 \usepackage{mathtools}
 \usepackage{proof}
 
@@ -16,7 +16,7 @@
 
 \usepackage{minted} %code block
 
-%\usepackage{unicode-math}
+\usepackage{unicode-math}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
 \usepackage{hyperref} %url
 \hypersetup{
@@ -144,35 +144,14 @@
 \end{itemize}
 \end{annotation}
 
-\section{Language}
-
-\subsection{Language equation and Arden's Rule}
-
-\begin{theorem}
-\rm The set $A^* \cdot B$ is the smallest language that is a solution for $X$ in the linear equation 
-\[
-	X = A \cdot X + B
-\]
-where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreover, If the set $A$ does not contain the empty word, then the solution is unique.
-\end{theorem}
-
-\begin{annotation}
-\rm \bluet{Arden's rule can be used to help convert some finite automatons to regular expressions}.
-\end{annotation}
-
 \subsection{Higher-order logic}
 
 \begin{annotation}
-\rm Second-order logic在first-order logic的基础上，给其中的谓词也加上了量词. 给谓词加量词意义是什么呢？答案是引入了variables之间的relations. 
-
-想想在first-order logic对于一个variable $x$，它可以被一个量词bound.  例如:
+\rm Second-order logic在first-order logic的基础上，给其中的谓词也加上了量词. 给谓词加量词意义是什么呢？ 谓词实际上可以理解为varibles的properties，所以相当于你给properties也加上了量词. 形如：
 \[
-	\forall x. A(x).
+	\exists P P(b)
 \]
-这个assertion是说所有的$x$都有$A(x)$, 现在换个assertion是说存在一个满足$A(x)$的所有$x$组成的集合，那应该怎么表示呢？ 这里前面所提到的relation就在这里体现出来了，这个集合里面的所有元素都满足$A(x)$. 现在最关键是这个集合如何表示？ 我们可以用一个新的谓词来表示这个集合
-\[
-	\exists P. \forall x. P(x) \leftrightarrow A(x) \equiv \exists P. \forall x. (P(x) \to A(x) \wedge A(x) \to P(x))
-\]
+这里的$P$实际上就是一个谓词变量(predicate variable). 从语义上来说$P$可以理解为集合，理解为满足某种性质的varibles组成的set, 所以你对$P$施加一个量词也就是在考虑不同的集合. 
 \end{annotation}
 
 \subsection{Misc}
@@ -193,6 +172,24 @@ where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreov
 	\item $\{\land ,\lor ,\rightarrow \}$, etc.
 \end{itemize}
 \end{example}
+
+\section{Language}
+
+\subsection{Language equation and Arden's Rule}
+
+\begin{theorem}
+\rm The set $A^* \cdot B$ is the smallest language that is a solution for $X$ in the linear equation 
+\[
+	X = A \cdot X + B
+\]
+where $X, A, B$ are sets of string and $+$ stands for union of languages. Moreover, If the set $A$ does not contain the empty word, then the solution is unique.
+\end{theorem}
+
+\begin{annotation}
+\rm \bluet{Arden's rule can be used to help convert some finite automatons to regular expressions}.
+\end{annotation}
+
+
 
 \newpage
 \section{Equivalence of Program}
