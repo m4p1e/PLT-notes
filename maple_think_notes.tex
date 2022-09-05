@@ -175,6 +175,33 @@
 
 \section{Language}
 
+\subsection{Standard Semantics}
+
+\begin{annotation}
+\rm Operational semantics关注给定一个initial state会得到怎样的final state, 每一个CFG's node对应一个transfer function $f:\mathcal{S} \to \mathcal{S}$
+\[
+	\lam{s}{(\mu(s),next)}.
+\]
+其中$f$表示对state $s$的update, next表示下一个将要进入的node. 那么operational semantics的一个解释过程可以用递归的形式定义:
+\[
+	\vn{interp} = \lam{s}{\lam{n}{\ifelse{isExitNode(n)}{s}{\mathbf{let}~(s',n')=f_n(s)~\mathbf{in}~\vn{interp}~s'~n'}}}
+\]
+如果我们希望得到一个准确的定义，即不希望等式两边都包含$\vn{interp}$，那么我可以利用一个trick
+\[
+\vn{semantics} = \vn{fix}(\lam{F}{\lam{s}{\lam{n}{\ifelse{isExitNode(n)}{s}{\mathbf{let}~(s',n')=f_n(s)~\mathbf{in}~F~s'~n'}}}})
+\]
+你仔细观察一下这个fixpoint就是$\vn{interp}$本身.
+\end{annotation}
+
+\subsection{Collecting Semantics}
+
+\begin{annotation}
+\rm Collecting semantics和operational semantics不同的是，每一个CFG's node可能对应了一个set of states, 而不是单一的state了. 因为collecting semantics从一开始就把所有可能的initial states作为了一个set来考虑. 因此此时的transfer function为$f:\mathcal{P}(\mathcal{S}) \to \mathcal{P}(\mathcal{S})$:
+\[
+f_{n \to m} = \lam{S}{\Set{s'}{s \in S ~\text{and}~f_n(s)=(s',m)}}
+\]
+\end{annotation}
+
 \subsection{Language equation and Arden's Rule}
 
 \begin{theorem}
