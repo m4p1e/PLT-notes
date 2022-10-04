@@ -194,30 +194,6 @@ $$
 
 {\color{blue} 所谓adjunction就是指$fg \rightarrow id$和$gf \rightarrow id$，这个箭头是一个natural transform, 至于更细的东西要去看看category theory了! PAAA上说$f$和$g$互为“weak inverse”，看起来也是比较形象啊！所以有下面的一个命题}.
 
-\begin{annotation}
-\rm 现在我们尝试把galois connection放到抽象解释范畴上，让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 
-
-这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持，反过来亦然，同时galois connection强化的两个条件
-\begin{enumerate}
-	\item $a \leq g(f(a))$表示抽象过程是可能会丢失精度的，但是依然是正确的. {\color{blue} 我的理解是把具体的值通过映射放到抽象域里面做运算得到的结果，再映射回来可能比在具体域里面做运算得到的结果要稍微差一点，但是正确性是可以保证的}.
-	\item $b \geq f(g(b))$表示具体化的过程不会丢失精度. {\color{blue} 把抽象值放到具体域里面操作一遍，再映回来是不会丢精度，这也是可以很自然想到的}.
-\end{enumerate}
-如果更细致去刻画一下我自己的annotation就是
-\begin{enumerate}
-	\item $x,y \in A$
-	$$
-	x \vee y \leq g(f(x) \vee f(y)).
-	$$
-	\item $x',y'\in B$
-	$$
-	x' \wedge y' \geq f(g(x') \wedge g(y')).
-	$$
-\end{enumerate}
-为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$. 因此galois connection蕴含了两个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism.
-\end{annotation}
-
-
-
 \newpage
 
 \begin{annotation}
@@ -247,6 +223,37 @@ $$
 再用一下Proposition \ref{gc-second-def}，即有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$. {\color{red} 值得关注是$f$和$g$都只是一个semilattice homomorphism，而且是两种不同操作}. 其实我们做分析的时候，也只是使用一个semilattice，至于是meet还是join和原本分析过程的方向是有关的. 
 \end{proof}
 
+\begin{annotation}
+\rm 有了前面这两个semilattice homomorphism. 我们现在就可以尝试把galois connection和abstract interpretation联系起来. 若让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持. 同时$\vee$作为这里我们关心的运算, 那么很自然地想法就是把$A$里面的$\vee$放到$B$做去做，同时我们还希望得到是一个$A$中的结果. 当然我们整个过程是必须是safe的. 如果形式化表示这整个过程就是
+\[
+x \vee y \leq g(f(x) \vee f(y)).
+\]
+单纯地galois connection只有$x \vee y \leq g(f(x \vee y))$, 这显然满足不了我们的需求. 于是前面的semilattice homomorphism在这里work了. 
+
+
+%同时galois connection强化的两个条件
+%\begin{enumerate}
+%	\item $a \leq g(f(a))$表示抽象过程是可能会丢失精度的，但是依然是正确的. {\color{blue} 我的理解是把具体的值通过映射放到抽象域里面做运算得到的结果，再映射回来可能比在具体域里面做运算得到的结果要稍微差一点，但是正确性是可以保证的}.
+%	\item $b \geq f(g(b))$表示具体化的过程不会丢失精度. {\color{blue} 把抽象值放到具体域里面操作一遍，再映回来是不会丢精度，这也是可以很自然想到的}.
+%\end{enumerate}
+%如果更细致去刻画一下我自己的annotation就是
+%\begin{enumerate}
+%	\item $x,y \in A$
+%	$$
+%	x \vee y \leq g(f(x) \vee f(y)).
+%	$$
+%	\item $x',y'\in B$
+%	$$
+%	x' \wedge y' \geq f(g(x') \wedge g(y')).
+%	$$
+%\end{enumerate}
+%为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$. 因此galois connection蕴含了两个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism.
+\end{annotation}
+
+\begin{annotation}
+\rm 这里有一个有趣的问题就是，若在上述过程中发生在abstract domain中的一个运算得到结果$r$, 使其实例化得到一个concrete domain中的结果$r'$, 如果再把$r'$再放到abstract domain中$r''$. 那么$r$和$r''$之间应该又怎样的关系呢？ 如果如此重复得到$r_1'', r_2'', \cdots$呢？ 
+\end{annotation}
+
 \begin{proposition}
 \rm {\color{red} (weak inverse)} For galois connection $(f,g)$, we have the equations
 $$
@@ -269,6 +276,8 @@ $$
 所以$f \circ g \circ f  = f$. 同理可证第二个式子.
 \end{proof}
 
+
+
 \begin{proposition}
 \rm \redt{(galois connection的构造1)} If the pair $(f,g)$ is Galois connection of lattice $A$ and $B$. Then $f$ uniquely determines $g$ by
 $$
@@ -279,7 +288,7 @@ $$
 f(a) = \bigwedge\Set{b}{a \leq g(b)}.
 $$
 
-{\color{blue} 我个人认为这个性质真的非常好}!
+{\color{blue} 这个性质非常有用，在已知$f$或者$g$中任意一个，都可以按照上面的方法构造出另外一个}. 
 \end{proposition}
 
 
