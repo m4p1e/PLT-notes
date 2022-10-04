@@ -187,12 +187,12 @@ $$
 \end{center}
 
 \begin{proof}
-($\Rightarrow$). 前提$(f,g)$是一个galois connection，给定$a \in A$, $b \in B$. 若$f(a) \leq b$, 两边同时apply $g$, 有$g(f(a)) \leq g(b)$，同时有$a \leq g(f(a))$. 那么$a \leq g(b)$. 若$a \leq g(b)$，同理可以得到$f(a) \leq b$.
+($\Rightarrow$). 前提$(f,g)$是一个galois connection，给定$a \in A$, $b \in B$. 若$f(a) \leq b$, 两边同时apply $g$, 有$g(f(a)) \leq g(b)$，同时有$a \leq g(f(a))$, 因此$a \leq g(b)$. 若$a \leq g(b)$，同理可以得到$f(a) \leq b$.
 
-($\Leftarrow$). 前提$(f,g)$满足$f(a) \leq b~\text{if and only if}~a \leq g(b)$. 我们直接取$b = f(a)$, 那么$f(a) \leq f(b)$当且仅当$a \leq g(f(a))$. 同理直接取$a = g(b)$，那么$g(b) \leq g(b)$当且仅当$f(g(a)) \leq b $.   
+($\Leftarrow$). 前提$(f,g)$满足$f(a) \leq b~\text{if and only if}~a \leq g(b)$. 我们直接取$b = f(a)$, 则可以得到$a \leq g(f(a))$. 同理直接取$a = g(b)$，则可以得到$f(g(a)) \leq b$.   
 \end{proof}
 
-{\color{blue} 关于adjunction的东西$fg \rightarrow id$和$gf \rightarrow id$，这个箭头是一个natural transform, 至于更细的东西要去看看category theory了! PAAA上说$f$和$g$互为“weak inverse”，看起来也是比较形象啊！所以有下面的一个命题}.
+{\color{blue} 所谓adjunction就是指$fg \rightarrow id$和$gf \rightarrow id$，这个箭头是一个natural transform, 至于更细的东西要去看看category theory了! PAAA上说$f$和$g$互为“weak inverse”，看起来也是比较形象啊！所以有下面的一个命题}.
 
 \begin{annotation}
 \rm 现在我们尝试把galois connection放到抽象解释范畴上，让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 
@@ -200,7 +200,7 @@ $$
 这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持，反过来亦然，同时galois connection强化的两个条件
 \begin{enumerate}
 	\item $a \leq g(f(a))$表示抽象过程是可能会丢失精度的，但是依然是正确的. {\color{blue} 我的理解是把具体的值通过映射放到抽象域里面做运算得到的结果，再映射回来可能比在具体域里面做运算得到的结果要稍微差一点，但是正确性是可以保证的}.
-	\item $b \geq f(g(b)$表示具体化的过程不会丢失精度. {\color{blue} 本来抽象值，放到具体域里面操作一遍，再映回来是不会丢精度，这也是可以很自然想到的}.
+	\item $b \geq f(g(b))$表示具体化的过程不会丢失精度. {\color{blue} 把抽象值放到具体域里面操作一遍，再映回来是不会丢精度，这也是可以很自然想到的}.
 \end{enumerate}
 如果更细致去刻画一下我自己的annotation就是
 \begin{enumerate}
@@ -213,7 +213,7 @@ $$
 	x' \wedge y' \geq f(g(x') \wedge g(y')).
 	$$
 \end{enumerate}
-为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$.
+为此我们需要去分别证明$f(x \vee y) = f(x) \vee f(y)$和$g(x \wedge y) = g(x) \wedge g(y)$. 因此galois connection蕴含了两个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism.
 \end{annotation}
 
 
@@ -234,19 +234,17 @@ And similarly
 \begin{enumerate}
 	\item $g(\top_B) = \top_A$;
 	\item $g(x \wedge y) = g(x) \wedge g(y)$.
-\end{enumerate}
-
-{\color{blue} 啧啧，没想到啊galois connection竟然弄了一个semilattice homomorphism出来，突然想找一下characterization of semilattice homomorphism}. 
+\end{enumerate} 
 \end{proposition}
 
 \begin{proof}
-(1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质$f\circ g(\perp_B) = \perp_B$，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质，有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
+(1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质$f\circ g(\perp_B) = \perp_B$，最后结合$f$的单调性有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
 
-(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$是一个upper bound. 最关键是确界证明$f(x \vee y) \leq f(x) \vee f(y)$. 由于galois connection，有$x \leq g(f(x))$，再由$g$是monotone，有$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，那么
+(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$，因此$f(x \vee y)$是一个upper bound. 接下来就是证明它是一个least upper bound. 由galois connection有$x \leq g(f(x))$，同时$g$是monotone，那么$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，于是
 $$
 x \vee y \leq g(f(x) \vee f(y))
 $$
-再用一下galois connection，就有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$. {\color{red} 值得关注是$f$和$g$都只是一个semilattice homomorphism，而且是两种不同操作}. 其实我们做分析的时候，也只是使用一个semilattice，至于是meet还是join和原本分析过程的方向是有关的. 
+再用一下Proposition \ref{gc-second-def}，即有$f(x \vee y) \leq f(x) \vee f(y)$. 综上两边夹，所以$f(x \vee y) = f(x) \vee f(y)$. {\color{red} 值得关注是$f$和$g$都只是一个semilattice homomorphism，而且是两种不同操作}. 其实我们做分析的时候，也只是使用一个semilattice，至于是meet还是join和原本分析过程的方向是有关的. 
 \end{proof}
 
 \begin{proposition}
@@ -747,7 +745,7 @@ $$
 
 这个concrete analysis domain构成的是一个infinite lattice，可以想象一个上述不含有$[-\infty, +\infty]$构成的升链，它是不可能收敛的，即不满足ACC. 所以我们自然的考虑下面的abstract analysis domain
 $$
-\textbf{Interval}_K = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in K \cup \{-\infty\}, z^+ \in \mathbb{K} \cup \{+\infty\}, z^- \leq z^+ }.
+\textbf{Interval}_K = \{\perp\} \cup \Set{[z^-,z^+]}{z^- \in K \cup \{-\infty\}, z^+ \in K \cup \{+\infty\}, z^- \leq z^+ }.
 $$
 其中$K$是一个finite set，在$K$限制下现在的analysis domain是一个finite lattice. 我们可以定义$\textbf{Interval}$和$\textbf{Interval}_K$之间的一个galois connection. 从$\textbf{Interval}_K$到$\textbf{Interval}$的$g$是比较直接的
 $$
