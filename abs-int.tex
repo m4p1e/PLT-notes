@@ -240,7 +240,7 @@ And similarly
 \begin{proof}
 (1) 由于$B$上$\perp_B$的性质，有$f(\perp_A) \geq \perp_B$. 反过来由于$A$上的$\perp_A$性质，有$g(\perp_B) \geq \perp_A$，再用一下galois connection的性质$f\circ g(\perp_B) = \perp_B$，最后结合$f$的单调性有$f(\perp_A) \leq \perp_B$. 综上两边夹，所以$f(\perp_A) = \perp_B$.
 
-(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$，因此$f(x \vee y)$是一个upper bound. 接下来就是证明它是一个least upper bound. 由galois connection有$x \leq g(f(x))$，同时$g$是monotone，那么$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，于是
+(2) 由于$f$是monotone，有$f(x) \leq f(x \vee y)$和$f(x) \leq f(x \vee y)$，所以$f(x) \vee f(y) \leq f(x \vee y)$. 由galois connection定义有$x \leq g(f(x))$，同时$g$是monotone，那么$x \leq g(f(x) \vee f(y))$. 同理也有$y \leq g(f(x) \vee f(y))$，于是
 $$
 x \vee y \leq g(f(x) \vee f(y))
 $$
