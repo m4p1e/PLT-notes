@@ -224,11 +224,21 @@ $$
 \end{proof}
 
 \begin{annotation}
-\rm 有了前面这两个semilattice homomorphism. 我们现在就可以尝试把galois connection和abstract interpretation联系起来. 若让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持. 同时$\vee$作为这里我们关心的运算, 那么很自然地想法就是把$A$里面的$\vee$放到$B$做去做，同时我们还希望得到是一个$A$中的结果. 当然我们整个过程是必须是safe的. 如果形式化表示这整个过程就是
+\rm 有了前面这两个semilattice homomorphism. 我们现在就可以尝试把galois connection和abstract interpretation联系起来. 若让lattice $A$表示我们原本一个analysis domain，lattice $B$表示一个更抽象的analysis domain用来加快我们的分析或者让我们的分析可计算，那么这里$\func{f}{A}{B}$称为{\color{red} abstraction function}，$\func{g}{B}{A}$称为{\color{red} concretization function}. 这里的$f$和$g$都是单调函数意味，原本的实际值之间的关系在abstract domain上依然保持. 同时$\vee$作为这里我们关心的运算, 那么很自然地想法就是把$A$里面的$\vee$放到$B$做去做，同时我们还希望得到是一个$A$中的结果. 当然我们整个过程是必须是safe的, 关于safe定义就是若$a \leq b$, 那么$a$ can be safely replaced by $b$. 如果形式化表示这整个过程就是
 \[
 x \vee y \leq g(f(x) \vee f(y)).
 \]
 单纯地galois connection只有$x \vee y \leq g(f(x \vee y))$, 这显然满足不了我们的需求. 于是前面的semilattice homomorphism在这里work了. 
+
+再次值得说明的是，$f$和$g$哪个是concretization function或者abstraction function这取决你要怎么用. 更具体一点就是，你是如何定义order和safe的.
+
+同理我们还有这样一个过程:
+\[
+	x \wedge y \geq f(g(x) \wedge g(y))
+\]
+这里的safety定义就是若$a \geq b$, 那么$a$ can be safely replaced by $b$. 有点反直觉，为什么`小的'可以替换`大的'? 因为这完全取决于如何定义order. 举个例子两个predicates $p_1 = \{x \leq 1 \wedge y = 1\}$和$p_2 = \{x \leq 1\}$, 显然$p_1$要强于$p_2$. 我们可以定义$p_2 \leq p_1$ if $p_1 \to p_2$. 但是把predicate作为描述状态空间的工具，显然$S(p_1) \subset S(p_2)$. 
+
+聪明地你会发现两个过程实际是等价的，你的实际问题通过某些转换都可以用两种方式来表示. 
 
 
 %同时galois connection强化的两个条件
