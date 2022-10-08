@@ -900,6 +900,21 @@ $$
 $$
 \end{definition}
 
+\begin{example}
+\rm Local reduction for $\wedge I$ introduction rule.
+\[
+	\infer[\wedge E_1]{A~true}{\infer[\wedge I]{A \wedge B}{ \deduce{A~true}{\mathcal{D}} & \deduce{B~true}{\mathcal{E}}}} \Rightarrow_R \deduce{A~true}{\mathcal{D}}
+\]
+Similarily for $\wedge E_2$.
+\end{example}
+
+\begin{example}
+\rm Local expansion for $\wedge E$ elimination rule.
+\[
+	\deduce{A \wedge B~true}{\mathcal{D}} \Rightarrow_E \infer[\wedge I]{A \wedge B~true}{\infer[\wedge E_1]{A~true}{\deduce{A \wedge B~true}{\mathcal{D}}} & \infer[\wedge E_2]{B~true}{\deduce{A \wedge B~true}{\mathcal{D}}}}
+\]
+\end{example}
+
 
 \begin{definition}\label{substitution-in-ND}
 \rm (\redt{substitution Principle}) If 
