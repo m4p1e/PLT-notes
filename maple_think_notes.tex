@@ -540,6 +540,33 @@ int checkValves(int wait1, int wait2) {
 上面就是执行了最后一次循环并且在这次循环中进入了L23所在的branch，主要需要注意一下$P_{20b}$这里设计到了inter-analysis. 
 \end{example}
 
+\subsection{Craig Interpolation}
+
+\begin{definition}
+\rm Let $P \to Q$ be a valid first-order formula. A Craig Interpolation for $P$ and $Q$ is a formula $C$ that satisfies the following conditions:
+\begin{itemize}
+	\item $P \to C$ and $C \to Q$ are valid.
+	\item All the variables in $C$ also appear in both $P$ and $Q$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}
+\rm (\redt{Craig Interpolation Theorem}) Let $P \to Q$ be a valid first-order formula, where $P$ and $Q$ share at least one variable symbol. Then there exists a formula $C$ containing only variable symbols in both $P$ and $Q$ such that $P \to C$ and $C \to Q$.
+\end{theorem}
+
+\begin{proof}
+\rm
+\end{proof}
+
+\begin{annotation}
+\rm satisfiability形式
+\end{annotation}
+
+
+\begin{theorem}
+\rm 依赖unsat的线性构造，转换，小
+\end{theorem}
+
 \newpage
 \begin{thebibliography}{9}
 \bibitem{ITLTS}
