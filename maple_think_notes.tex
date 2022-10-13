@@ -540,10 +540,12 @@ int checkValves(int wait1, int wait2) {
 上面就是执行了最后一次循环并且在这次循环中进入了L23所在的branch，主要需要注意一下$P_{20b}$这里设计到了inter-analysis. 
 \end{example}
 
+
+\newpage
 \subsection{Craig Interpolation}
 
 \begin{definition}
-\rm Let $P \to Q$ be a valid first-order formula. A Craig Interpolation for $P$ and $Q$ is a formula $C$ that satisfies the following conditions:
+\rm Let $P \to Q$ be a valid propositional formula. A Craig Interpolation for $P$ and $Q$ is a formula $C$ that satisfies the following conditions:
 \begin{itemize}
 	\item $P \to C$ and $C \to Q$ are valid.
 	\item All the variables in $C$ also appear in both $P$ and $Q$.
@@ -551,12 +553,28 @@ int checkValves(int wait1, int wait2) {
 \end{definition}
 
 \begin{theorem}
-\rm (\redt{Craig Interpolation Theorem}) Let $P \to Q$ be a valid first-order formula, where $P$ and $Q$ share at least one variable symbol. Then there exists a formula $C$ containing only variable symbols in both $P$ and $Q$ such that $P \to C$ and $C \to Q$.
+\rm (\redt{Craig Interpolation Theorem}) Let $P \to Q$ be a propositional formula, where $P$ and $Q$ share at least one atomic proposition. Then there exists a formula $C$ containing only variable symbols in both $P$ and $Q$ such that $P \to C$ and $C \to Q$.
 \end{theorem}
 
 \begin{proof}
-\rm
+\rm 我们用$\text{atoms}(P)$和$\text{atoms}(Q)$分别表示$P$和$Q$中的variable symbols(atomic proposition). 这里对$|\text{atoms}(P)-\text{atoms}(Q)|$做induction, 其中$\text{atoms}(P)-\text{atoms}(Q)$表示出现在$P$中但不在$Q$中的variable symbols.  
+
+\textsc{Base case}: 当$|\text{atoms}(P)-\text{atoms}(Q)| = 0$, 我们可以让$C = P$作为一个interpolation，显然$P \to P$ is valid and $P \to Q$.
+
+\textsc{Inductive hypothesis}: 假设$|\text{atoms}(P)-\text{atoms}(Q)| = n$时原命题成立.
+
+\textsc{Inductive case}: 当$|\text{atoms}(P)-\text{atoms}(Q)| = n+1$时，我们取$\alpha \in |\text{atoms}(P)-\text{atoms}(Q)|$.  我们定义$P_{\alpha \to \top}$表示将$P$中所有$\alpha$替换成$\top$得到的formula, 类似地我们用$P_{\alpha \to \bot}$表示将$P$中所有$\alpha$替换成$\bot$得到的formula. 显然我们有$P \equiv P_{\alpha \to \top} \vee P_{\alpha \to \bot}$. 根据inductive hypothesis我们找到一个关于$P_{\alpha \to \top} \vee P_{\alpha \to \bot} \to Q$的interpolation $C$. 显然$C$也是$P \to Q$的一个interpolation.
 \end{proof}
+
+\begin{annotation}
+\rm 值得注意上面的proof仅仅在proposition logic下证明了Craig interpolation了. 这也是为什么我们可以将上面的$\alpha$分别用$\top$和$\bot$替换，因为$\alpha$表示的实际是atomic proposition, 对于atomic proposition而言它只有$\top$和$\bot$.
+
+那么比较自然的问题就是first-order logic上怎么证明? 先回答两个first-order formula $\varphi$和$\psi$需要shared什么？ 若
+\[
+\forall x. F(x) \wedge G(y) \to G(y). 
+\]
+\cite{CF2007}里面提到了non-logical symbols.
+\end{annotation}
 
 \begin{annotation}
 \rm satisfiability形式
@@ -584,5 +602,8 @@ A Calculus of Communicating Systems. Robin Milner.
 
 \bibitem{BMGM15}
 Baluda, Mauro, Giovanni Denaro, and Mauro Pezzè. "Bidirectional symbolic analysis for effective branch testing." IEEE Transactions on Software Engineering 42.5 (2015): 403-426
+
+\bibitem{CF2007}
+\url{https://www.logic.at/lvas/185255/ml-07-4in1.pdf}
 \end{thebibliography}
 \end{document}
