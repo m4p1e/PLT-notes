@@ -597,13 +597,77 @@ int checkValves(int wait1, int wait2) {
 在使用中我们会通常中$A$和$B$分别表示两个set of clauses, 也就是对$A$和$B$进行normalization先.  
 \end{annotation}
 
-\begin{theorem}
-\rm 
-\end{theorem}
+\begin{definition}
+\rm A proof of unsatisifability $\varPi$ for a set of clause $C$ is a root-tree $(V_\varPi, E_\varPi)$, where $V_\varPi$ is a set of clauses, such that for every vertex $c \in V_{\varPi}$:
+\begin{itemize}
+	\item if $c$ is a empty clause, then $c$ is the unique root.
+	\item if $c$ is resolvent of $c_1$ and $c_2$, then edge $(c,c_1)$ and $(c,c_2)$ are both in $E_\varPi$.
+	\item $c$ is leaf that is caluse in $C$ otherwise.
+\end{itemize}
+\end{definition}
+
+\begin{annotation}
+\rm 这个proof实际就是做resolution得到empty clause一个过程, 是很自然的一个从下到上的一棵树, 当然也有定义把empty clasue当做unique leaf的形式. 无论哪种情况，只要能理解resolution过程就行. 这里简单把resolution再写一遍.
+\[
+	\infer{C_1 \cup C_2}{p \cup C_1 & \neg p \cup C_2}
+\]
+其中literal $p$对应的variable称为pivot variable.
+\end{annotation}
+
+\begin{definition}
+\rm Given a set of clauses $C$, we say a variable is \redt{global} if it appears in all clauses in $C$, and \redt{local} to one clause $c$ in $C$ if it appear only in $c$. Given any clause $c_i \in C$, we denote by $g(c_i)$ the disjunction of the \redt{global literals} in $c_i$ and by $l(c_i)$ the disjunction of \redt{literals local} to $c_i$ 
+\end{definition}
+
+\begin{annotation}
+\rm 注意上面variable和literal的描述. 
+\end{annotation}
 
 \begin{theorem}
-\rm 依赖unsat的线性构造，转换，小
+\rm \redt{linear-time construction} Let $(A,B)$ be a pair of caluse sets and let $\varPi$ be a proof of unsatisfiability of $A \cup B$. For all vertices $c \in V_{\varPi}$, let $p(c)$ be a boolean formula, such that 
+\begin{itemize}
+	\item if $c$ is leaf, then
+	\begin{itemize}
+		\item if $c \in A$ then $p(c) = g(c)$,
+		\item else $p(c)$ is the $\top$.
+	\end{itemize}
+	\item else, let $c$ is resolvent of $c_1$ and $c_2$ and let $v$ be pivot variable of this resolution. 
+	\begin{itemize}
+		\item if $v$ is local to $A$, then $p(c) = p(c_1) \vee p(c_2)$,
+		\item else $p(c) = p(c_1) \wedge p(c_2)$.
+	\end{itemize}
+\end{itemize}
+Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varPi$.
 \end{theorem}
+
+\begin{annotation}
+\rm 这个证明感觉不是那么显然. 先从直觉出发，我们先设$A$和$B$是没有common clauses，再假设proof $\varPi$里面属于$A$的leaves为$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$, 属于$B$的leaves为$\{\beta_1, \beta_2, \cdots, \beta_n\}$. 我们可以重排整个proof $\varPi$: 
+\begin{itemize}
+	\item 先对$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$做resolution, 直到无法继续. 得到$\{\alpha_1', \alpha_2', \cdots, \alpha_i'\}$
+	\item 再对$\{\alpha_1', \alpha_2', \cdots, \alpha_i'\}$和$\{\beta_1, \beta_2, \cdots, \beta_n\}$一起做resolution.
+\end{itemize}
+上述想法实际对应了这样一个操作，如果$\varPi$中存在这样一个片段:
+\[
+	\infer[v_1 \in l(A)]{c_1}{\infer[v_1 \notin l(A)]{v_1 \cup c_2}{\deduce{v_2 \cup c_4}{\mathcal{D}} & \deduce{\neg v_2 \cup c_5}{\mathcal{E}}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}}
+\]
+我们就把下面这个resolution往上移动，变成下面这样
+\[
+	\begin{aligned}
+	\infer[v_2 \notin l(A)]{c_1}{\infer[v_1 \in l(A)]{v_2 \cup (c_4 \backslash v_1 \cup c_3)}{\deduce{v_1 \cup (v_2 \cup c_4 \backslash v_1)}{\mathcal{D}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}} & \deduce{\neg v_2 \cup c_5}{\mathcal{E}}}\\ 
+	\infer[v_2 \notin l(A)]{c_1}{\deduce{v_2 \cup c_4 }{\mathcal{D}} & \infer[v_1 \in l(A)]{\neg v_2 \cup (c_5 \backslash v_1 \cup c_3)}{\deduce{v_1 \cup (\neg v_2 \cup c_5 \backslash v_1)}{\mathcal{E}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}}}
+	\end{aligned}
+\]
+上面两个略微不同的形式依赖于$c_1$到底是在$c_4$里面还是在$c_5$里面. 显然这个往上移动操作是可以做到的，也就是说现在整棵树依然是$(A,B)$一个proof, 我们设其为$\varPi'$, 我们接着来研究一下两个proof最后得到的$p(\bot)$有什么关系， 我们设$\varPi'$对应$p'(\bot)$. 因为上述只是一个局部变换，没有新增任何结点，只有两个结点对应的boolean formula发生了变化，对于整个proof而言只是以$c_1$为根结点的子树发生了变化，所以我们只需要看一下$p(c_1)$和$p'(c_1)$到底是什么关系. 我们先设$p(v_2 \cup c_4) = b_1, p(\neg v_2 \cup c_5) = b_2, p(\neg v_1 \cup c_3) = b_3$. 那么显然$p(c_1) = (b_1 \wedge b_2) \vee b_3$. 对于$p'(c_1)$我们有两个不同的结果:
+\begin{itemize}
+	\item $v_1 \in c_4$: $p_1'(c_1) = b_1 \wedge (b_3 \vee b_2) \equiv (b_1 \wedge b_3) \vee (b_1 \wedge b_2)$
+	\item $v_2 \in c_5$: $p_2'(c_2) = (b_1 \vee b_3) \wedge b_2 = (b_1 \wedge b_2) \vee (b_2 \wedge b_3)$
+\end{itemize}
+显然有$p_1'(c_1) \to p(c_1)$和$p_2'(c_1) \to p(c_1)$. 这可以说明什么呢? $p'(\bot) \to p(\bot)$, 很可惜这种方式只能得到上述定理的一个弱的形式. 目前我还不知道如何接着往下证明.
+\end{annotation}
+
+\begin{proof}
+\rm ???
+\end{proof}
+
 
 \newpage
 \begin{thebibliography}{9}
