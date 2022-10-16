@@ -623,7 +623,7 @@ int checkValves(int wait1, int wait2) {
 \end{annotation}
 
 \begin{theorem}
-\rm \redt{linear-time construction} Let $(A,B)$ be a pair of caluse sets and let $\varPi$ be a proof of unsatisfiability of $A \cup B$. For all vertices $c \in V_{\varPi}$, let $p(c)$ be a boolean formula, such that 
+\rm (\redt{linear-time construction}) Let $(A,B)$ be a pair of caluse sets and let $\varPi$ be a proof of unsatisfiability of $A \cup B$. For all vertices $c \in V_{\varPi}$, let $p(c)$ be a boolean formula, such that 
 \begin{itemize}
 	\item if $c$ is leaf, then
 	\begin{itemize}
@@ -639,8 +639,18 @@ int checkValves(int wait1, int wait2) {
 Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varPi$.
 \end{theorem}
 
+
+\makeatletter
+\DeclareRobustCommand{\lvdots}{%
+  \vbox{
+    \baselineskip6\p@\lineskiplimit\z@
+    \kern-\p@
+    \hbox{.}\hbox{.}\hbox{.}\hbox{.}\hbox{.}\hbox{.}\hbox{.}\hbox{.}\hbox{.}
+  }}
+\makeatother
+
 \begin{annotation}
-\rm 这个证明感觉不是那么显然. 先从直觉出发，我们先设$A$和$B$是没有common clauses，再假设proof $\varPi$里面属于$A$的leaves为$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$, 属于$B$的leaves为$\{\beta_1, \beta_2, \cdots, \beta_n\}$. 我们可以重排整个proof $\varPi$: 
+\rm 这个证明感觉不是那么显然, 花了2-3天想了一下. 先从直觉出发，我们先设$A$和$B$是没有common clauses，再假设proof $\varPi$里面属于$A$的leaves为$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$, 属于$B$的leaves为$\{\beta_1, \beta_2, \cdots, \beta_n\}$. 我们可以重排整个proof $\varPi$: 
 \begin{itemize}
 	\item 先对$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$做resolution, 直到无法继续. 得到$\{\alpha_1', \alpha_2', \cdots, \alpha_i'\}$
 	\item 再对$\{\alpha_1', \alpha_2', \cdots, \alpha_i'\}$和$\{\beta_1, \beta_2, \cdots, \beta_n\}$一起做resolution.
@@ -661,13 +671,48 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 	\item $v_1 \in c_4$: $p_1'(c_1) = b_1 \wedge (b_3 \vee b_2) \equiv (b_1 \wedge b_3) \vee (b_1 \wedge b_2)$
 	\item $v_2 \in c_5$: $p_2'(c_2) = (b_1 \vee b_3) \wedge b_2 = (b_1 \wedge b_2) \vee (b_2 \wedge b_3)$
 \end{itemize}
-显然有$p_1'(c_1) \to p(c_1)$和$p_2'(c_1) \to p(c_1)$. 这可以说明什么呢? $p'(\bot) \to p(\bot)$, 很可惜这种方式只能得到上述定理的一个弱的形式. 目前我还不知道如何接着往下证明.
+显然有$p_1'(c_1) \to p(c_1)$和$p_2'(c_1) \to p(c_1)$. 这可以说明什么呢? $p'(\bot) \to p(\bot)$, 很可惜这种方式只能得到上述定理的一个弱的形式. 换句话就是我们只能得到一个比较强的interpolation，我们一般更在乎是尽量弱的interpolation， 这样它的结构或许更加的简洁.
+
+
+换个思路我们重新开始思考，既然上面那个方向转换不行，我们换个方向. 我们这样重排 proof $\prod$:
+\begin{itemize}
+	\item 先对$\{\beta_1, \beta_2, \cdots, \beta_n\}$做resolution，直到无法继续. 得到$\{\beta_1', \beta_2', \cdots,\beta_j'\}$.
+	\item 再对$\{\beta_1', \beta_2', \cdots,\beta_j'\}$和$\{\alpha_1, \alpha_2, \cdots, \alpha_m\}$一起做resolution.
+\end{itemize}
+但是这里有一个小问题就是pivot variable为$v_1 \notin l(A)$的resolutions并不完全是$B$里面的resolution，当$v_1$是global variables的时候它实际是属于$A$与$B$之间的resolution. 这里其实就暗示了我们需要对上面的第二步再细化一步, 这个问题留到后面. 我们先看看反方向移动有什么性质. 如果$\varPi$中存在这样一个片段:
+\[
+	\infer[v_1 \notin l(A)]{c_1}{\infer[v_1 \in l(A)]{v_1 \cup c_2}{\deduce{v_2 \cup c_4}{\mathcal{D}} & \deduce{\neg v_2 \cup c_5}{\mathcal{E}}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}}
+\]
+我们把下面resolution还是往上移动，变成下面这样:
+\[
+	\begin{aligned}
+	\infer[v_2 \in l(A)]{c_1}{\infer[v_1 \notin l(A)]{v_2 \cup (c_4 \backslash v_1 \cup c_3)}{\deduce{v_1 \cup (v_2 \cup c_4 \backslash v_1)}{\mathcal{D}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}} & \deduce{\neg v_2 \cup c_5}{\mathcal{E}}}\\ 
+	\infer[v_2 \in l(A)]{c_1}{\deduce{v_2 \cup c_4 }{\mathcal{D}} & \infer[v_1 \notin l(A)]{\neg v_2 \cup (c_5 \backslash v_1 \cup c_3)}{\deduce{v_1 \cup (\neg v_2 \cup c_5 \backslash v_1)}{\mathcal{E}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}}}
+	\end{aligned}
+\]
+实际就是把前面的$\notin$和$\in$互换. 此时有$p(c_1) = (b_1 \vee b_2) \wedge b_3$. 对于$p'(c_1)$分别有
+\begin{itemize}
+	\item $c_1 \in c_4$: $p_1'(c_1) = (b_1 \wedge b_3) \vee b_2 $.
+	\item $c_1 \in c_5$: $p_2'(c_2) = b_1 \vee (b_3 \vee b_2)$.
+\end{itemize}
+显然此时我们有了希望看到的结论$p(c_1) \to p'(c_1)$, 等价于我们已经有了$p(\bot) \to p'(\bot)$这已经算是成功的基础了). 当你不断对proof $\varPi$做这个操作，直到无法继续我们设这个新的proof为$\varPi'$. 现在我们来看一下$\varPi'$结构是怎样的. 现在$\varPi$最上面的resolution都是pivot variable都满足$v \notin l(A)$，前面也提到了这样的resolution包含了pivot variable $v \in l(B)$和$v \in g(A)$两种情况. 我们再来排一次，把pivot variable $v \in l(B)$放在最前面. 也就是如出现下述proof片段:
+\[
+	\infer[v_1 \in l(B)]{c_1}{\infer[v_1 \in g(A)]{v_1 \cup c_2}{\deduce{v_2 \cup c_4}{\mathcal{D}} & \deduce{\neg v_2 \cup c_5}{\mathcal{E}}} & \deduce{\neg v_1 \cup c_3}{\mathcal{F}}}
+\]
+我们把下面resolution往上移动, 也会得到上述类似两种形式, 这里不在累述了. 最重要是此时$p'(c_1) = p''(c_1)$, 因为这里都是conjunction. 这就是说明这种移动并不会影响对应结点的boolean formula, 也就是说依然有$p(c_1)\to p''(c_1)$. 我们对$\varPi'$不断做这个操作，知道无法继续我们设这个新的proof为$\varPi''$. 我们可以简单画一下$\varPi''$的结构:
+\[
+	\deduce[\lvdots^{v \in l(A)}]{\bot}{\deduce[\lvdots^{v \in g(A)}]{\gamma_1 \quad \cdots \quad \gamma_s}{\deduce[\lvdots^{v \in l(B)}]{\beta_1' \quad \cdots \quad \beta_j'}{\beta_1 & \cdots & \beta_m} & \alpha_{i_1} & \cdots & \alpha_{i_k}} & \alpha_{t_1} & \cdots & \alpha_{t_l}}
+\]
+整个结构分为三个层次，是我们通过前两次移动策略得到的. 我们主要看一下中间整个层次. 首先可以确定是$\{\beta_1',\cdots, \beta_j'\}$里面所有variables都是在$g(A)$中, 此时我们如果考虑把$\alpha_{i_1}, \cdots , \alpha_{i_k}$分布替换成$g(\alpha_{i_1}), \cdots,  g(\alpha_{i_k})$. 此时第二个层次的结构是不会发生变化的，因为它里面做的resolution的pvoit variables也都在$g(A)$. 并且你会发现${\gamma_1, \cdots, \gamma_s}$会被消成$\bot$. 这样我们得到又得到了一个新的更短的proof $\varPi'''$，我们也自然地得到了一个interpolation $g(\alpha_{i_1}) \wedge \cdots \wedge g(\alpha_{i_k})$. 我们证明了一个比较弱的interpolation，那么原来比它强的interpolation也自然是存在的，这样我们整个证明就结束了.
 \end{annotation}
 
 \begin{proof}
-\rm ???
+\rm Formalization for above sketch.
 \end{proof}
 
+\begin{annotation}
+\rm 上面的theorem最重要地就是告诉我们计算interpolation不需要第二次用到SAT-solver, 并且整个计算过程是线性的. 
+\end{annotation}
 
 \newpage
 \begin{thebibliography}{9}
