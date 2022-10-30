@@ -16,7 +16,7 @@
 
 \usepackage[cache=false]{minted} %code block
 
-\usepackage{unicode-math}
+%\usepackage{unicode-math}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref} %url解决过长的问题
 \usepackage{hyperref} %url
 \hypersetup{
@@ -713,6 +713,56 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \begin{annotation}
 \rm 上面的theorem最重要地就是告诉我们计算interpolation不需要第二次用到SAT-solver, 并且整个计算过程是线性的. 
 \end{annotation}
+
+\newpage
+\section{Homotopy Type Theory}
+
+\subsection{Universe and Families}
+
+\begin{definition}
+\rm A \redt{universe} is type whose elements are types.
+\end{definition}
+
+\begin{annotation}
+\rm 为了避免Russell's paradox在集合论中尴尬，可以用一种分级定义的universe:
+\[
+	\mathcal{U}_0 : \mathcal{U}_0 :\mathcal{U}_2 : \cdots
+\]
+其中每一个$\mathcal{U}_i$是$\mathcal{U}_{i+1}$中的元素. 同样允许当$A:\mathcal{U}_i$, 也有$A : \mathcal{U}_{i+1}$. 但是这里可能有一个小问题就是这样使得$A$的类型不唯一了. 当某个$\mathcal{U}$被确定了之后，它包含的types通常称为\redt{small types}.
+\end{annotation}
+
+\begin{definition}
+\rm Given type $A$, the functions $B: A \to \mathcal{U}$ whose codomain is a universe are called \redt{families of type} $A$.
+\end{definition}
+
+\begin{annotation}
+\rm 理解family的关键是: 当$B$一个function, 它接受一个类型为$A$的元素，输出是一个新的type $T$, 它的类型为$\mathcal{U}$. 这里最重要的说$B$   
+\end{annotation}
+
+\begin{example}
+\rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 定义$\text{Fin}(n)$是一个type, 符合这种type的元素是一个包含$n$个元素的集合，那么$\text{Fin}$就是关于描述the types of finite sets的的family.
+
+一个constant type family就是type $B(x)$并不依赖某个element with type $A$, 此时可以直接写作$B:\mathcal{U}$, $\mathcal{U}$也是可以盖住function types的. 
+\end{example}
+
+
+\section{Dependent Function Types(\texorpdfstring{$\Pi$}{pi}-types)}
+
+
+\begin{definition}
+\rm Given a type $A:\mathcal{U}$ and a family $B:A \to \mathcal{U}$, then $\Pi_{(x:A)} B(x):\mathcal{U}$ is type of dependent functions whose domain is element $x$ of type $A$ and  codomain is element of type $B(x)$. There is a alternative notation for this type, such as $\Pi(x : A).B(x)$.
+\end{definition}
+
+\begin{annotation}
+\rm dependent funtion和type family的区别是什么？ 区别就是前者描述函数输出的是一个满足某个type $B(x)$的元素，后者描述的是输出的是一个满足$\mathcal{U}$的类型.所以这也是这里为什么叫dependent function type的原因，它确实是一个描述函数的类型.
+\end{annotation}
+
+
+%https://math.stackexchange.com/questions/2007230/whats-the-difference-between-a-dependent-function-type-pi-types-and-a
+\begin{example}
+\rm 当family $B$是constant的时候，有$\Pi_{(x:A)} B(x) \equiv (A \to B)$, 即original function type. 这说明dependent function type是可以完美盖住之前的function type的. 
+\end{example}
+
 
 \newpage
 \begin{thebibliography}{9}
