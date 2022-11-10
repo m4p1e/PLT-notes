@@ -37,7 +37,6 @@
 \setlength{\parindent}{2em} 
 \usepackage{indentfirst}
 
-
 \usepackage{xcolor}
 \usepackage{titlesec}
 \titleformat{\section}[block]{\color{blue}\Large\bfseries\filcenter}{}{1em}{}
@@ -53,6 +52,9 @@
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{exercise}{Exercise}[section]
 \newtheorem{annotation}[theorem]{Annotation}
+
+
+%{\mathlarger{\mathlarger\mathlarger{\mathlarger{\oldPi}}}}
 
 \newcommand\Set[2]{\{\,#1\mid#2\,\}} %集合
 \newcommand\SET[2]{\Set{#1}{\text{#2}}} %
@@ -111,6 +113,8 @@
 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}\PackageWarning{TODO:}{#1!}}
 
+\newcommand{\defeqv}{\vcentcolon\equiv}
+
 %variable name
 \ExplSyntaxOn 
 \NewDocumentCommand{\vn}{m}
@@ -124,6 +128,7 @@
     { \mathop{}\!\mathit{#1} }
  }
 \ExplSyntaxOff
+
 
 \begin{document}
 \title{关于Maple Algebra的这一路}
@@ -739,14 +744,16 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \rm 理解family的关键是: 当$B$一个function, 它接受一个类型为$A$的元素，输出是一个新的type $T$, 它的类型为$\mathcal{U}$. 这里最重要的说$B$   
 \end{annotation}
 
-\begin{example}
+\begin{example}\label{ex:family_fin}
 \rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 定义$\text{Fin}(n)$是一个type, 符合这种type的元素是一个包含$n$个元素的集合，那么$\text{Fin}$就是关于描述the types of finite sets的的family.
-
-一个constant type family就是type $B(x)$并不依赖某个element with type $A$, 此时可以直接写作$B:\mathcal{U}$, $\mathcal{U}$也是可以盖住function types的. 
 \end{example}
 
 
-\section{Dependent Function Types(\texorpdfstring{$\Pi$}{pi}-types)}
+\begin{example}
+\rm 一个constant type family就是type $B(x)$并不依赖某个element with type $A$, 此时可以直接写作$B:\mathcal{U}$, 因为$\mathcal{U}$也是可以盖住function types的. 
+\end{example}
+
+\subsection{Dependent Function Types(\texorpdfstring{$\Pi$}{pi}-types)}
 
 
 \begin{definition}
@@ -760,8 +767,103 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 
 %https://math.stackexchange.com/questions/2007230/whats-the-difference-between-a-dependent-function-type-pi-types-and-a
 \begin{example}
-\rm 当family $B$是constant的时候，有$\Pi_{(x:A)} B(x) \equiv (A \to B)$, 即original function type. 这说明dependent function type是可以完美盖住之前的function type的. 
+\rm 取\ref{ex:family_fin}中的family $\text{Fin}:\mathcal{N} \to \mathcal{U}$, 我们可以构造一个dependent function $\text{fmax}:\Pi_{n : N} \text{Fin}(n+1)$， $\text{fmax}$
+返回值为非空集合中最大值. 如果我们用$\{0_{n}, 1_{n}, \cdots, (n-1)_n\}$来表示elements of $\text{Fin}(n)$, 那么$\text{fmax}(n) \defeqv n_{(n+1)}$\footnote{$\defeqv$表示function definition} 
 \end{example}
+
+\begin{example}
+\rm 当family $B$是constant的时候，有$\Pi_{(x:A)} B(x) \equiv (A \to B)$\footnote{$\equiv$表示definitional equality}, 即original function type. 这说明dependent function type是可以完美盖住之前的function type的.
+\end{example}
+
+\begin{example}
+\rm 如果一个dependent function接受一个type作为参数，此时我们可以称它为polymorphic function, 例如polymorphic identity function $\text{id}:\Pi_{A:\mathcal{U}} A \to A$.
+\end{example}
+
+\begin{example}
+\rm 如果一个dependent functuon同样可以接受多个参数， 例如polymorphic swap function $\text{swap}: \Pi_{A:\mathcal{U}}\Pi_{B:\mathcal{U}}\Pi_{C:\mathcal{U}}(A \to B \to C) \to (B \to A \to C)$, 它对应的function definition为
+\[
+	\text{swap}(A,B,C,g) \defeqv \lam{b}{\lam{a}{g(a)(b)}}.
+\]
+\end{example}
+
+\subsection{Dependent Pair Types}
+
+\begin{annotation}
+\rm 这里有一个uniqueness principle，我暂时不知道把它放在哪里，索性先放在这里. 我将它理解为:要确定某个东西$A$, 我们只需要看$A$是如何被使用的. 例如给定一个函数$f$, 它可以等价于$\lam{x}{f(x)}$, 这里其实就是用了一次$\eta$-conversion. 这里就相当于是$f$被它对应的函数值唯一确定了. 这也是所谓的extensionally (外延). %TODO
+\end{annotation}
+
+\begin{example}
+\rm 关于product type有两个projection functions, 它们对应的types为:
+\[
+	\begin{aligned}
+	\pi_1: A \times B \to A \\
+	\pi_2: A \times B \to B
+	\end{aligned}
+\]
+根据前面的提到的uniqueness principle, 我们通过确定$\pi_1$和$\pi_2$的对应函数值来唯一确定它们, 即
+\[
+	\begin{aligned}
+	\pi_1((a,b)) \defeqv a \\
+	\pi_2((a,b)) \defeqv b 
+	\end{aligned}
+\]
+这里有一个小问题你在这里定义两个函数时候，你都得用一下uniqueness principle. 我们试着想想这两个函数是如此的相似，我们能不能只用一次uniqueness principle就给出两个的定义呢？ 这里可以很自然地提出recursor.
+\end{example}
+
+\begin{definition}
+\rm Given a product type $A \times B$. Define function $\text{rec}_{A \times B}$ as the recursor for $A \times B$ with type
+\[
+	\text{rec}_{A \times B}:\Pi_{C:\mathcal{U}}(A \to B \to C) \to A \times B \to C
+\]
+and defining equation
+\[
+	\text{rec}_{A \times B}(C, g, (a,b)) \defeqv g(a)(b).
+\]
+\end{definition}
+
+\begin{example}
+\rm 此时我们可以用$\text{rec}_{A \times B}$来定义$\pi_1$和$\pi_2$:
+\[
+	\begin{aligned}
+	\pi_1 \defeqv \text{rec}_{A \times B}(A, \lam{a}{\lam{b}{a}}) \\
+	\pi_2 \defeqv \text{rec}_{A \times B}(B, \lam{a}{\lam{b}{b}})
+	\end{aligned}
+\]
+有一个比较特殊的nullary product type $\mathbf{1}$, 它只有一个inhabitant我们可以用$\star:\mathbf{1}$表示. 它也有一个对应的recursor $\text{rec}_\mathbf{1}: \Pi_{C:\mathcal{U}} C \to \mathbf{1} \to C$, 它的defining equation为
+\[
+	\text{rec}_\mathbf{1}(C, c, \star) \defeqv c 
+\]
+这是因为你从$\mathbf{1}$中不能获取任何信息.
+\end{example}
+
+\begin{annotation}
+\rm 关于recursor的理解，在这里还是比较模糊.
+\end{annotation}
+
+\begin{example}
+\rm 关于product types的dependent functions $f: \Pi_{x:A\times B}C(x)$, 其中$C: (A \times B) \to \mathcal{U}$. 我们可以用一个function $g:\Pi_{x:A}\Pi_{y:B}C((x,y))$来定义, 即
+\[
+	f((x,y)) = g(x)(y).
+\]
+想想为什么我们这里可以用这样一个$g$来定义呢？ 首先我们规定了type为$A \times B$的元素只能是一个pair, 而且pair里面的两个元素包含了pair本身所有的信息(自己的理解). 如果把$C$看做一个关于$A \times B$一个property，那么$C(x)$就是一个predicate，其中$x: A \times B$. 如果我们想探究不同的properties, 就引出了induction.
+\end{example}
+
+\begin{definition}
+\rm Given a product type $A \times B$. Define a function $\text{ind}$ as the induction for $A \times B$ with the type
+\[
+	\text{ind}_{A \times B}: {\Pi}_{C:A \times B \to \mathcal{U}}(\Pi_{x:A}\Pi_{y:A} C((x,y))) \to \Pi_{x:A\times B} C(x)
+\]
+and the defining equation:
+\[
+	\text{ind}_{A \times B}(C, g, (a,b)) \defeqv g(a)(b).
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. 
+\end{annotation}
+
+
 
 
 \newpage
