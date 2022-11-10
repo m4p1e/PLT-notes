@@ -792,8 +792,16 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \rm 这里有一个uniqueness principle，我暂时不知道把它放在哪里，索性先放在这里. 我将它理解为:要确定某个东西$A$, 我们只需要看$A$是如何被使用的. 例如给定一个函数$f$, 它可以等价于$\lam{x}{f(x)}$, 这里其实就是用了一次$\eta$-conversion. 这里就相当于是$f$被它对应的函数值唯一确定了. 这也是所谓的extensionally (外延). %TODO
 \end{annotation}
 
+\begin{annotation}
+\rm 另外一个需要说明的是这里我们并没有规定product type的inhabitant就一定是一个pair, 也就是说这个东西并没有作为规则写到type theory中. 相反我们可以引入一个elimination rule: 对于任意的function $g: A \to B \to C$, 我们都可以定义一个function $f: A \times B \to C$使得
+\[
+	f((a,b)) \defeqv g(a)(b)
+\]
+这个rule是什么意思呢？ $f$ is well-defined when we specify its values on pairs. 我的理解这个$f$只是一个partial function, 只给出了关于pairs情况下的定义. %TODO
+\end{annotation}
+
 \begin{example}
-\rm 关于product type有两个projection functions, 它们对应的types为:
+\rm 按照上面的思路可以推出两个关于product type有两个projection functions, 它们对应的types为:
 \[
 	\begin{aligned}
 	\pi_1: A \times B \to A \\
@@ -836,17 +844,41 @@ and defining equation
 这是因为你从$\mathbf{1}$中不能获取任何信息.
 \end{example}
 
+\begin{definition}
+\rm The recursion pinciple for catesian products is the fact that we can define a function $f:A \times B \to C$ as above by giving its value on pairs.
+\end{definition}
+
 \begin{annotation}
 \rm 关于recursor的理解，在这里还是比较模糊.
 \end{annotation}
 
-\begin{example}
-\rm 关于product types的dependent functions $f: \Pi_{x:A\times B}C(x)$, 其中$C: (A \times B) \to \mathcal{U}$. 我们可以用一个function $g:\Pi_{x:A}\Pi_{y:B}C((x,y))$来定义, 即
+\begin{annotation}
+\rm 关于product types的dependent functions $f: \Pi_{x:A\times B}C(x)$, 其中$C: (A \times B) \to \mathcal{U}$. 我们也使用一个elimination rule: 给定任意的function $g:\Pi_{x:A}\Pi_{y:B}C((x,y))$, 我们可以定义dependent function $f: \Pi_{x:A\times B}C(x)$.
 \[
-	f((x,y)) = g(x)(y).
+	f((x,y)) \defeqv g(x)(y).
 \]
-想想为什么我们这里可以用这样一个$g$来定义呢？ 首先我们规定了type为$A \times B$的元素只能是一个pair, 而且pair里面的两个元素包含了pair本身所有的信息(自己的理解). 如果把$C$看做一个关于$A \times B$一个property，那么$C(x)$就是一个predicate，其中$x: A \times B$. 如果我们想探究不同的properties, 就引出了induction.
+\end{annotation}
+
+\begin{example}
+\rm 现在我们来证明product type只能是一个pair, 我们尝试构造这样一个dependent function $\text{uniq}_{A \times B}:\Pi_{x:A \times B}((\pi_1(x),\pi_2(x)) =_{A \times B} x)$, 通过defining equation
+\[
+	\text{uniq}_{A \times B}((a,b)) \defeqv \text{refl}_{(a,b)}.
+\]
+其中$\text{refl}_{x}: x =_A x$ for any $x:A$是一个well-typed element. 那么$C(x) \equiv (\pi_1(x),\pi_2(x)) =_{A \times B} x)$, 那么当$x \defeqv (a,b)$, 我们可以得到
+\[
+	C(x) \defeqv (\pi_1(((a,b)),\pi_2((a,b))) =_{A \times B} (a,b)
+\]
+显然有
+\[
+	(\pi_1(((a,b)),\pi_2((a,b))) \equiv (a,b)
+\]
+因此$\text{refl}_{(a,b)}: (\pi_1(((a,b)),\pi_2((a,b))) = (a,b)$还是well-typed. 所以关于$\text{uniq}_{A \times B}$整个构造是对的，如何进一步说话$x$确实是一个pair呢？ 还是有点小问题.
 \end{example}
+
+
+\begin{annotation}
+induction的由来
+\end{annotation}
 
 \begin{definition}
 \rm Given a product type $A \times B$. Define a function $\text{ind}$ as the induction for $A \times B$ with the type
@@ -860,7 +892,7 @@ and the defining equation:
 \end{definition}
 
 \begin{annotation}
-\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. 
+\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. induction也可以被称之为(dependent) eliminator, 而recursion可以被称之为non-dependent eliminator.
 \end{annotation}
 
 
