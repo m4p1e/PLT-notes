@@ -719,6 +719,22 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \rm 上面的theorem最重要地就是告诉我们计算interpolation不需要第二次用到SAT-solver, 并且整个计算过程是线性的. 
 \end{annotation}
 
+\begin{definition}
+\rm (\redt{Craig interpolant over path}) Given formula $A_1 \wedge A_2 \wedge \cdots \wedge A_n$ is unsatisfiable. Let sequence of formulas $\hat{A}_0, \hat{A}_1, \cdots, \hat{A}_n$ is defined as follows.
+\begin{itemize}
+	\item $\hat{A}_0 = true$ and $\hat{A}_n = false$. 
+	\item for all $1 \leq i \leq n$, $\hat{A}_{i-1} \wedge A_i \to \hat{A}_{i}$.
+	\item for all $1 \leq i < n$, $\hat{A}_i \in (\mathcal{L}(A_1 \wedge \cdots \wedge A_i) \cup \mathcal{L}(A_{i+1} \wedge \cdots \wedge A_n))$ where $\mathcal{L}(\phi)$ denote well-formed formula over the vocabulary of $\phi$.
+\end{itemize}
+\end{definition}
+
+\begin{annotation}
+\rm 路径条件通常就是形如$A_1 \wedge A_2 \wedge \cdots \wedge A_n$. 当通过SAT-slover对其求解得到结果是unsatisfiable, 意味这这样的路径是unreachable的. 于是我们可以把这样的路径排除在后续的分析之外, 排除在外的手法有很多:
+\begin{itemize}
+	\item 我们通常是在CFG类似的program graph上进行分析，那么我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去, 
+\end{itemize}
+\end{annotation}
+
 \newpage
 \section{Homotopy Type Theory}
 
