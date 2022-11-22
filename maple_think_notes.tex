@@ -729,9 +729,37 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \end{definition}
 
 \begin{annotation}
-\rm 路径条件通常就是形如$A_1 \wedge A_2 \wedge \cdots \wedge A_n$. 当通过SAT-slover对其求解得到结果是unsatisfiable, 意味这这样的路径是unreachable的. 于是我们可以把这样的路径排除在后续的分析之外, 排除在外的手法有很多:
+\rm 路径条件通常形如canonical form $A_1 \wedge A_2 \wedge \cdots \wedge A_n$. 当通过SAT-slover对其求解得到结果是unsatisfiable, 意味这这样的路径是unreachable的. 于是我们可以把这样的路径排除在后续的分析之外, 排除在外的手法有很多:
 \begin{itemize}
-	\item 我们通常是在CFG类似的program graph上进行分析，那么我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去, 
+	\item 我们通常是在CFG类似的program graph上进行分析，显然我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去，这就是最初的直觉.
+	\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/644CA52C-1C17-4714-A076-2AE26418F4CE.jpeg}
+    \caption{Refinement by node copying}
+    \label{fig:refine1}
+    \end{figure}
+    图\ref{fig:refine1}中的$\varphi$为图中路径的prefix path condition, 消除这条路径并不能简单的把$c$这条边去掉, 我们需要copy结点然后加上annotation, 这个annotation的含义是路径条件满足它的时候才能继续往前. 因此这里带$\varphi$的copy结点是没有以$c$为label的outgoing edge. 这样在annotation + copy的模式下我们就去掉了infeasible path. 
+    
+    还有一个问题是我们应该选择copy哪一个结点, 通常我们选择那个结点是和frontier相关的，frontier是一种特殊的边. 它连接的我们已知可达的结点和还没有抵达的结点, 这里我们还不知道它是否可达. 当我们经过进一步计算之后发现它不可达, i.e., 一步扩展可达路径的路径. 此时这个不可达结点的前驱可达结点，就可以称为我们的copy对象. 可以看见这个$\varphi$是满足一定性质的，即$\varphi$ is sat and $\varphi \wedge \psi_c$ is unsat, 这是有道理的. 我们不能任意选择infeasible path中间的结点来copy, 然后删掉一些边. 你必须要保证从删掉这些边产生的路径都是infeasible才行. 
+    
+    最后一个值得探讨的问题, 这个$\phi$往往是比较复杂的, 把它作为annotation实际上不太方便的, 因为当你抵达这个点的时候, 你需要判断它是否满足$\phi$再做进一步打算. 利用Craig interpolation我们就可以简化这个$\phi$, 得到一个$\hat{\phi}$. 在满足$\hat{\phi}$的情况下也是不可达的,这里弱一点$\hat{\phi}$显然要比$\phi$好.
+    \item 上面的这种方法存在冗余的问题. 举一个完整的分析例子, 图\ref{fig:refine2}对应一个带if的简单程序, 在if的出口有一个关于error的transition，假设error这个点是unreachable的，其他的点都是reachable的. 其中绿色的路径表示我们每次分析的CFG上关于error的一条路径, 这里我们用了7步才判定图中error这个点是unreachable的. 我们分别来看一下过程:
+    \begin{enumerate}
+    	\item 此时$\pi$取不经过if的路径. 这里$\varphi_1$ is sat and  $\varphi_1 \wedge \varphi_e$ is unsat. 那么$e$对应的这条边就是这里的froniter, 这里我们copy $\varphi$所对应的结点. 我们设copy对象为结点$v$, copy的步骤如下:
+    	\begin{itemize}
+    		\item copy $v$得到$v'$, 包括$v$的所有前驱都需要也指向$v'$; $v'$只需要指向所有$v$的后继.
+    		\item 去掉$v$上的froniter. 
+    	\end{itemize}
+		$v$上标注annotation $\varphi_1$, 而$v'$上标注annotation $\neg \varphi_1$. 于是得到了(2).
+		\item 此时$\pi$取(2)中经过if的路径. 这里$\neg \varphi_1 \wedge \varphi_2 \wedge \varphi_e$ is unsat. 那么$e$对应的这条边就是这里的frontier, 这里我们copy $\neg \varphi_1 \wedge \varphi_2$对应的结点, 得到$\varphi_1 \vee \neg \varphi_2$. 这里我写错成$\neg varphi_1 \wedge \neg \varphi_2$. 理论上这个条件也没什么问题, 所以这里貌似还要多几步才行, 最终得到应该会是一个$\neg \varphi_1 \wedge (\varphi_1 \vee \neg \varphi_2)$.
+    \end{enumerate}
+    其余过程类似, 直到从开始结点没有一条到error结点的路径为止. 这样看起来分析是非常impractical的, 相关图的扩展几乎是成指数型的, 并且在分析过程中会发现需要的分析步骤是冗余的. 那么另外一种手法就是不对CFG图进行修改，直接在CFG上做annotation, 这样做有两个好处:(1 很明显CFG不会扩张了; (2 annotation可以cover不同路径但是"相同状态".
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/refine2.jpeg}
+    \caption{Refinement by node copying}
+    \label{fig:refine2}
+    \end{figure}
 \end{itemize}
 \end{annotation}
 
