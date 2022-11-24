@@ -728,10 +728,36 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \end{itemize}
 \end{definition}
 
+%\begin{annotation}
+%\rm 路径条件通常形如canonical form $A_1 \wedge A_2 \wedge \cdots \wedge A_n$. 当通过SAT-slover对其求解得到结果是unsatisfiable, 意味这这样的路径是unreachable的. 于是我们可以把这样的路径排除在后续的分析之外, 排除在外的手法有很多.
+%\end{annotation}
+
+\newpage
+\subsection{Graph as Proof}
+
 \begin{annotation}
-\rm 路径条件通常形如canonical form $A_1 \wedge A_2 \wedge \cdots \wedge A_n$. 当通过SAT-slover对其求解得到结果是unsatisfiable, 意味这这样的路径是unreachable的. 于是我们可以把这样的路径排除在后续的分析之外, 排除在外的手法有很多:
+\rm 当我们想证明program中某个点unreachable的时候，我们需要说明可以抵达这个点的所有路径都是infeasible的. 那么我们应当以怎样的形式给出这个证明呢？ 我们可以从CFG构造出另外一个graph, 借助这个graph我们可以很直接说明这些路径确实不存在, 这里有两种手法:
 \begin{itemize}
-	\item 我们通常是在CFG类似的program graph上进行分析，显然我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去，这就是最初的直觉.
+	\item 直接在graph上显式地去掉这些路径.
+	\item graph上显式的把这些路径标出来，并且说明这些路径不存在.
+\end{itemize}
+无论哪种方法都需要扩展原CFG. 我们可以形式化一点，设CFG为$G_1 = (V_1,E_1)$和新的graph为$G_2 = (V_2, E_2)$. 我们需要两个basic map:
+\begin{itemize}
+	\item vertex map: $f_v: V_2 \to V_1$.
+	\item edge map: $f_e: E_2 \to E_1$.
+\end{itemize}
+这两个map在这里指明$G_2$上vertex和edge都在$G_1$中, 因为我们希望$G_2$上的路径都是在$G_1$中的. 值得注意的是存在$f_v(v) = f(w), v \neq w \in V_2$. 这是因为希望$G_2$可以表示独立的路径，这使得我们需要把两条不同路径上的重复结点分开，这样的重复结点虽然对应$G_1$中同一个结点但是在$G_2$是distinct的.
+
+无论哪种的方法，我们都是无法避免去选路径，然后沿着路径去分析的. 这里我们继续以符号化分析为起点，给定一条从entry noode到target node的路径$\pi = (\epsilon, a_0, a_1, \cdots, a_n)$, 它对应path condition是normal form为$P_\pi = A_0 \wedge A_1 \wedge A_n$. 我们再建立一个对应关系, 当$i > 0$时, $a_{i-1}$执行$a_i$都之前都满足需要$A_i$. 其中$a_0$是真正的entry node, 额外给出$\epsilon$为了可以在开始的时候方便地给一个initial condition(函数调用传参). 这里有两种情况:
+\begin{itemize}
+	\item $P_\pi$ is sat, 那么我们可以直接出给反例.
+	\item $P_\pi$ is unsat, 那么我们就可以排除这条路径. 
+\end{itemize}
+后面我们主要研究如何不断的排除这条路径.
+\end{annotation}
+
+\begin{example}
+\rm (\redt{Navie analysis}) 我们通常是在CFG类似的program graph上进行分析，显然我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去，这就是最初的直觉.
 	\begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{images/644CA52C-1C17-4714-A076-2AE26418F4CE.jpeg}
@@ -740,10 +766,11 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
     \end{figure}
     图\ref{fig:refine1}中的$\varphi$为图中路径的prefix path condition, 消除这条路径并不能简单的把$c$这条边去掉, 我们需要copy结点然后加上annotation, 这个annotation的含义是路径条件满足它的时候才能继续往前. 因此这里带$\varphi$的copy结点是没有以$c$为label的outgoing edge. 这样在annotation + copy的模式下我们就去掉了infeasible path. 
     
-    还有一个问题是我们应该选择copy哪一个结点, 通常我们选择那个结点是和frontier相关的，frontier是一种特殊的边. 它连接的我们已知可达的结点和还没有抵达的结点, 这里我们还不知道它是否可达. 当我们经过进一步计算之后发现它不可达, i.e., 一步扩展可达路径的路径. 此时这个不可达结点的前驱可达结点，就可以称为我们的copy对象. 可以看见这个$\varphi$是满足一定性质的，即$\varphi$ is sat and $\varphi \wedge \psi_c$ is unsat, 这是有道理的. 我们不能任意选择infeasible path中间的结点来copy, 然后删掉一些边. 你必须要保证从删掉这些边产生的路径都是infeasible才行. 
+  	还有一个问题是我们应该选择copy哪一个结点, 通常我们选择那个结点是和frontier相关的，frontier是一种特殊的边. 它连接的我们已知可达的结点和还没有抵达的结点, 这里我们还不知道它是否可达. 当我们经过进一步计算之后发现它不可达, i.e., 一步扩展可达路径的路径. 此时这个不可达结点的前驱可达结点，就可以称为我们的copy对象. 可以看见这个$\varphi$是满足一定性质的，即$\varphi$ is sat and $\varphi \wedge \psi_c$ is unsat, 这是有道理的. 我们不能任意选择infeasible path中间的结点来copy, 然后删掉一些边. 你必须要保证从删掉这些边产生的路径都是infeasible才行. 
     
     最后一个值得探讨的问题, 这个$\phi$往往是比较复杂的, 把它作为annotation实际上不太方便的, 因为当你抵达这个点的时候, 你需要判断它是否满足$\phi$再做进一步打算. 利用Craig interpolation我们就可以简化这个$\phi$, 得到一个$\hat{\phi}$. 在满足$\hat{\phi}$的情况下也是不可达的,这里弱一点$\hat{\phi}$显然要比$\phi$好.
-    \item 上面的这种方法存在冗余的问题. 举一个完整的分析例子, 图\ref{fig:refine2}对应一个带if的简单程序, 在if的出口有一个关于error的transition，假设error这个点是unreachable的，其他的点都是reachable的. 其中绿色的路径表示我们每次分析的CFG上关于error的一条路径, 这里我们用了7步才判定图中error这个点是unreachable的. 我们分别来看一下过程:
+    
+    上面的这种方法存在冗余的问题. 举一个完整的分析例子, 图\ref{fig:refine2}对应一个带if的简单程序, 在if的出口有一个关于error的transition，假设error这个点是unreachable的，其他的点都是reachable的. 其中绿色的路径表示我们每次分析的CFG上关于error的一条路径, 这里我们用了7步才判定图中error这个点是unreachable的. 我们分别来看一下过程:
     \begin{enumerate}
     	\item 此时$\pi$取不经过if的路径. 这里$\varphi_1$ is sat and  $\varphi_1 \wedge \varphi_e$ is unsat. 那么$e$对应的这条边就是这里的froniter, 这里我们copy $\varphi$所对应的结点. 我们设copy对象为结点$v$, copy的步骤如下:
     	\begin{itemize}
@@ -751,17 +778,46 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
     		\item 去掉$v$上的froniter. 
     	\end{itemize}
 		$v$上标注annotation $\varphi_1$, 而$v'$上标注annotation $\neg \varphi_1$. 于是得到了(2).
-		\item 此时$\pi$取(2)中经过if的路径. 这里$\neg \varphi_1 \wedge \varphi_2 \wedge \varphi_e$ is unsat. 那么$e$对应的这条边就是这里的frontier, 这里我们copy $\neg \varphi_1 \wedge \varphi_2$对应的结点, 得到$\varphi_1 \vee \neg \varphi_2$. 这里我写错成$\neg varphi_1 \wedge \neg \varphi_2$. 理论上这个条件也没什么问题, 所以这里貌似还要多几步才行, 最终得到应该会是一个$\neg \varphi_1 \wedge (\varphi_1 \vee \neg \varphi_2)$.
+		\item 此时$\pi$取(2)中经过if的路径. 这里$\neg \varphi_1 \wedge \varphi_2 \wedge \varphi_e$ is unsat. 那么$e$对应的这条边就是这里的frontier, 这里我们copy $\neg \varphi_1 \wedge \varphi_2$对应的结点, 得到$\varphi_1 \vee \neg \varphi_2$. 这里我写错成$\neg \varphi_1 \wedge \neg \varphi_2$. 理论上这个条件也没什么问题, 所以这里貌似还要多几步才行, 最终得到应该会是一个$\neg \varphi_1 \wedge (\varphi_1 \vee \neg \varphi_2)$.
     \end{enumerate}
-    其余过程类似, 直到从开始结点没有一条到error结点的路径为止. 这样看起来分析是非常impractical的, 相关图的扩展几乎是成指数型的, 并且在分析过程中会发现需要的分析步骤是冗余的. 那么另外一种手法就是不对CFG图进行修改，直接在CFG上做annotation, 这样做有两个好处:(1 很明显CFG不会扩张了; (2 annotation可以cover不同路径但是"相同状态".
     \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/refine2.jpeg}
     \caption{Refinement by node copying}
     \label{fig:refine2}
     \end{figure}
-\end{itemize}
+其余过程类似. 它显然对应了我们前面提到的第一种方法, 最后图上不存在从开始结点到error结点的显式路径. 但是分析过程是非常impractical的, 相关图的扩展几乎是成指数型的, 并且在分析过程中会发现有一些分析步骤是冗余的. 最后总结一下这种方法内在本质:
+\begin{itemize}
+	\item 不断地寻找frontier, 切割frontier的一段. 新增的edges可以作为新frontier，这些新增的edges包括了切割froniter一段的前驱, 这样我们实际总是在压缩前置路径. 直到frontier一端为entry node, 那么此时可选的路径就是只能是frontier本身. 如果依然是unsat, 那么就可以证明确实不存在这样的一条从entry node出发的路径.
+	%\item 图\ref{fig:refine2}中的(2)图，左上角的这条红边实际是可以去掉的, 因为这样的前置路径只有一条.
+	%\item 前面提到的一个问题, (1) to (2), 会将其中frontier一端的结点分割成$\varphi_1$和$\neg \varphi_1$. 接着$\neg \varphi_1$所在结点又会分割成$\neg \varphi_1 \wedge \varphi_2$和$\neg(\neg \varphi_1 \wedge \varphi_2) \equiv \varphi_1 \vee \neg \varphi_2$. 问题来了, 这里又把$\varphi_1$带回来了, 并且你要知道(2)中那条左上红色的边一直存在的. 最终这里因为这条边的存在，会继续分为$\varphi_1 \wedge (\varphi_1 \vee \neg \varphi_2) \equiv true$和$\neg (\varphi_1 \wedge (\varphi_1 \vee \neg \varphi_2)) \equiv false$. 如果我们在(2)把左上角红边作为下一步的frontier, 似乎就可以避免上述情况.
+	\item 实际处理的路径要比真实存在的路径要多的. 我们想一个极端情况图\ref{fig:refine3}, 假设原CFG上只有一条指向target的路径.
+	\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/BFE42FBF-CA3E-492F-89B4-7F5677DA8246.jpeg}
+    \caption{Refinement for single path}
+    \label{fig:refine3}
+    \end{figure}
+    可以看到这里处理的路径个数和路径的长度是关系的, 准确来说如果CFG上实际存在$n$条候选错误路径, 那么实际可能分析$O(2^n)$路径. 这个直觉来源于你如果copy一个结点，那么你就会将通过这个点的所有路径数乘2.    
+\end{itemize}    
+\end{example}
+
+\begin{annotation}
+\rm 前面第一个例子里面用到了给结点加label的概念, 我们可以给它形式化一下, 设label map $f_l: V_2 \to L$. 那么上面的例子中$L$为logic formulas $\mathcal{L}(\Sigma)$, 于是$G_2$上每一个结点都对应一个formula, 没有显式标注的label的结点, 都默认label为true.  
 \end{annotation}
+
+\begin{definition}
+\rm Given label map $f_l: V_2 \to \mathcal{L}(\Sigma)$ of graph $G_2=(V_2,E_2)$ and $u,w \in V_2$. We say $u$ is covered by $w$, if
+\begin{itemize}
+	\item $f_v(u) = f_v(w)$ and 
+	\item $f_l(u) \supset f_l(w)$ ($\supset$ w.r.t implies).
+\end{itemize}
+\end{definition}
+
+\begin{annotation}
+\rm 当label刻画的是所在结点的状态的时候，$u$ is covered by $w$就是说$w$可以reachable的结点，那么$u$也一定是可以reachable的. 因为label越弱描述状态空间就越大. 
+\end{annotation}
+
 
 \newpage
 \section{Homotopy Type Theory}
