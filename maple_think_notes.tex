@@ -756,7 +756,7 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 后面我们主要研究如何不断的排除这条路径.
 \end{annotation}
 
-\begin{example}
+\begin{example}\label{ex:refine_path1}
 \rm (\redt{Navie analysis}) 我们通常是在CFG类似的program graph上进行分析，显然我们分析的路径都是这个CFG上存在的路径. 当某条路径是infeasible时，我们可以想办法把它从CFG上抹去，这就是最初的直觉.
 	\begin{figure}[h]
     \centering
@@ -798,12 +798,20 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
     \caption{Refinement for single path}
     \label{fig:refine3}
     \end{figure}
-    可以看到这里处理的路径个数和路径的长度是关系的, 准确来说如果CFG上实际存在$n$条候选错误路径, 那么实际可能分析$O(2^n)$路径. 这个直觉来源于你如果copy一个结点，那么你就会将通过这个点的所有路径数乘2.    
+    可以看到这里处理的路径个数和路径的长度是关系的, 准确来说如果CFG上实际存在$n$条候选错误路径, 那么实际可能分析$O(2^n)$路径. 这个直觉来源于你如果copy一个结点，那么你就会将通过这个点的所有路径数乘2.
+    \item 准确来说我们总是strengthen某个结点上的条件，这个strengthen过程就是通过新增一个conjunct再取反. i.e, $\neg (\neg \varphi_1 \wedge \varphi_2)$. 这里的直觉是什么呢？ 我们知道一个predicate可以将整个程序状态空间一分为二, 满足它的状态和不满足它的状态, 对应这个predicate本身和它的取反形式. 例如当$\varphi_1$对应的状态无法reach到某个结点, 那么可能reach这个结点的状态只能在$\neg \varphi_1$中了. 接着我们分析了一条新路径在对应结点产生$\varphi_2$, 此时原本这个结点上还有一个$\neg \varphi_1$, 那么实际的条件就是$\neg \varphi_1 \wedge \varphi_2$. 可以看出来我们在$\neg \varphi_1$基础上又strengthen了一次，如果这个条件依然不行，那么再取反分割结点. 两次取反你会发现$\varphi_1$又回来了, 但是我们之前已经排除了$\varphi_1$. 这个方案告诉你取反并不是一种比较好的办法，它太弱了.
+      
+    我们可以直接新增一个取反的后conjunct, 不再直接取反, i.e., $\neg \varphi_1 \wedge \neg \varphi$. 这相当于就是把已经探索过的路径条件都给收集起来了.
+    \item 每次只会对一个结点加annotation, 即frontier上的一段. 这样的后果就是我们得重复计算路径条件, 参考图\ref{fig:refine3}.      
 \end{itemize}    
 \end{example}
 
 \begin{annotation}
-\rm 前面第一个例子里面用到了给结点加label的概念, 我们可以给它形式化一下, 设label map $f_l: V_2 \to L$. 那么上面的例子中$L$为logic formulas $\mathcal{L}(\Sigma)$, 于是$G_2$上每一个结点都对应一个formula, 没有显式标注的label的结点, 都默认label为true.  
+\rm 前面第一个例子里面用到了给结点加label的概念, 我们可以给它形式化一下, 设label map $f_l: V_2 \to L$. 那么上面的例子中$L$为logic formulas $\mathcal{L}(\Sigma)$, 于是$G_2$上每一个结点都对应一个formula, 没有显式标注的label的结点, 都默认label为true. 后面记录两种对上述navie方法的改进:
+\begin{itemize}
+	\item Unfolding.
+	\item Lazy annotation.
+\end{itemize}
 \end{annotation}
 
 \begin{definition}
@@ -815,9 +823,12 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \end{definition}
 
 \begin{annotation}
-\rm 当label刻画的是所在结点的状态的时候，$u$ is covered by $w$就是说$w$可以reachable的结点，那么$u$也一定是可以reachable的. 因为label越弱描述状态空间就越大. 
+\rm 当label作为所在结点需要满足的状态时，$u$ is covered by $w$就意味着$w$可以reachable的结点，那么$u$也一定是可以reachable的. 按照这个思路我们就可以尝试去优化前面的分析方法. 
 \end{annotation}
 
+\begin{example}
+\rm Example \ref{ex:refine_path1}中实际在划分某一结点的所有程序状态, 将不可达的程序状态都从CFG上剥离出去了.
+\end{example}
 
 \newpage
 \section{Homotopy Type Theory}
