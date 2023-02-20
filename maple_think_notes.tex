@@ -159,6 +159,72 @@
 这里的$P$可以看做一个谓词变量(predicate variable). 从语义上来说$P$可以理解为集合，更进一步说就是满足某种property的varibles组成的set, 所以你对$P$施加一个量词也就是在考虑不同的集合，此时上面的formula可以非正式地理解为存在某个集合$P$包含$b$.
 \end{annotation}
 
+\subsection{Quantifier Elimination}
+
+\begin{annotation}
+\rm Fourier-Motzkin algorithm适用于prenex form下内部formula是一个conjunction且里面的每个conjuncts只能是一个literals i.e., $\forall {x_1,x_2,\cdots,x_n}.~ x_1 > a_1 \wedge x_2 > a_2 \wedge \cdots \wedge x_n > a_n$. 我们将这个算法记为$\pi$, 那么只要我们把任意的formula都转换称DNF,
+\end{annotation}
+
+\begin{annotation}
+\rm David Monniaux (CAV'10)中提到可以利用SMT-solver来把任意quantifer-free formula转换成DNF, 这样我们对其中DNF中的每一个clause都可以分开来使用Fourier-Motzkin algorithm. 它具体的做法就是，对于给定的formula $F$, 扔给SAT-solver, 如果是satisfiable的，那么SAT-solver就会给出一个solution, 这个solution实际对应一个conjunction $C$ (由$F$中atoms构造的，如果solution某个variable使得对应的atom是true, 那么就把这个atom丢到conjunction中，反之把negation of atom丢到conjunction中)使得$C \rightarrow F$. 这样我们再把$F \wedge \neg C$扔到SMT-solver中，类似一直操作，直到unsat. 
+
+这种方式存在一个问题, 如果给定$F \equiv (x_1 = 0 \vee x_1 = 1) \wedge \cdots \wedge (x_n = 0 \vee x_n = 1)$, 那么将产生$2^n$个conjuncts. 而对于$\exists x_2,\cdots,x_n.~F$, 它的quantifier free形式却只是$x_1 = 0 \vee x_1 = 1$ (logically equivalent quantifier-free formula). 显然有点不太efficient，这个时候我们不直接用$F \wedge C$, 而用$F \wedge \neg \pi(\exists x_2,\cdots,x_n.~C)$作为新一轮的查询. 例如这里设$C \equiv (x_1 = 0 \wedge x_2 = 0 \wedge \cdots \wedge x_n = 0)$, 那么$\pi(C) \equiv x_1 = 0$, 这样我们只需要call SAT-solver两次就可以得到我们想要的DNF. 
+
+David Monniaux提出的优化方法远不止于此，其核心在于对nested quantifiers如何处理. 如果此时给定$F \equiv \exists x.\forall y.\exists z. ~ z \geq 0 \wedge ((x \geq z \wedge y \geq z) \vee y \leq 1 - z)$, 显然这个$F$是valid的. 我们从内向外一层层去掉quantifiers.
+\begin{itemize}
+    \item 设最里面的quantifier-free formula为$F_3$, 它并不是DNF, 尝试转化为DNF. 假设扔给SMT-solver得到solution $x = 0 \wedge y =0 \wedge z = 0$, 对应的conjunction为$C_1 \equiv z \geq 0 \wedge x \geq z \wedge y \geq z \wedge y \leq 1 - z$, 那么$\pi(\exists z.~C_1) \equiv x \geq 0 \wedge y \geq 0 \wedge y \leq 1$. 再把$F_3 \wedge \neg \pi(C)$丢到SMT-solver中得到solution $x = 0 \wedge y = -1 \wedge z = 2$, 对应的conjunction为$C_2 \equiv z \geq 0 \wedge x \geq z \wedge y \leq 1 - z$, 那么$\pi(\exists z.~C_2) \equiv x \geq 0 \wedge y \leq 1$. 如此继续，设$F_2 \equiv \exists z. F_3$, 最后有$F_2 \equiv \bigvee \pi(\exists z.~C_i) \equiv x \geq 0 \vee y \leq 1$. 
+    \item 设$F_1 = \forall y.~F_2$, 那么显然有$F_1 \equiv x \geq 0$.
+    \item 最后$\exists x. F_1 \equiv true$.
+\end{itemize}
+注意到如果我们只取quantifier-free $F_2$中的conjunct $x \geq 0$, 使得$F_2' \equiv x \geq 0$, 对$\exists x.\forall y. ~F_2'$做quantifier elimination，最后也能得到$true$这个结果. 这意味着我们不用在最里面那个阶段费尽心思地构造完整的DNF. 也就是说用“比较强的formula”得到了一个结果，那么显然“弱一点的formula”也是有这个结果的. 但是只有当这个结果是true的时候，这么做才有意义，不然出现false的时候，你并不能说明它是false的, 其他情况给不出原formula准确的quantifier-free form.
+
+我还是想记录这个算法的全过程推理，因为花了不少精力，将来忘记了就比较可惜. 算法如图\ref{fig:qe-sat}, 其每个关键的步骤细节如下:
+\begin{itemize}
+    \item 首先是关于这里$F_0, F_1, \cdots F_n$的定义: $F_0$是一个形如$\forall_{B_0}\exists_{B_1}\forall_{B_2}\cdots F$的prenex. 其中$B_0,B_1,B_2,\cdots$就是把相邻地相同的quantifiers合起来. 对于任意$i \geq 0$, $F_i = \forall \neg F_{i+1}$, 注意这里是从$F_0$往后构造$F_i$的. 例如给定$\forall x. \exists y.\forall z~G$, 它对应的$F_i$分别为
+    \[
+        \begin{tabular}{l}
+        $F_0 = \forall x. \exists y.\forall z~G$ \\
+        $F_1 = \forall y. \exists z.~\neg G$ \\
+        $F_2 = \forall z.~G$ \\
+        $F_3 = \neg G$
+        \end{tabular}
+    \]
+    \item 这里$\textsc{SMT-Test}(C, F)$用于判断$C \wedge F$是否是satisfiable，它的返回值为$(b, C')$, 其中$b$是一个boolean value表示是否satisfiable. 当$b = true$时，有$\text{atoms}(C') \subseteq \text{atoms}(F)$, 且满足$C' \Rightarrow F$ and $C \wedge C'$ is satisfiable. 这一点很容易办到，参考上面由solution生成对应conjunction的过程; 当$b=false$时，$C = false$.
+    \item 其中$M_0,M_1,\cdots,M_{n-1}$初始化为$true$, 满足对任意的$i < n$有$F_i \Rightarrow M_i$. 注意在$\textsc{Q-Test}$的每一步都会保持这个条件.
+    \item 最关键的$\textsc{Q-Test}(i, C)$, 设它的返回值为$(b, C')$, 其中$b$表示$F_i \wedge C$表示是否satisfiable. \redt{(性质1)如果$b = true$, 有$\text{FV}(C) = \text{FV}(F_i)$, 且满足$C' \Rightarrow F_i$ and $C \wedge C'$ is sat}. 那这个算法和quantifier elimination有什么关系呢? 考虑$\textsc{Q-Test}(0, true)$, 当它第一个返回值为$true$的时候，就有$C' \Rightarrow F_0$, 并且$C'$是quantifier-free的. 这个时候我们就得到了一个比如强的formula $C'$, 拿它可以进一步去测试$\forall F_0$或者$\exists F_0$就有意义了.  
+    
+    最大的缺点是给不出准确原完整的quantifier-free form. 也就是我们无法保证$F_0 \Rightarrow C'$.
+    
+    %恰好地是算法本身返回时, 也会保持一个额外的\redt{(性质2), 当$i < n$时有$F_i \wedge C \Rightarrow C'$}. 当包含量词的时候总有$n \geq 1$. 这就意味当$i = 0$时，有$F_0 \Rightarrow C'$. 所以整个算法的correctness是Ok的.  
+    
+    前面我们把算法基本核心描述了一下, 我们下面一步一步来看:
+    \begin{itemize}
+        \item 当$i = n$, 如果$F_n \wedge C$ is unsat, 那么$F_n \wedge C \Rightarrow false$且$false \Rightarrow F_n$, 即返回值$(false, false)$. 如果$F_n \wedge C$ is sat, $C' \Rightarrow F_n$是显然的，还对$C'$做了一次泛化(generalization)找到弱一点$C''$依然符合条件. 我们希望最终得到的那个强的formula能更弱一点，尽量贴近$F_n$. 
+        \item 当$i < n$时，看下面这个while循环. 当$b' = false$时，由$C \wedge M_i$ is unsat可以马上得到$C \wedge F_i$ is unsat, 因为$F_i \Rightarrow M_i$ (在后面唯一修改$M_i$的地方，我们会证明这个关系在$M_i$被修改之后依然保持). 因此$\textsc{Q-Test}(i, C)$返回$(false, false)$, 性质1是显然保持的.
+        
+        当$b' = true$时，此时由$C \wedge M_i$ is sat还不能确定$C \wedge F_i$ is sat. 同时是否有$C' \Rightarrow  F_i$也不能确定，想确定它可以按照下面思路
+        \[
+            \begin{tabular}{l}
+                $C' \Rightarrow  F_i$ is valid \\
+                $\equiv \neg (C' \Rightarrow F_i)$ is unsat \\
+                $\equiv C' \wedge \neg F_i$ is unsat \\
+                $\equiv C' \wedge \exists_{B_i} F_{i+1}$ is unsat (by $F_i = \forall_{B_i} \neg F_{i+1}$)\\
+            \end{tabular}
+        \]
+        这里有$FV(C') \subseteq FV(\exists_{B_i} F_{i+1})$, 那么这里最后只需要确定$C' \wedge F_{i+1}$是否是unsat的，直接调用$\textsc{Q-Test}(i+1, C')$即可. 如果其返回值$b'' = false$, 直接返回经过前面的分析是满足性质1的. 这里也还做一下generalization， 也是希望最终得到的那个强的formula能更弱一点, 尽量贴近$F_i$. 
+        
+        如果其返回值$b'' = true$, 那么我们不能确定$C' \Rightarrow F_i$. 但是我们得到了一个$C''$使得$C'' \Rightarrow F_{i+1}$ and $C' \wedge C''$ is satisfiable. 就是这个$C''$ 使得$C' \wedge \exists_{B_i} F_{i+1}$ is sat, 如果我们未来想得到一个新的$C'$满足$C' \Rightarrow F_i$, 就要尽量把$C''$排除出去. 因此把$\neg \pi(\exists_{B_i} C'')$加到$M_i$中. 这里我们需要确认一下$F_i \Rightarrow M_i$是否依然保持. 由于$C'' \Rightarrow F_{i+1}$, 所以有$\exists_{B_i} C'' \Rightarrow \exists_{B_i} F_{i+1}$, 它的逆否命题为$\forall_{B_i} \neg F_{i+1} \to \neg \exists_{B_i} C''$, 其左边是等价于$F_i$, 右边等价于$\neg \pi(\exists_{B_i} C'')$.
+    \end{itemize}
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/qe-sat.png}
+    \caption{Q-Test}
+    \label{fig:qe-sat}
+\end{figure}
+\end{annotation}
+
+\newpage
 \subsection{Misc}
 
 \begin{definition}
@@ -453,6 +519,58 @@ where $\xrightarrow{}^*$ is multi-transition.
 
 \newpage
 \section{Symbolic Execution}
+
+\subsection{Predicate transformer}
+
+\begin{definition}
+\rm A \redt{predicate transformer} $p$ is a function
+\[
+    p: \text{FOL} \times \text{stmts} \to \text{FOL}
+\]
+where FOL are first-order logic formulas and stmts are program statements.
+\end{definition}
+
+\begin{definition}
+\rm Given a FOL $Q$ and program statement $c$, the \redt{weakest precondition} is a FOL $\text{wp}(Q, c)$ satisfies the following conditions
+\begin{itemize}
+    \item $\{\text{wp}(Q, c)\}c\{Q\}$.
+    \item for any FOL $P$ such that $\{P\}c\{Q\}$, $P \Rightarrow \text{wp}(Q, c)$.
+\end{itemize}  
+\end{definition}
+
+\begin{example}
+\rm For assumption 
+\[
+    \text{wp}(Q, \text{assume}~e\} = e \to Q,
+\]
+想想deduction theorem或者modus ponens, 没有比这个更弱的.  
+\end{example}
+
+\begin{definition}
+\rm Given a FOL $Q$ and program statement $c$, the \redt{strongest postcondition} is a FOL $\text{sp}(P, c)$ satisfies the following conditions
+\begin{itemize}
+    \item $\{P\}c\{\text{sp}(Q, c)\}$.
+    \item for any FOL $Q$ such that $\{P\}c\{Q\}$, $\{\text{sp}(Q, c)\} \Rightarrow Q$.
+\end{itemize}
+\end{definition}
+
+\begin{example}
+\rm For assignment, there is standard nation. One possible is  
+\[
+    \text{sp}(P[e/x], x \coloneqq e) = P.
+\]
+Another one is 
+\[
+    \text{sp}(P, x \coloneqq e) \equiv \exists v'. v = e[v'/v] \wedge P[v'/v].
+\]
+For example, 
+\[
+    \text{sp}(x \geq i, x \coloneqq x+k) \equiv (\exists x'. x = x' + k \wedge x' \geq i) \equiv (x-k \geq i). 
+\]
+第二种方式显的更加的自然, 对做符号执行是比较友好的.  
+\end{example}
+
+
 
 \subsection{Some Reasoning}
 
@@ -830,6 +948,124 @@ Then $p(\bot)$ is an interpolant for $(A, B)$ where $\bot$ is the root of $\varP
 \rm Example \ref{ex:refine_path1}中实际在划分某一结点的所有程序状态, 将不可达的程序状态都从CFG上剥离出去了.
 \end{example}
 
+\section{Model Checking}
+
+\subsection{Bounded Model Checking}
+
+\subsection{Interpolation and SAT-Based Model Checking}
+
+\begin{annotation}
+\rm 遵循unrolling的策略，给定一个初始状态$I_0$, check它所有$k$可达的状态. 这里我们可以利用interpolation的想法给出一个关于one-step可达状态的over-approximation, 让我们在不需要增加$k$的情况下尽可能地往前分析. 这个想法的根本是如果在某个比较大的状态集中我们的checking通过了，显然那个被盖住的真正的状态集也是safe的. 同时配合bounded model checking, 增大bounder $k$, 我们也可以消除over-approximation带来的failure checking.
+\end{annotation}
+
+\begin{procedure}[H]
+\SetAlgoLined
+\DontPrintSemicolon
+\If{$I \wedge F$ \textup{is satisfiable}}{return \textit{true}}
+$R \leftarrow I$ \;
+\While{\textit{true}}{
+    $M' \leftarrow (R, T, F)$ \;
+    $A \leftarrow \textsc{CNF}(\textsc{Pref}_1(M'), U_1)$ \;
+    $B \leftarrow \textsc{CNF}(\textsc{Suff}_0^k(M'), U_2)$ \;
+    \eIf{$A \wedge B$ \textup{is satisfiable}}
+    {
+        \eIf{$R = I$}{return \textit{true}}{abort}
+    }
+    {
+        Let $\Pi$ be a proof of unsatisfiability of $A \wedge B$\;
+        $P \leftarrow \textsc{Itp}(\Pi, A, B)$ \;
+        $R' = P\left<W/W_0\right>$\;
+        \If{$\redt{R' \Rightarrow R}$}{return \textit{false}}
+        $R \leftarrow R \wedge R'$
+    }
+}
+\caption{FiniteRun({$M = (I,T,F), k > 0$})}
+\end{procedure}
+
+\begin{annotation}
+\rm 上面的算法完整的描述利用interpolation在$k$-bound下做的checking，目的是找到满足某种property的状态. 其中$M=(I,T,F)$为一个target automata, $I$和$F$分布为initial state predicate和final state predicate, $T$是描述状态转移的一个predicate. SAT-based BMC的目标为
+\[
+    I(W_0) \wedge \left(\bigwedge_{0 \leq i < k} T(W_i, W_{i+1})\right) \wedge \left(\bigvee_{j \leq i \leq k}F(W_i)\right)
+\]
+是否satisfiable? 简而言之, 能否从初始状态$k$步可达的状态中找到一个满足$F$的状态. 在while之前先判断了是否存在$0$步的情况. 其中$R$表示当前所有可达的状态，初始化为$I$. 在while内，会首先创建一个new automata, 将$R$作为新的状态，去做新一轮的k-bounded checking. 这里将上面的目标分为了两个部分，前置路径和后置路径. 其中$A$表示1步前置路径
+\[
+    R(W_{-1}) \wedge T(W_{-1}, W_{0}),
+\]
+$B$表示$k$步后置路径
+\[
+    \left(\bigwedge_{0 \leq i \leq k} T(W_i, W_{i+1})\right) \wedge \left(\bigvee_{j \leq i \leq k}F(W_i)\right)
+\]
+注意这里变成了$k+1$步. 如果在第一次循环下就有$A \wedge B$ is sat, 那么这个时候checking就结束了, 因为这里的$R$此时并不是over-approximation. 反之则直接abort了, 需要重新调整$k$才行, 因为我们不能保证这里是误报还是真的counterexample. 如果$A \wedge B$ is unsat, 那么这个时候我们就可以induce出来一个interpolant $P$满足$A \to P$ and $P \wedge B$ is unsat. 接着我们需要将$P$中的prime variables变回一般的state space得到$R'$. 此时从$R'$出发的$k$步状态都是不满足$F$的, 并且从$R$出发的$k+1$步状态都是不满足$F$的. 此时的$R'$可以理解为关于$R$出发1步可达状态的一个over-approximation. 因此下一轮$R$应该为$R \vee R'$, 这个新的$R$保持了从$R$出发的$k$步状态都是不满足$F$，因此需要往后考虑一下$k+1$步. 所以这个$k$实际是限制$R'$的步长的. 最重要地是理解算法中的红色部分，如果有$R' \Rightarrow R$, 那么$R$就是一个inductive invariant. 这是因为$I \Rightarrow R$是trivial的，再根据$R \wedge T \to R'$ ($R'$ is interpolant)，显然有$R \wedge T \to R$. 当$R$是一个inductive invariant的时候，再配合$R \wedge F$ is unsat, 可以知道所有reachable states都是不满足$F$, 我们的checking也结束了.
+
+上面实际更像更像$k+1$ BMC. 我们来考虑一下细节，先考虑直接划分$k$ BMC得到A, B
+\[
+   \underbrace{I(W_0) \wedge T(W_0, W_1)}_{A} \wedge \underbrace{\left(\bigwedge_{0<i<k} T(W_i, W_{i+1}) \right) \wedge \left(\bigvee_{j \leq i \leq k}F(W_i)\right)}_B
+\]
+假设$C$是关于$A \wedge B$一个interpolant. 到底应该如何理解$C$是个什么呢？ 问题的关键是$A$和$B$实际呈现是什么东西. $A$应该是characterize从初始状态一步可达状态，这样$A \to C$就意味着从初始状态一步可达状态都满足$C$. 而$B$应该是characteriz从$k-1$可达最终状态($\neg P$)的状态, 这样$C \wedge B$ is unsat就意味着满足$C$的状态都至少不能在$k-1$步到底最终状态. 
+\end{annotation}
+
+\subsection{IC3}
+
+\begin{annotation}
+\rm IC3的核心就是strengthening property直到inductive或者遇到反例无法用unreachability剔除. 这种想法把常规的abstraction和refinement过程糅杂地不那么明显了. 比较难理解是clauses传递过程, 正确的视角是把一个clause当做一个predicate，整个IC3依然是在predicate abstraction的范畴下. “向前传递”实际上对应了post operation, 而新增clause实际是在refine原本的abstract model消除反例. 
+
+对于一个给定的transition system $S:(\overline{x}, I, T)$和一个safety property $P$. 整个过程将构造一串formulas $F_0 = I,F_1,F_2,\cdots,F_k$表示对应$0, 1, \cdots, k$可达状态的over-approximation，它们满足下述性质:
+\begin{enumerate}
+    \item $I \Rightarrow F_0$;
+    \item $F_i \Rightarrow F_{i+1}$ for $0 \leq i < k$;
+    \item $F_i \Rightarrow P$ for $0 \leq i \leq k$;
+    \item $F_i \wedge T \Rightarrow F'_{i+1}$ \footnote{这里是$F'_{i+1}$而不是$F_{i+1}$, 如果写成后者, 这里就会与(2)出现歧义. $F'_{i+1}$表示将$F_{i+1}$中的variables $\{x_i\} $都换成带prime的variables $\{x_i'\}$} for $0 \leq i < k$ .
+\end{enumerate}
+一旦出现$\textup{clauses}(F_i) = \textup{clauses}(F_{i+1})$，那么$F_i$就是我们要找的那个strengthening clauses such that $F_i \wedge P \wedge T \Rightarrow F_i \wedge P$.
+
+接下来看看这串$F_i$是如何构造的. 
+\begin{itemize}
+    \item Base case: check the satisfiability of $I \wedge \neg P$ ($I \Rightarrow P$ is true e.q. to $I \wedge \neg P$ is unsat) and $I \wedge T \wedge \neg P'$. 这是对$0$-step和$1$-step的一个check.
+    \item Inductive case: 当$k > 0$时，假设$F_0,F_1,\cdots,F_k$满足上述4个性质. 现在来尝试构造$F_{k+1}$. 首先check $F_k \wedge T \Rightarrow P'$是否存在.
+    \begin{itemize}
+        \item 如果$F_k \wedge T \Rightarrow P'$. 此时让$F_{k+1} = P$, 显然当前sequence依然保持上述4个性质. 另外还要做一个操作，将$F_0, F_1, \cdots, F_k$中的clauses ``向前移动": 对于任意$c \in F_i$ ($0 \leq i \leq k$), 如果$F_i \wedge T \Rightarrow c'$并且$c \notin \textup{clauses}(F_{k+1})$, 那么让$F_{k+1} \leftarrow F_{k+1} \wedge c$. 如果这个操作过程中发现存在$\textup{clauses}(F_i) = \textup{clauses}(F_{i+1})$，那么找到了strengthening clauses $F_i$.
+        \item 如果$F_k \wedge T \nRightarrow P'$. 那么这里一定存在一个state $s \models F_k$使得它的下一个状态并不满足$P$. 这里下一步的做法就是尝试把$s$剔除，就是要证明$s$是unreachable. 也就是证明$\neg s$是inductive invariant. 首先确定$0\leq i \leq k$中最大的$i$使得$\neg s$ is inductive relative to $F_i$，即$i \Rightarrow \neg s$ and $F_i \wedge \neg s \Rightarrow \neg s$. 如果这样的$i$不存在，即$\neg s$ is not even inductive relative to $F_0$, 那么显然$s$就无法排除了, 这就意味着$P$ is not inductive invariant. 如果这样的$i$存在，再对$s$做一次inductive generalization, 找到mininal subclause $c \subseteq \neg s$ that is inductive relative to $F_i$. 接着将$c$作为一个conjunct依次放到$F_0, \cdots, F_{i+1}$上. 首先把$c$放到$F_0, \cdots,F_i$上并不会违反上述四个性质, 这一点很容易check. 其次最后是$F_{i+1}$，这是因为$F_{i} \wedge \neg s \wedge T \Rightarrow \neg s'$, 配合性质(4), 可以得到$F_{i} \wedge \neg s \wedge T \Rightarrow F_{i+1}' \wedge \neg s'$. 
+        
+        如果$i \geq k - 1$, 显然$s$已经被排除在$F_k$. 比较难处理的是$i < k-1$的情况, 此时并没有把$s$从$F_k$中去掉. 这里需要先思考一下为什么$\neg s$会是在$F_i$上inductive而不是$F_{i+1}$? 这里可以形式化一下这个问题:
+        \[
+            \begin{aligned}
+            F_{i+1} \wedge \neg s \wedge T \nRightarrow \neg s \\
+            F_{i} \wedge \neg s \wedge T \Rightarrow \neg s \\
+            \end{aligned}
+        \]
+        那么这里必然存在一个状态$t$满足
+        \[
+            t \models F_{i+1} ~\textup{and}~ t \not\models F_{i}~\textup{and}~(t,s) \in T.
+        \]
+        也就是说存在一个$F_{i+1}$中的状态$t$，它下一个状态满足$s$. 如果能将这样的$t$从$F_{i+1}$都剔除去，那么也会有$\neg s$ is inductive relative to $F_{i+1}$. 现在的目标就是让$\neg t$ is inductive relative to $F_{i}$ (注意这里不是$i+1$), 和前面对$s$的处理是高度重合的. 但这里有一个好的性质是当$i > 0$时， $\neg t$至少在$F_{i-1}$是inductive的. 这是因为根据前面的条件，这里有$F_{i} \Rightarrow \neg t$, 所以这里的难度小于对$s$的处理. 接着我们继续考虑使用这样的方法处理$i+2, i+3,\cdots, k$, 最终$\neg s$会在$F_{k-1}$上inductive，这样就把$s$从$F_k$中剔除了. 我们又回到了考虑$F_k \wedge T \Rightarrow P'$的情况. 
+        
+        现在我们的条件应该是这样的
+        \[
+            \left\{
+            \begin{aligned}
+                &s \models F_k \\
+                &(s,u) \in T \\
+                &u \not\models P
+            \end{aligned} \right.
+        \]
+        确定一个小claim: \redt{当$k > 2$时，$\neg s$ is inductive relative to $F_{k-2}$}. 假设$\neg s$ is not inductive relative to $F_{k-2}$, 则
+        \[
+            F_{k-2} \wedge \neg s \wedge T \Rightarrow s.
+        \]
+        再配合一下性质(4), 显然我们得到
+        \[
+            F_{k-2} \wedge \neg s \wedge T \Rightarrow s \wedge F_{k-1}
+        \]
+        这就意味着$s$也在$F_{k-1}$中，这和$F_{k-1} \wedge T \Rightarrow P$是矛盾的. 上面这个claim意味着我们找那个最大值$i$似乎也不太麻烦, 甚至有点一击必中的感觉. 
+    \end{itemize}
+\end{itemize}
+\end{annotation}
+
+
+\begin{annotation}
+\rm 我觉得比较好的理解IC3的顺序应该是先看看understanding IC3, 理解里面介绍的incremental construction是什么，再看看IC3之前的作者另一个工作FSIS里面的inductive generalization思想. 最后再来主攻IC3.
+\end{annotation}
+
 \newpage
 \section{Homotopy Type Theory}
 
@@ -970,6 +1206,14 @@ and defining equation
 \]
 \end{annotation}
 
+\begin{definition}
+\rm A judgmental equality or definitional equality is the notion of equality which is defined to be a judgement, we write it as $a \equiv b : A$ or simply $a \equiv b$.
+\end{definition}
+
+\begin{definition}
+\rm A proposition equality is a proposition, so it is also a type such that $a =_A b$, and to prove the proposition is to find term of type $a =_A b$.
+\end{definition}
+
 \begin{example}
 \rm 现在我们来证明product type只能是一个pair, 我们尝试构造这样一个dependent function $\text{uniq}_{A \times B}:\Pi_{x:A \times B}((\pi_1(x),\pi_2(x)) =_{A \times B} x)$, 通过defining equation
 \[
@@ -983,12 +1227,12 @@ and defining equation
 \[
 	(\pi_1(((a,b)),\pi_2((a,b))) \equiv (a,b)
 \]
-因此$\text{refl}_{(a,b)}: (\pi_1(((a,b)),\pi_2((a,b))) = (a,b)$还是well-typed. 所以关于$\text{uniq}_{A \times B}$整个构造是对的，如何进一步说话$x$确实是一个pair呢？ 还是有点小问题.
+因此$\text{refl}_{(a,b)}: (\pi_1(((a,b)),\pi_2((a,b))) = (a,b)$还是well-typed. 所以关于$\text{uniq}_{A \times B}$整个构造是对的，如何进一步说明$x$确实是一个pair呢？ 难度从$f$是well-defined? 推出其所有结果都是well-typed, 然后$x$ is equal to a pair.
 \end{example}
 
 
 \begin{annotation}
-induction的由来
+\rm 如果你把前面的dependent function $f$当做一个predicate来描述所有类型为product type的元素的某种property，同时把(ordered) pair当做product type的canonical element. 那么就意味$f$只需要作用到这些canonical elements上就够了, 这样就可以导出induction.
 \end{annotation}
 
 \begin{definition}
@@ -1003,11 +1247,72 @@ and the defining equation:
 \end{definition}
 
 \begin{annotation}
-\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. induction也可以被称之为(dependent) eliminator, 而recursion可以被称之为non-dependent eliminator.
+\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. induction也可以被称之为(dependent) eliminator, 而recursion可以被称之为non-dependent eliminator, 因为都它们都在描述我们应该怎么去用某个元素. 
 \end{annotation}
 
+\begin{example}
+\rm 关于unit type $\mathbf{1}$的induction为
+\[
+    \text{ind}_\mathbf{1}: \Pi_{C:\mathbf{1} \to \mathcal{U}} C(\star) \to \Pi_{x:\mathbf{1}} C(x)
+\]
+with the defining equation
+\[
+    \text{ind}_\mathbf{1}(C,c,\star) \defeqv c.
+\]
+通过$\text{ind}_\mathbf{1}$我们也可以知道unit type只有对应的一个元素，这就是unit type的uniqueness principle. 因为我们构造一个dependent function
+\[
+    \text{uniq}_1:\Pi_{x:\mathbf{1}} x=\star
+\]
+with defining equation
+\[
+    \text{uniq}_\mathbf{1} \defeqv \text{ind}_\mathbf{1}(\lam{x}{x = \star}, \text{refl}_\star)
+\]
+\end{example}
 
+\begin{definition}
+\rm Given a type $A:\mathcal{U}$ and a family $B: A \to \mathcal{U}$, the dependent pair type is written as $\sum_{(x:A)} B(x)$.
+\end{definition}
 
+\begin{example}
+\rm 当$B$是一个constant的时候, 此时$\Sigma_{(x:A)} B$就是product type.
+\end{example}
+
+\begin{definition}
+\rm Given a function $g:\Pi_{x:A} B(x) \to C$, we can define a function out of a $\Sigma$-type $f:(\Sigma_{x:A}B(x)) \to C$ via the defing equation
+\[
+    f((a,b)) = g(a)(b)
+\]
+\end{definition}
+
+\begin{example}
+\rm 关于$\Sigma$-type两个non-dependent projection function定义如下: the first projection function
+\[
+    \pi_1:(\Sigma_{x:A}B(x)) \to A
+\]
+with the defining equation
+\[
+    \pi_1((a,b)) \defeqv a.
+\]
+The second projection function
+\[
+    \pi_2:\Pi_{p:(\Sigma_{x:A}B(x))} B(\pi_1(p)) 
+\]
+这里我们还无法构造$\pi_2$，因为我们还没有定义在$\Sigma$-type上的dependent function如何构造. 
+\end{example}
+
+\begin{definition}
+\rm Given a function $g:\Pi_{a:A}\Pi_{b:B(a)} C((a,b))$, we can define a dependent function $f: \Pi_{p:\Sigma_{x:A} B(x)} C(p)$ with defining equation
+\[
+    f((a,b)) \defeqv g(a)(b)
+\]
+\end{definition}
+
+\begin{definition}
+\rm The induction for $\Sigma$-type $\Sigma_{x:A}B(x)$ is 
+\[ 
+    \text{ind}_{\Sigma_{x:A}B(x)}: \Pi_{C:(\Sigma_{x:A}B(x) \to \mathcal{U})}(\Pi_{a:A}\Pi_{b:B(a)} C((a,b))) \to \Pi_{p:(\Sigma_{x:A}B(x))} C(p) 
+\]
+\end{definition}
 
 \newpage
 \begin{thebibliography}{9}
