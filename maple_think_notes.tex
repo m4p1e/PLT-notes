@@ -191,15 +191,13 @@ David Monniaux提出的优化方法远不止于此，其核心在于对nested qu
     \]
     \item 这里$\textsc{SMT-Test}(C, F)$用于判断$C \wedge F$是否是satisfiable，它的返回值为$(b, C')$, 其中$b$是一个boolean value表示是否satisfiable. 当$b = true$时，有$\text{atoms}(C') \subseteq \text{atoms}(F)$, 且满足$C' \Rightarrow F$ and $C \wedge C'$ is satisfiable. 这一点很容易办到，参考上面由solution生成对应conjunction的过程; 当$b=false$时，$C = false$.
     \item 其中$M_0,M_1,\cdots,M_{n-1}$初始化为$true$, 满足对任意的$i < n$有$F_i \Rightarrow M_i$. 注意在$\textsc{Q-Test}$的每一步都会保持这个条件.
-    \item 最关键的$\textsc{Q-Test}(i, C)$, 设它的返回值为$(b, C')$, 其中$b$表示$F_i \wedge C$表示是否satisfiable. \redt{(性质1)如果$b = true$, 有$\text{FV}(C) = \text{FV}(F_i)$, 且满足$C' \Rightarrow F_i$ and $C \wedge C'$ is sat}. 那这个算法和quantifier elimination有什么关系呢? 考虑$\textsc{Q-Test}(0, true)$, 当它第一个返回值为$true$的时候，就有$C' \Rightarrow F_0$, 并且$C'$是quantifier-free的. 这个时候我们就得到了一个比如强的formula $C'$, 拿它可以进一步去测试$\forall F_0$或者$\exists F_0$就有意义了.  
-    
-    最大的缺点是给不出准确原完整的quantifier-free form. 也就是我们无法保证$F_0 \Rightarrow C'$.
+    \item 最关键的$\textsc{Q-Test}(i, C)$, 设它的返回值为$(b, C')$, 其中$b$表示$F_i \wedge C$表示是否satisfiable. \redt{(性质1)如果$b = true$, 有$\text{FV}(C) = \text{FV}(F_i)$, 且满足$C' \Rightarrow F_i$ and $C \wedge C'$ is sat}. 那这个算法和quantifier elimination有什么关系呢? 考虑$\textsc{Q-Test}(0, true)$, 当它第一个返回值为$true$的时候，就有$C' \Rightarrow F_0$, 并且$C'$是quantifier-free的. 这个时候我们就得到了一个比如强的formula $C'$, 拿它可以进一步去测试$\forall F_0$或者$\exists F_0$就有意义了. 最大的缺点是给不出准确原完整的quantifier-free form. 也就是我们无法保证$F_0 \Rightarrow C'$.
     
     %恰好地是算法本身返回时, 也会保持一个额外的\redt{(性质2), 当$i < n$时有$F_i \wedge C \Rightarrow C'$}. 当包含量词的时候总有$n \geq 1$. 这就意味当$i = 0$时，有$F_0 \Rightarrow C'$. 所以整个算法的correctness是Ok的.  
     
     前面我们把算法基本核心描述了一下, 我们下面一步一步来看:
     \begin{itemize}
-        \item 当$i = n$, 如果$F_n \wedge C$ is unsat, 那么$F_n \wedge C \Rightarrow false$且$false \Rightarrow F_n$, 即返回值$(false, false)$. 如果$F_n \wedge C$ is sat, $C' \Rightarrow F_n$是显然的，还对$C'$做了一次泛化(generalization)找到弱一点$C''$依然符合条件. 我们希望最终得到的那个强的formula能更弱一点，尽量贴近$F_n$. 
+        \item 当$i = n$, 如果$F_n \wedge C$ is unsat, 那么$F_n \wedge C \Rightarrow false$且$false \Rightarrow F_n$, 即返回值$(false, false)$. 如果$F_n \wedge C$ is sat, $C' \Rightarrow F_n$是显然的，还对$C'$做了一次泛化(generalization)找到弱一点$C''$依然符合条件. 因为我们希望最终得到的那个强的formula能更弱一点，尽量贴近$F_n$. 
         \item 当$i < n$时，看下面这个while循环. 当$b' = false$时，由$C \wedge M_i$ is unsat可以马上得到$C \wedge F_i$ is unsat, 因为$F_i \Rightarrow M_i$ (在后面唯一修改$M_i$的地方，我们会证明这个关系在$M_i$被修改之后依然保持). 因此$\textsc{Q-Test}(i, C)$返回$(false, false)$, 性质1是显然保持的.
         
         当$b' = true$时，此时由$C \wedge M_i$ is sat还不能确定$C \wedge F_i$ is sat. 同时是否有$C' \Rightarrow  F_i$也不能确定，想确定它可以按照下面思路
@@ -1076,7 +1074,7 @@ $B$表示$k$步后置路径
 \end{definition}
 
 \begin{annotation}
-\rm 为了避免Russell's paradox在集合论中尴尬，可以用一种分级定义的universe:
+\rm 为了避免Russell's paradox在集合论中尴尬，可以定义一组分层的universe:
 \[
 	\mathcal{U}_0 : \mathcal{U}_0 :\mathcal{U}_2 : \cdots
 \]
@@ -1088,16 +1086,16 @@ $B$表示$k$步后置路径
 \end{definition}
 
 \begin{annotation}
-\rm 理解family的关键是: 当$B$一个function, 它接受一个类型为$A$的元素，输出是一个新的type $T$, 它的类型为$\mathcal{U}$. 这里最重要的说$B$   
+\rm family是一个比较重要的component, 它用于描述a collection of types varying over a given type $A$.
 \end{annotation}
 
 \begin{example}\label{ex:family_fin}
-\rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 定义$\text{Fin}(n)$是一个type, 符合这种type的元素是一个包含$n$个元素的集合，那么$\text{Fin}$就是关于描述the types of finite sets的的family.
+\rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 其结果表示恰好只存在$n$个元素它们的类型为$\text{Fin}(n)$, 也就是说"满足" $\text{Fin}(n)$的元素只有$n$个, 即$0_{n}: \text{Fin}(n), 1_{n}: \text{Fin}(n), \cdots, (n-1)_n : \text{Fin}(n)$.
 \end{example}
 
 
 \begin{example}
-\rm 一个constant type family就是type $B(x)$并不依赖某个element with type $A$, 此时可以直接写作$B:\mathcal{U}$, 因为$\mathcal{U}$也是可以盖住function types的. 
+\rm 一个constant type family 为 $B:\mathcal{U}$. 
 \end{example}
 
 \subsection{Dependent Function Types(\texorpdfstring{$\Pi$}{pi}-types)}
@@ -1108,18 +1106,17 @@ $B$表示$k$步后置路径
 \end{definition}
 
 \begin{annotation}
-\rm dependent funtion和type family的区别是什么？ 区别就是前者描述函数输出的是一个满足某个type $B(x)$的元素，后者描述的是输出的是一个满足$\mathcal{U}$的类型.所以这也是这里为什么叫dependent function type的原因，它确实是一个描述函数的类型.
+\rm dependent funtion和type family的区别是什么？ 前者的函数输出 (function result) 为一个term，后者的输出是一个type.
 \end{annotation}
 
 
 %https://math.stackexchange.com/questions/2007230/whats-the-difference-between-a-dependent-function-type-pi-types-and-a
 \begin{example}
-\rm 取\ref{ex:family_fin}中的family $\text{Fin}:\mathcal{N} \to \mathcal{U}$, 我们可以构造一个dependent function $\text{fmax}:\Pi_{n : N} \text{Fin}(n+1)$， $\text{fmax}$
-返回值为非空集合中最大值. 如果我们用$\{0_{n}, 1_{n}, \cdots, (n-1)_n\}$来表示elements of $\text{Fin}(n)$, 那么$\text{fmax}(n) \defeqv n_{(n+1)}$\footnote{$\defeqv$表示function definition} 
+\rm 取\ref{ex:family_fin}中的family $\text{Fin}:\mathbb{N} \to \mathcal{U}$, 我们可以构造一个dependent function $\text{Fmax}:\Pi_{n : \mathbb{N}} \text{Fin}(n+1)$， 其结果表示非空集合$\text{Fin}(n+1)$中"最大值" (或者说最后一个元素) , 即$\text{Fmax}(n) \defeqv n_{(n+1)}$\footnote{$\defeqv$表示function definition} 
 \end{example}
 
 \begin{example}
-\rm 当family $B$是constant的时候，有$\Pi_{(x:A)} B(x) \equiv (A \to B)$\footnote{$\equiv$表示definitional equality}, 即original function type. 这说明dependent function type是可以完美盖住之前的function type的.
+\rm 当family $B$是一个constant family时，有$\Pi_{(x:A)} B(x) \equiv A \to B$\footnote{$\equiv$表示definitional equality}, 即non-dependent function type. 这也说明dependent function type是一种general form.
 \end{example}
 
 \begin{example}
@@ -1127,43 +1124,57 @@ $B$表示$k$步后置路径
 \end{example}
 
 \begin{example}
-\rm 如果一个dependent functuon同样可以接受多个参数， 例如polymorphic swap function $\text{swap}: \Pi_{A:\mathcal{U}}\Pi_{B:\mathcal{U}}\Pi_{C:\mathcal{U}}(A \to B \to C) \to (B \to A \to C)$, 它对应的function definition为
+\rm 如果一个dependent functuon同样可以接受多个参数，例如polymorphic swap function $\text{swap}: \Pi_{A:\mathcal{U}}\Pi_{B:\mathcal{U}}\Pi_{C:\mathcal{U}}(A \to B \to C) \to (B \to A \to C)$, 它对应的function definition为
 \[
 	\text{swap}(A,B,C,g) \defeqv \lam{b}{\lam{a}{g(a)(b)}}.
 \]
+swap可以用来交换function里面两个arguments.
 \end{example}
 
 \subsection{Dependent Pair Types}
 
 \begin{annotation}
-\rm 这里有一个uniqueness principle，我暂时不知道把它放在哪里，索性先放在这里. 我将它理解为:要确定某个东西$A$, 我们只需要看$A$是如何被使用的. 例如给定一个函数$f$, 它可以等价于$\lam{x}{f(x)}$, 这里其实就是用了一次$\eta$-conversion. 这里就相当于是$f$被它对应的函数值唯一确定了. 这也是所谓的extensionally (外延). %TODO
+\rm 这里有一个uniqueness principle，可以简单地理解为先用一次introduction rule构造$a : A$, 再用一次elimination rule给$a : A$"拆开", 然后再用一次introduction rule我们又可以得到$a : A$. 例如给定$x : A \times B$, 那么它的uniqueness principle 就是$(\pi_1(x), \pi_2(x)) \equiv x$ . 注意这是一个命题, 它表示所有$x : A \times B$, 其$x$都是一个ordered pair, 所以了这个definitional equality是需要证明的，因此也可以叫做propositional uniqueness principle. 
 \end{annotation}
 
 \begin{annotation}
-\rm 另外一个需要说明的是这里我们并没有规定product type的inhabitant就一定是一个pair, 也就是说这个东西并没有作为规则写到type theory中. 相反我们可以引入一个elimination rule: 对于任意的function $g: A \to B \to C$, 我们都可以定义一个function $f: A \times B \to C$使得
+\rm 另外一个需要说明的是这里我们并没有规定product type就必须是一个pair, 也就是说这个东西并没有作为规则写到type theory中. 当然你要是说introductionl里面似乎已经规定了, 好像也说的过去, 但是hott里面认为这是需要证明的. 这就是非常细微的差别.
+\end{annotation}
+
+\begin{definition}
+\rm 对于任意的function $g: A \to B \to C$, 我们都可以定义一个function $f: A \times B \to C$使得
 \[
 	f((a,b)) \defeqv g(a)(b)
 \]
-这个rule是什么意思呢？ $f$ is well-defined when we specify its values on pairs. 我的理解这个$f$只是一个partial function, 只给出了关于pairs情况下的定义. %TODO
-\end{annotation}
+$f$ is well-defined when we specify its values on pairs.
+\end{definition}
 
-\begin{example}
-\rm 按照上面的思路可以推出两个关于product type有两个projection functions, 它们对应的types为:
+\begin{definition}
+\rm Two projection functions:
 \[
 	\begin{aligned}
 	\pi_1: A \times B \to A \\
 	\pi_2: A \times B \to B
 	\end{aligned}
 \]
-根据前面的提到的uniqueness principle, 我们通过确定$\pi_1$和$\pi_2$的对应函数值来唯一确定它们, 即
+其中
 \[
 	\begin{aligned}
 	\pi_1((a,b)) \defeqv a \\
 	\pi_2((a,b)) \defeqv b 
 	\end{aligned}
 \]
-这里有一个小问题你在这里定义两个函数时候，你都得用一下uniqueness principle. 我们试着想想这两个函数是如此的相似，我们能不能只用一次uniqueness principle就给出两个的定义呢？ 这里可以很自然地提出recursor.
-\end{example}
+\end{definition}
+
+\begin{annotation}
+上面两个projections中的$g_1 : A \to B \to A$和$g_2: A \to B \to B$分别为
+\[
+    \begin{aligned}
+    g_1 \defeqv \lam{x}{\lam{y}{x}} \\
+    g_1 \defeqv \lam{x}{\lam{y}{y}}
+    \end{aligned}
+\]
+\end{annotation}
 
 \begin{definition}
 \rm Given a product type $A \times B$. Define function $\text{rec}_{A \times B}$ as the recursor for $A \times B$ with type
@@ -1189,15 +1200,9 @@ and defining equation
 	\text{rec}_\mathbf{1}(C, c, \star) \defeqv c 
 \]
 这是因为你从$\mathbf{1}$中不能获取任何信息.
+
+可以看到recursion实际是一个更为general elimination rule (The recursion pinciple for catesian products is the fact that we can define a function $f:A \times B \to C$ as above by giving its value on pairs).
 \end{example}
-
-\begin{definition}
-\rm The recursion pinciple for catesian products is the fact that we can define a function $f:A \times B \to C$ as above by giving its value on pairs.
-\end{definition}
-
-\begin{annotation}
-\rm 关于recursor的理解，在这里还是比较模糊.
-\end{annotation}
 
 \begin{annotation}
 \rm 关于product types的dependent functions $f: \Pi_{x:A\times B}C(x)$, 其中$C: (A \times B) \to \mathcal{U}$. 我们也使用一个elimination rule: 给定任意的function $g:\Pi_{x:A}\Pi_{y:B}C((x,y))$, 我们可以定义dependent function $f: \Pi_{x:A\times B}C(x)$.
@@ -1247,7 +1252,7 @@ and the defining equation:
 \end{definition}
 
 \begin{annotation}
-\rm 显然$\text{rec}_{A \times B}$只是$\text{ind}_{A \times B}$的一种特殊情况，即当$C$是一个constant的时候. induction也可以被称之为(dependent) eliminator, 而recursion可以被称之为non-dependent eliminator, 因为都它们都在描述我们应该怎么去用某个元素. 
+\rm 这个就是更加general的elimination rule了，如果前面的recursion rule叫做non-dependent eliminator, 那么这个induction就可以叫做dependent eliminator.
 \end{annotation}
 
 \begin{example}
@@ -1297,7 +1302,7 @@ The second projection function
 \[
     \pi_2:\Pi_{p:(\Sigma_{x:A}B(x))} B(\pi_1(p)) 
 \]
-这里我们还无法构造$\pi_2$，因为我们还没有定义在$\Sigma$-type上的dependent function如何构造. 
+这里我们还无法构造$\pi_2$，因为我们还不知道$\Sigma$-type的dependent function如果构造.
 \end{example}
 
 \begin{definition}
