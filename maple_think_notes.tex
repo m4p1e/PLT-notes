@@ -114,6 +114,17 @@
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}\PackageWarning{TODO:}{#1!}}
 
 \newcommand{\defeqv}{\vcentcolon\equiv}
+\newcommand{\refl}{\textbf{refl}}
+\newcommand{\id}{\textbf{id}}
+\newcommand{\ind}{\textbf{ind}}
+\newcommand{\ap}{\textbf{ap}}
+\newcommand{\apd}{\textbf{apd}}
+\newcommand{\transport}{\textbf{transport}}
+\newcommand{\transportconst}{\textbf{transportconst}}
+\newcommand{\lift}{\textbf{lift}}
+\newcommand{\pr}{\textbf{pr}}
+\newcommand{\qinv}{\textbf{qinv}}
+
 
 %variable name
 \ExplSyntaxOn 
@@ -1065,7 +1076,7 @@ $B$表示$k$步后置路径
 \end{annotation}
 
 \newpage
-\section{Homotopy Type Theory}
+\section{Martain L\"{o}f Type Theory}
 
 \subsection{Universe and Families}
 
@@ -1090,7 +1101,14 @@ $B$表示$k$步后置路径
 \end{annotation}
 
 \begin{example}\label{ex:family_fin}
-\rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 其结果表示恰好只存在$n$个元素它们的类型为$\text{Fin}(n)$, 也就是说"满足" $\text{Fin}(n)$的元素只有$n$个, 即$0_{n}: \text{Fin}(n), 1_{n}: \text{Fin}(n), \cdots, (n-1)_n : \text{Fin}(n)$.
+\rm 设$\text{Fin}:\mathbb{N} \to \mathcal{U}$, 其结果表示恰好只存在$n$个元素它们的类型为$\text{Fin}(n)$, 也就是说"满足" $\text{Fin}(n)$的元素只有$n$个, 即$0_{n}: \text{Fin}(n), 1_{n}: \text{Fin}(n), \cdots, (n-1)_n : \text{Fin}(n)$. 给出一个agdastdlib里面的构造
+\[
+    \begin{aligned}
+    &\text{zero} : \text{Fin}~(\text{suc}~n) \\
+    &\text{suc}  : (i : \text{Fin}~n) → \text{Fin} ~(\text{suc}~n)
+    \end{aligned}
+\]
+每个type $\text{Fin}~n$都有一元素$\text{zero}$, 而对于每一个$i_{n} : \text{Fin}~(n)$都可以得到一个$i_{n+1} : \text{Fin}~(n+1)$.
 \end{example}
 
 
@@ -1138,7 +1156,7 @@ swap可以用来交换function里面两个arguments.
 \end{annotation}
 
 \begin{annotation}
-\rm 另外一个需要说明的是这里我们并没有规定product type就必须是一个pair, 也就是说这个东西并没有作为规则写到type theory中. 当然你要是说introductionl里面似乎已经规定了, 好像也说的过去, 但是hott里面认为这是需要证明的. 这就是非常细微的差别.
+\rm 另外一个需要说明的是这里我们并没有规定product type就必须是一个pair, 也就是说这个东西并没有作为规则写到type theory中. 当然你要是说introductionl rule里面似乎已经规定了, 那确实是，但是需要证明.
 \end{annotation}
 
 \begin{definition}
@@ -1302,7 +1320,7 @@ The second projection function
 \[
     \pi_2:\Pi_{p:(\Sigma_{x:A}B(x))} B(\pi_1(p)) 
 \]
-这里我们还无法构造$\pi_2$，因为我们还不知道$\Sigma$-type的dependent function如果构造.
+这里我们还无法构造$\pi_2$，因为我们还不知道$\Sigma$-type的dependent function如何构造.
 \end{example}
 
 \begin{definition}
@@ -1317,7 +1335,756 @@ The second projection function
 \[ 
     \text{ind}_{\Sigma_{x:A}B(x)}: \Pi_{C:(\Sigma_{x:A}B(x) \to \mathcal{U})}(\Pi_{a:A}\Pi_{b:B(a)} C((a,b))) \to \Pi_{p:(\Sigma_{x:A}B(x))} C(p) 
 \]
+with defining equation.
+\[
+    \text{ind}_{\Sigma_{x:A}B(x)} (C, g, (a,b)) \defeqv g(a)(b)
+\]
 \end{definition}
+
+\begin{example}
+\rm Assume $R : A \to B \to \mathcal{U}$, then type-theoretic axiom of choice is
+\[
+    \text{ac}: \Pi_{x : A}\Sigma_{y : B} R(x,y) \to \Sigma_{f : A \to B} \Pi_{x: A} R(x, f(x))
+\]
+with defining equation
+\[
+    \text{ac} (g) \defeqv (\lam{x}{\pi_1(g(x))}, \lam{x}{\pi_2(g(x))}).    
+\]
+将$\Pi$看做$\forall$, 而将$\Sigma$看做$\exists$, 就比较好理解了.
+\end{example}
+
+\subsection{Coproduct Type}
+
+\begin{definition}
+\rm A coproduct type is formed as $A + B$ with introductions rules
+\[
+    \infer[+\textsc{Intro}_1]{\text{inl}(a) : A + B}{a : A}  \quad \infer[+\textsc{Intro}_2]{\text{inr}(b) : A + B}{b : A}
+\]
+\end{definition}
+
+\begin{definition}
+\rm The recursion principle of coproduct type is
+\[
+    \text{rec}_{A + B} : \Pi_{C : \mathcal{U}} (A \to C) \to (B \to C) \to A + B \to C
+\]
+with defining equation
+\[
+    \begin{aligned}
+    \text{rec}_{A + B}(C, g_0, g_1, \text{inl}(a)) \defeqv g_0(a) \\
+    \text{rec}_{A + B}(C, g_0, g_1, \text{inr}(b)) \defeqv g_1(b) 
+    \end{aligned}
+\]
+where $g_0 : A \to C$ and $g_1 : B \to C$.
+\end{definition}
+
+\begin{definition}
+\rm The induction principle of coproduct type is
+\[
+    \text{ind}_{A + B} : \Pi_{C : A + B \to \mathcal{U}} (\Pi_{x : A} C(\text{inl}(x))) \to (\Pi_{y : B} C(\text{inr}(y))) \to \Pi_{z : A + B} C(z)
+\]
+with defining equation
+\[
+    \begin{aligned}
+    \text{ind}_{A + B}(C, g_0, g_1, \text{inl}(a)) \defeqv g_0(a) \\
+    \text{ind}_{A + B}(C, g_0, g_1, \text{inr}(b)) \defeqv g_1(b) 
+    \end{aligned}
+\]
+where $g_0 : \Pi_{x : A} C(\text{inl}(x))$ and $g_1 : \Pi_{y : A} C(\text{inr}(y))$. 
+\end{definition}
+
+
+\subsection{Concrete Construction}
+
+\begin{definition}
+\rm The constructors for $\mathbb{N}$ are
+\[
+    \begin{aligned}
+        &0 : \mathbb{N} \\
+        &\text{succ} : \mathbb{N} \to \mathbb{N} 
+    \end{aligned}
+\]
+\end{definition}
+
+\begin{definition}
+\rm Primitive recursion of $\mathbb{N}$ is 
+\[
+    \begin{aligned}
+    &f(0) \defeqv c_0 \\
+    &f(\text{succ}~n) \defeqv c_s(n, f(n))
+    \end{aligned}
+\]
+where $f: \mathbb{N} \to C$, $c_0 :\mathbb{N}$ and $c_s : \mathbb{N} \to C \to C$.
+\end{definition}
+
+\begin{annotation}
+\rm 注意上面用到了primitive这个词，它意味着这个recursion可以盖住所有$f: \mathbb{N} \to C$的构造. 如果想要构造$\mathbb{N}$上的加法, 我们只需要这个$C$换成$N \to N$, 那么此时$c_0 : \mathbb{N} \to \mathbb{N}$， 而$c_s : \mathbb{N} \to (\mathbb{N} \to \mathbb{N}) \to (\mathbb{N} \to \mathbb{N})$. 此时$f$我们用$\text{add}$来表示，那么$\text{add}(n)$实际就是plus operator $n+$, $\text{add(0)} \defeqv c_0$表示即$0+$, 而$\text{add}(\text{succ}~n) = c_s(n, add(n))$表示$n+1+$.
+\end{annotation}
+
+\begin{definition}
+\rm Recursor of $\mathbb{N}$ is
+\[
+    \text{rec}_{\mathbb{N}} : \Pi_{C : \mathcal{U}} \to C \to (\mathbb{N} \to C \to C) \to \mathbb{N} \to C
+\]
+with defining equation
+\[
+    \begin{aligned}
+        &\text{rec}_{\mathbb{N}}(C, c_0, c_s, 0) \defeqv c_0 \\
+        &\text{rec}_{\mathbb{N}}(C, c_0, c_s, \text{succ}~n) \defeqv c_s(n,  \text{rec}_{\mathbb{N}}(C, c_0, c_s, n))
+    \end{aligned}
+\]
+\end{definition}
+
+\begin{definition}
+\rm Induction principle of $\mathbb{N}$ is 
+\[
+    \text{ind}_{\mathbb{N}} : \Pi_{C : \mathbb{N} \to \mathcal{U}} C(0) \to (\Pi_{n : \mathbb{N}} C(n) \to C(\text{succ}~n)) \to \Pi_{n: N} C(n)
+\]
+with defining equation
+\[
+    \begin{aligned}
+        &\text{ind}_{\mathbb{N}}(C, c_0, c_s, 0) \defeqv c_0 \\
+        &\text{ind}_{\mathbb{N}}(C, c_0, c_s, \text{succ}~n) \defeqv c_s(n,  \text{ind}_{\mathbb{N}}(C, c_0, c_s, n))
+    \end{aligned}
+\]
+\end{definition}
+
+\subsection{Programming Language Definition}
+
+\begin{annotation}
+\rm Given the type $\Sigma_{x : A} P(x)$, we can regard it as the type of all elements $x : A$ such that $P(x)$.
+\end{annotation}
+
+\subsection{Algebraic Structure Definition}
+
+\begin{example}
+\rm A type of magma is 
+\[
+    \text{Magma} : \Sigma_{A : \mathcal{U}} A \to A \to A.
+\]
+Magma可以刻画那些带有binary operator的代数结构. 其中$A$实际就代表了a set of elements, 我们可以通过$\pi_1$拿到. 而其binary operator, 我们可以通过$\pi_2$拿到.
+\end{example}
+
+\begin{example}
+\rm A type of pointed-magma is 
+\[
+    \text{PointedMagma} : \Sigma_{A : \mathcal{U}} (A \to A \to A) \times A.
+\]
+相比于Magmas, 这里多出了一些点$x : A$, 例如我们常常需要的identity element.
+\end{example}
+
+\begin{example}
+\rm A type of boolean is $\mathbf{2} : \mathcal{U}$ is intended to have exactly two elements $0_{2}, 1_2 : \mathbf{2}$. 我们可以用coproduct type配合unit type来定义它, i.e., $\mathbf{1} + \mathbf{1}$, 这里就正好有两个元素. 当然了也可以显式地直接定义$\mathbf{2}$.
+
+依赖boolean type的if-then-else对应的recursion principle为
+\[
+    \text{rec}_{\mathbf{2}} : \Pi_{C : \mathcal{U}} C \to C \to \mathbf{2} \to C 
+\]
+with defining equation
+\[
+    \begin{aligned}
+    \text{rec}_{\mathbf{2}}(C, c_0, c_1, 0_2) = c_0 \\
+    \text{rec}_{\mathbf{2}}(C, c_0, c_1, 1_2) = c_1  
+    \end{aligned}
+\]
+\end{example}
+
+\subsection{Identity Types}
+
+\begin{definition}
+\rm Given two elements $a b : A$, there is type $a =_A b : \mathcal{U}$ called \emph{identity type} or \emph{equality type} in the same universe.
+\end{definition}
+
+\begin{definition}
+\rm The only introduction rule for identity types is a dependent function
+\[
+    \refl : \Pi_{a : A} (a =_A a)
+\]
+called \redt{reflexivity}.
+\end{definition}
+
+\begin{definition}
+\rm (\redt{Indiscernibility of identicals}) For every family $C : A \to \mathcal{U}$, there is a function
+\[
+    f: \Pi_{x,y : A} \Pi_{p : x =_A y} ~C(x) \to C(y)
+\]
+such that $f(x,x,\refl_x) \defeqv \id_C(x)$.
+\end{definition}
+
+\begin{annotation}
+\rm Indiscernibility of identicals描述当两个东西是相同的时候, 当其中一个满足某种性质的时候，另外一个也应当满足这个性质. 在任何使用它们的场景下都是无法区分它们的.
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Principle of substitution}) To prove that every $x,y$ with $x = y$ has property $P(x,y)$, it suffices to prove that every pair $x,x$ (for which $x = x$) has property $P(x,x)$
+\end{lemma}
+
+\begin{proof}
+By Indiscernibility of identicals for $x = y$, we know $P(x,x) \to P(x,y)$ (fixed the first argument).
+\end{proof}
+
+\begin{annotation}
+\rm MLTT中也有一个类似path induction的identify type的elimination rule.
+\end{annotation}
+
+\newpage
+\section{Homotopy Type Theory}
+\begin{annotation}
+Topologically, ...
+\end{annotation}
+
+\begin{definition}
+\rm Topologically, a identity type is a \redt{path}.  
+\end{definition}
+
+\subsection{Path Induction}
+\begin{annotation}
+\rm \redt{The family of identity types is freely generated by the reflexivity terms}.
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{Path induction}) Given a family $C : \Pi_{x,y : A} (x =_A y) \to \mathcal{U}$ and a function $c : \Pi_{x : A} C(x, x, \refl_x)$, there is a function 
+\[
+    f : \Pi_{x,y : A} \Pi_{p : x =_A y} C(x,y,p)
+\]
+such that $f(x,x,\refl_x) \defeqv c(x)$. It corresponds a single function
+\[
+    \ind_{=A} : \Pi_{C : \Pi_{x, y : A} (x =_A y) \to \mathcal{U}}~ (\Pi_{x : A} C(x,x,\refl_x)) \to \Pi_{x, y : A} \Pi_{p : x=_A y} C(x,y,p)
+\]
+with the equality $\ind_{=A}(C,c,x,x,\refl_x) \defeqv c(x)$.
+\end{definition}
+
+\begin{annotation}
+\rm Given a identity type family $C$, to prove that every pair $x,y$ with path $p : x = y$ has property $C(x,y,p)$, it suffices to prove that every pair $x,x$ with loop $\refl_x$ has property $C(x,x,\refl_x)$. 
+\end{annotation}
+
+\begin{annotation}
+\rm 辅助理解path induction, 思考$1 + 3 = 3 + 1$的证明过程. 这里应该有一些类似的证明， 例如
+\[
+\begin{aligned}
+    1 + 3 = 0 + 4 = 4 = 4 = 1 + 3 = 2 + 2 = 3 + 1 \\
+\end{aligned}
+\]
+但是无论怎样我们都无法直接用$\refl_{1+3}$或者$\refl_{3+1}$来一步到位，而是连续地使用了$\refl$. 这里看起来identity type是inductive defined, 注意这并不对! 这里$1 + 3 = 3 + 1$是一个non-dependent identity type family $C(x,y,p) \defeqv 1 + 3 = 3 + 1$, 因此还是identity type family是inductive defined. 可以更general一点，来证明 $1 + x = x + 1$, 我们也可以借助identity type，构造一个family $C(x, y, p) \defeqv 1 + x = y + 1$.
+\end{annotation}
+
+\begin{definition}
+\rm (\redt{Based path induction}) Fix an element $a :A$, we have a dependent function
+\[
+    \ind_{=A}' : \Pi_{a : A} \Pi_{C : \Pi_{x : A} (a =_A x) \to \mathcal{U}}~  C(a,\refl_a) \to \Pi_{x : A} \Pi_{p : a=_A x} C(x, p) 
+\]
+with the equality 
+\[
+    \ind_{=A}'(a, C, c, a,  \refl_a) \defeqv c.
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 注意这里不能同时固定$x,y : A$. 特别地，换句话说我们不能只通过$C(\refl_x)$来证明$C(p)$ with $p : x =_A x$. 因为HoTT允许$x, x$之间的paths不只有reflexivity.
+
+从拓扑的观点来看，一个两端固定的绳子可能不能连续形变到同一个点 (constant path (路径只在某一点上)). 例如给定挖掉圆心的圆 $\{(x,y) | 0 < x^2 + y^2 < 2\}$. 我们来考虑两种情况
+\begin{center}
+    \includegraphics[scale=0.1]{images/topo1.png}
+\end{center}
+绿色的环显然是可以连续形变到这个环上的某个点, 但是红色的环不行. 因为中间的这个洞阻碍了连续形变. 如果运行这个环的某个端点可变，显然我们可以一直收缩这个端点到另外一个端点. 连续形变相当于在其过程中产生了很多的paths, 这些paths都是"连续"的或者homotopical.
+\end{annotation}
+
+\begin{lemma}
+\rm Path induction and based path induction are equivalent.
+\end{lemma}
+
+\begin{proof}
+($\Leftarrow$)是简单的，即
+\[
+    \begin{aligned}
+     \text{eq}_l : &(\ind_2 :(\Pi_{a : A} \Pi_{C : \Pi_{x : A} (a =_A x) \to \mathcal{U}}~  C(a,\refl_a) \to \Pi_{x : A} \Pi_{p : a=_A x} C(x, p))) \\ 
+     \to&(\ind_1 : (\Pi_{C : \Pi_{x, y : A} (x =_A y) \to \mathcal{U}}~ (\Pi_{x : A} C(x,x,\refl_x)) \to \Pi_{x, y : A} \Pi_{p : x=_A y} C(x,y,p)))
+    \end{aligned}
+\]
+with the equality $\text{eq}_l(\ind_2, C, c, x, y, p) = \ind_2(x, C(x), c(x), y, p)$.
+
+反过来就有点不太明显了， 即要证
+\[
+    \begin{aligned}
+     \text{eq}_r : &(\ind_1 : (\Pi_{C : \Pi_{x, y : A} (x =_A y) \to \mathcal{U}}~ (\Pi_{x : A} C(x,x,\refl_x)) \to \Pi_{x, y : A} \Pi_{p : x=_A y} C(x,y,p)))  \\
+     \to&(\ind_2 :(\Pi_{a : A} \Pi_{C : \Pi_{x : A} (a =_A x) \to \mathcal{U}}~  C(a,\refl_a) \to \Pi_{x : A} \Pi_{p : a=_A x} C(x, p)))
+    \end{aligned}
+\]
+这个时候没法直接用$\ind_1$. 这里我们需要利用path induction去额外证明一个property
+\[
+    f : \Pi_{x,y : A} \Pi_{p : x = y} \Pi_{C : \Pi_{z : A} (x =_A z) \to \mathcal{U}} ~ C(x,\refl_x) \to C(y,p).
+\]
+使得$D : \Pi_{x, y : A} (x = y) \to \mathcal{U}$ with $D(x, y, p) = \Pi_{C : \Pi_{z : A} (x =_A z) \to \mathcal{U}} C(x,\refl_x) \to C(y,p)$. 这里$D$就是$x = y$的一个family, 我们可以利用path induction来证明
+\[
+    f : \Pi_{x,y : A} \Pi_{p : x = y} D(x,y,p) 
+\]
+显然有$D(x,x,\refl_x) = \id_{C(x,\refl_x)}$. 因此我们有$\text{eq}_r(\ind_2, a, C, c, x, p) = f(a, x, p, C, c)$. 
+
+这里还需要注意是如果$\text{eq}_r$里面规定$C : \Pi_{x : A} (a = x) \to \mathcal{U}_i$, 那么必须需要$D : \Pi_{x, y : A} (x = y) \to \mathcal{U}_{i+1}$.  因为$D$的参数是$c : C$, 由此可能会产生类型为$\mathcal{U}_i$的元素，盖住它们需要用更高一层的universe.
+\end{proof}
+
+\begin{annotation}
+\rm 如何使用path induction呢？ 也就是说如何用path induction证明一些function $f$ ?
+
+如果我们type family $D : \Pi_{x,y : A} (x = y) \to \mathcal{U}$和$d : \Pi_{a:A} D(a,a,\refl_a)$，那么我们就可以得到一个dependent function
+\[
+    \ind_{=A}(D,d) : \Pi_{x,y:A}\Pi_{p : x = y} D(x,y,p)
+\]
+with the definition equality $\ind_{=A}(D,d,a,a,\refl_a) \defeqv d(a)$. 
+
+首先$f$应当是关于every $x,y$ with $p : x=y$的一个proprety, 此时就可以用$D$来抽象这个property. 并且$D(x,y,p)$应当是描述property中结果的那个type. 有可能此时$D(x,x,\refl)$还需要继续用path induction, 也就是无法直接构造$d$. 在下面一个小节中可以慢慢体会这个过程.
+\end{annotation}
+
+
+\subsection{Types are higher groupoids}
+
+\begin{lemma}
+\rm For every type $A$ and every $x,y : A$ there is a function
+\[
+    (x = y) \to (y = x)
+\]
+denoted $p \mapsto p^{-1}$, such that $\refl_x^{-1} \equiv \refl_x$ for each $x : A$. We call $p^{-1}$ the \redt{inverse} of $p$.
+\end{lemma}
+
+\begin{proof}
+\rm The corresponding type for the proposition is
+\[
+    f : \Pi_{A : \mathcal{U}} \Pi_{x , y : A} (x = y) \to (y = x).
+\]
+Let $D : \Pi_{x, y : A} (x = y) \to \mathcal{U}$ be the type family defined by $D(x,y,p) \defeqv (y=x)$. Then we have an element $d \defeqv \lam{x}{\refl_x} : \Pi_{x : A} D(x,x,\refl_x)$. Thus, the induction principle for identity types gives us an element $\ind_{=A}(D,d,x,y,p) : (y = x)$.
+\end{proof}
+
+\begin{lemma}
+\rm For every type $A$ and every $x,y,z : A$ there is a function 
+\[
+    (x = y) \to (y=z) \to (x=z)
+\]
+written $p \mapsto q \mapsto p \centerdot q$, such that $\refl_x \centerdot \refl_x \equiv \refl_x$ for any $x : A$. We call $p \centerdot q$ the \redt{concatenation} or \redt{composite} of $p$ and $q$.
+\end{lemma}
+
+\begin{proof}
+\rm The corresponding type for the proposition is
+\[
+    \Pi_{A : \mathcal{U}}\Pi_{x,y,z : A} ~ (x = y) \to (y=z) \to (x=z)
+\]
+Let $D_1 : \Pi_{x,y} (x=y) \to \mathcal{U}$ be the family defined by $D_1(x,y,p) \equiv \Pi_{z : A} \Pi_{q : y = z} (x=z)$. Now $D(x,x,\refl_x) = \Pi_{z : A}\Pi_{q : x = z} (x=z)$. Let $D_2 : \Pi_{x,z : A} \Pi_{q : x=z}~\mathcal{U}$ be the family defined by $D_2(x,z,q) \defeqv x = z$. Now $D_2(x,x,\refl_x) \equiv (x=x)$, then we have $d_2 : \Pi_{x:A} ~ D_2(x,x,\refl_x)$ defined by $d_2(x) = \refl_x$. 
+
+By induction principle for identity type we have $\ind_{=A} (D_2,d_2) : \Pi_{x,z : A} \Pi_{p : x=z} x = z$. Then we have $d_1 : \Pi_{x : A} D_1(x,x,\refl)$ defined by $d_1(x) = \ind_{=A} (D_2,d_2)$. Again by induction principle for identity type we have $\ind_{=A} (D_1,d_1) : \Pi_{x,y : A} \Pi_{p : x=y} \Pi_{z : A} \Pi_{q : y = z} (x=z)$. Since $p$ and $q$ is unused, then $\ind_{=A} (D_1,d_1) : \Pi_{x,y : A} (x=y)  \to \Pi_{z : A} (y = z) \to (x=z)$. Finally we have $\ind_{=A} (D_1,d_1) : \Pi_{x,y,z : A} (x=y)  \to (y = z) \to (x=z)$.
+\end{proof}
+
+\begin{definition}
+\rm A $\infty$-groupoid consists of a collection of objects, and then a collection of morphisms between objects, and then morphisms between morphisms, and so on. Morphisms at each level have identity, composition, and inverse operations.
+\end{definition}
+
+\begin{remark}
+\rm “equality”, “homotopical”, and “higher-groupoid” points of view on what we have done so far. 
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+     \hline Equality & Homotopy & $\infty$-Groupoid \\
+     \hline reflexivity & constant path & identity morphism \\
+     \hline symmetry & inversion of paths & inverse morphism \\
+     \hline transitivity & concatenation of paths & composition of morphisms \\
+     \hline
+\end{tabular}
+\end{center}
+\end{remark}
+
+\begin{lemma}
+\rm (\redt{2-path}) Suppose $A :\mathcal{U}$, that $x, y, z, w : A$ and that $p : x = y$ and $r : z = w$. We have the following:
+\begin{itemize}
+    \item $p = p \centerdot \refl_y$ and $p = \refl_x \centerdot p$.
+    \item $p^{-1} \centerdot p = \refl_y$ and $p \centerdot p^{-1} = \refl_x$.
+    \item $(p^{-1})^{-1} = p$.
+    \item $p \centerdot (q \centerdot r) = (p \centerdot q) \centerdot r$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+我们在这里只证明associativity.  它对应的type为
+\[
+    \Pi_{x,y,z,w : A} \Pi_{p : x=y} \Pi_{q : y = z} \Pi_{r : z = w} ~ p \centerdot (q \centerdot r) = (p \centerdot q) \centerdot r
+\]
+使得$D_1 : \Pi_{x,y : A} \Pi_{p : x=y}~\mathcal{U}$ defined by 
+\[
+    D_1(x,y,p) =\Pi_{z}\Pi_{q : y=z}\Pi_{w : A} \Pi_{r : z = w} ~ p \centerdot (q \centerdot r) = (p \centerdot q) \centerdot r
+\]
+此时$D_1(x,x,\refl_x) = \Pi_{z, w : A}\Pi_{q : x = z}\Pi_{r : z = w}~\refl_x \centerdot (q \centerdot r) = (\refl_x \centerdot q) \centerdot r$.
+
+再使得$D_2 : \Pi_{x, z : A} \Pi_{q : x=z} \to \mathcal{U}$ defined by 
+\[
+    D_2(x,z,q) = \Pi_{w : A}\Pi_{r : z = w} ~\refl_x \centerdot (q \centerdot r) = (\refl_x \centerdot q) \centerdot r.
+\]
+此时$D_2(x,x,\refl_x) = \Pi_{w : A}\Pi_{r : x = w } ~\refl_x \centerdot (\refl_x \centerdot r) = (\refl_x \centerdot \refl_x) \centerdot r$.
+
+最后使得$D_3 : \Pi_{x, w : A} \Pi_{r : x = w } \mathcal{U}$ defined by
+\[
+    D_3(x, w, r) = \refl_x \centerdot (\refl_x \centerdot r) = (\refl_x \centerdot \refl_x) \centerdot r
+\]
+此时$D_3(x,x,\refl_x) = \refl_x \centerdot (\refl_x \centerdot \refl_x) = (\refl_x \centerdot \refl_x) \centerdot \refl_x$. 因此$d_3 : \Pi_{x} D_3(x,x,\refl_x)$ defined by $d_3(x) = \refl_{\refl_x}$, 注意这里是2-path.
+
+最后用两次path induction，构造$d_2$和$d_1$, 和一次path induction证明原命题. 
+\end{proof}
+
+\begin{lemma}
+\rm (\redt{Right whiskering}) Suppose $a, b : A$ and $p, q : a = b$ and $\alpha : p = q$ and $r : b = c$, then we can define
+\[
+    a \centerdot_r r : p \centerdot r = q \centerdot r
+\]
+\end{lemma}
+
+\begin{proof}
+By induction on $r$, it suffices to assume $r$ as $\refl_b$, then $a \centerdot_r \refl : p \centerdot \refl_b = q \centerdot \refl_b$ can be defined by
+\[
+    a \centerdot_r \refl_b \defeqv {\textbf{ru}_p}^{-1} \alpha \textbf{ru}_q 
+\]
+where $\textbf{ru}_p : p = p \centerdot \refl_b$ and $\textbf{ru}_q : q = q \centerdot \refl_b$. 
+\end{proof}
+
+\begin{lemma}
+\rm (\redt{Left whiskering}) Suppose $b, c : A$ and $r, s : b = c$ and $\beta : r = s$ and $q : a = b$, then we define
+\[
+    q \centerdot_l \beta : q \centerdot r = q \centerdot s
+\]
+\end{lemma}
+
+\begin{annotation}
+\rm 前面两个whiskering lemma告诉我们2-path可以直接concact相同path的, 来产生一个新的2-path, 这就带来了一些等号上好的计算性质. 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Horizontal composition}) Suppose $a,b,c : A$ and $p,q: a = b$ and $r,s : b = c$ and $\alpha : p = q$ and $\beta : r = s$. Then we can define
+\[
+    \alpha \star \beta : p \centerdot r = q \centerdot s
+\]
+\begin{center}
+    \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,497); %set diagram left start at 0, and has height of 497
+
+%Curve Lines [id:da4580105282751987] 
+\draw    (136,369) .. controls (155.75,396.06) and (194.22,397.98) .. (229.12,385.32) .. controls (241.35,380.88) and (253.15,374.65) .. (263.54,367.08) ;
+\draw [shift={(265,366)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Curve Lines [id:da6945510671526884] 
+\draw    (137,343) .. controls (179.36,303.6) and (235.29,312.71) .. (263.72,337.84) ;
+\draw [shift={(265,339)}, rotate = 222.88] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Curve Lines [id:da19013021837951216] 
+\draw    (273,338) .. controls (315.36,298.6) and (371.29,307.71) .. (399.72,332.84) ;
+\draw [shift={(401,334)}, rotate = 222.88] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Curve Lines [id:da5521038491120764] 
+\draw    (277,365) .. controls (303.73,401.63) and (364.76,392.2) .. (404.79,362.89) ;
+\draw [shift={(406,362)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da951832554297978] 
+\draw    (199.5,334) -- (199.5,362)(196.5,334) -- (196.5,362) ;
+\draw [shift={(198,370)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da620936274617875] 
+\draw    (335.5,334) -- (335.5,362)(332.5,334) -- (332.5,362) ;
+\draw [shift={(334,370)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+% Text Node
+\draw (122,344) node [anchor=north west][inner sep=0.75pt]    {$a$};
+% Text Node
+\draw (264,341) node [anchor=north west][inner sep=0.75pt]    {$b$};
+% Text Node
+\draw (406,338) node [anchor=north west][inner sep=0.75pt]    {$c$};
+% Text Node
+\draw (184,291) node [anchor=north west][inner sep=0.75pt]    {$p$};
+% Text Node
+\draw (328,286) node [anchor=north west][inner sep=0.75pt]    {$r$};
+% Text Node
+\draw (184,394) node [anchor=north west][inner sep=0.75pt]    {$q$};
+% Text Node
+\draw (330,389) node [anchor=north west][inner sep=0.75pt]    {$s$};
+% Text Node
+\draw (207,341) node [anchor=north west][inner sep=0.75pt]    {$\alpha$};
+% Text Node
+\draw (340,342) node [anchor=north west][inner sep=0.75pt]    {$\beta$};
+
+
+\end{tikzpicture}
+\end{center}
+\end{lemma}
+
+\begin{proof}
+\rm We can define $\alpha \star \beta : p \centerdot r = q \centerdot s$ by
+\[
+    \alpha \star \beta \defeqv (\beta \centerdot_r r) \centerdot (q \centerdot_l \beta).
+\]
+\end{proof}
+
+
+\begin{definition}
+\rm A \redt{pointed type} $(A, a)$ is a type $A : \mathcal{U}$ together with a point $a : A$, called its basepoint.We write $\mathcal{U}_{\bullet}\defeqv \Sigma_{A : \mathcal{U}} A$ for the type of pointed types in the universe $\mathcal{U}$.
+\end{definition}
+
+\begin{definition}
+\rm Given a pointed type $(A, a)$, we define the \redt{loop space} of $(A, a)$ to be following pointed type:
+\[
+    \Omega(A, a) \defeqv ((a =_A a), \refl_a).
+\]
+An element of it will be called a \redt{loop} at $a$. For $n : \mathbb{N}$, the $n$-fold iterated loop space $\Omega^{n}(A, a)$ of a pointed type $(A, a)$ is defined recursively by:
+\[
+    \begin{aligned}
+        \Omega^0(A, a) &\defeqv (A, a) \\
+        \Omega^{n+1}(A, a) &\defeqv \Omega^n(\Omega(A,a)).
+    \end{aligned}
+\]
+An element of it will be called an $n$-loop or an $n$-dimensional loop at $a$.
+\end{definition}
+
+\begin{annotation}
+\rm Loop space可以看做所有点$a$上loops, 这样的loops可以用$a =_A a$来表示，特别地有一个特殊的loop叫做$\refl_a$. 
+\end{annotation}
+
+\subsection{Functions are Functors}
+
+\begin{lemma}
+\rm Suppose that $f : A \to B$ is a function. Then for any $x,y : A$ there is an operation
+\[
+    \ap_f:(x =_A y) \to (f(x) =_B f(y)).
+\]
+Moreover, for each $x : A$ we have $\ap_f(\refl_x) \equiv \refl_{f(x)}$. We often write $f(p)$ as $\ap_f(p)$.
+\end{lemma}
+
+\begin{annotation}
+\rm $\ap_f$可以看做the application of $f$ to a path or the action on paths of $f$.
+\end{annotation}
+
+
+\begin{lemma}
+\rm For functions $f : A \to B$ and $g : B \to C$ and paths $p : x=_A y$ and $q : y=_A z$, we have
+\begin{itemize}
+    \item Functoriality : $\ap_f(p \centerdot q) = \ap_f(p)\centerdot \ap_f(q)$.
+    \item Reflectivity : $\ap_f(p^{-1}) = \ap_f(p)^{-1}$.
+    \item Functor composition : $\ap_g(\ap_f(p)) = \ap_{g \circ f}(p)$.
+    \item Identity functor : $\ap_{\id_A}(p) = p$.
+\end{itemize}
+\end{lemma}
+
+\subsection{Type Families are Fibrations}
+
+\begin{annotation}
+\rm 如果给定一个dependent function $f : \Pi_{x : A} B(x)$ 和 $p : x = y$, 那么我们是否可以直接构造$f(x) = f(y)$ ? 显然不行，因为$B(x)$和$B(y)$可能并不是同一个类型. 所以这里有一些gap, 这些gap可以通过探究$p$本身蕴含的一些东西来解决. 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Transport}) Suppose that $P$ is a type family over $A$ and that $p : x =_A y$. Then there is a function $p_*: P(x) \to P(y)$. We often write $\transport^P(p,-) : P(x) \to P(y)$.
+\end{lemma}
+
+\begin{proof}
+\rm The corresponding type is
+\[
+    f : \Pi_{P : A \to \mathcal{U}}\Pi_{x,y : A} (x=y) \to (P(x) \to P(y)).
+\]
+By induction, it suffices to assume $p$ is $\refl_x$, then $f(P, x,x,\refl_x) = \refl_{P(x)}$.
+\end{proof}
+
+\begin{proof}
+\rm 这个$\transport$和indistinguiability of identicals实际上一样的，都在说如果$x = y$，那么$P(x)$成立当且仅当$P(y)$成立, 其中$P$可以看做关于type $A$的一个property. 
+
+从拓扑的观点来看，可以将$P : A \to \mathcal{U}$看做 a \redt{fibration} with base space $A$, with P(x) being the fiber over x, and with $\Sigma_{x : A} P(x)$ being the \redt{total space} of the fibration, with first projection $\Sigma_{x : A} P(x) \to A$. 如果存在$u : P(x)$, 那么path $p : x = y$ 就可以对应total space中的一个path $(x, u) = (y, p_*(x)))$. 这个过程称为path lifting.
+\begin{center}
+    \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Shape: Ellipse [id:dp8188930674915369] 
+\draw   (170,71) .. controls (170,53.88) and (219.7,40) .. (281,40) .. controls (342.3,40) and (392,53.88) .. (392,71) .. controls (392,88.12) and (342.3,102) .. (281,102) .. controls (219.7,102) and (170,88.12) .. (170,71) -- cycle ;
+%Curve Lines [id:da7500318047279952] 
+\draw    (235,75) .. controls (275,45) and (285,103) .. (325,73) ;
+\draw [shift={(325,73)}, rotate = 323.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+\draw [shift={(235,75)}, rotate = 323.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+%Shape: Ellipse [id:dp5278439924527563] 
+\draw   (170,204) .. controls (170,186.88) and (219.7,173) .. (281,173) .. controls (342.3,173) and (392,186.88) .. (392,204) .. controls (392,221.12) and (342.3,235) .. (281,235) .. controls (219.7,235) and (170,221.12) .. (170,204) -- cycle ;
+%Curve Lines [id:da6542980978586372] 
+\draw    (235,208) .. controls (275,178) and (285,236) .. (325,206) ;
+\draw [shift={(325,206)}, rotate = 323.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+\draw [shift={(235,208)}, rotate = 323.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+%Straight Lines [id:da31936463691040573] 
+\draw    (279,110) -- (278.04,162) ;
+\draw [shift={(278,164)}, rotate = 271.06] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+% Text Node
+\draw (191,60) node [anchor=north west][inner sep=0.75pt]    {$f( x)$};
+% Text Node
+\draw (335,60) node [anchor=north west][inner sep=0.75pt]    {$f( y)$};
+% Text Node
+\draw (279,49) node [anchor=north west][inner sep=0.75pt]    {$f( p)$};
+% Text Node
+\draw (201,196) node [anchor=north west][inner sep=0.75pt]    {$x$};
+% Text Node
+\draw (334,193) node [anchor=north west][inner sep=0.75pt]    {$y$};
+% Text Node
+\draw (256,204) node [anchor=north west][inner sep=0.75pt]    {$p$};
+% Text Node
+\draw (290,126) node [anchor=north west][inner sep=0.75pt]    {$\text{pr}_{1}$};
+% Text Node
+\draw (139,183) node [anchor=north west][inner sep=0.75pt]    {$A$};
+% Text Node
+\draw (88,37) node [anchor=north west][inner sep=0.75pt]    {$\Sigma _{( x\ :\ A)} P( x)$};
+
+
+\end{tikzpicture}
+\end{center}
+\end{proof}
+
+\begin{lemma}
+\rm (\redt{Path lifting property}). Let $P : A \to \mathcal{U}$ be a type family over $A$ and assume we have $u : P(x)$ for some $x : A$. Then for any $p : x=y$, we have
+\[
+    \lift(u,p) : (x, u) = (y, p_*(x)).
+\]
+in $\Sigma_{x : A} P(x)$, such that $\pr_1(\lift(u,p)) = p$.
+\end{lemma}
+
+\begin{definition}
+\rm Given a type family $P : A \to \mathcal{U}$, a dependent function $f : \Pi_{x :A} P(x)$ is a \redt{section} of the fibration $P$. If such $f$ is exists, we say there is \redt{fiberwise} happened.
+\end{definition}
+
+\begin{annotation}
+\rm 在给定一个section $f : \Pi_{x :A} P(x)$的情况下, 我们可以定义一个non-dependent function $f' : A \to \Sigma_{x : A} P(x)$ defined by $f'(x) \defeqv (x, f(x))$. 这样我们再把$\ap$用在$f'$上了，那么$f'(p) : f'(x) = f'(y)$. 但是type $f'(x) = f'(y)$并不能很好的显示这个total space上path是基于哪个$p : x=y$的, 也就是我们希望$p$也出现最后我们得到的那个equality type中. 于是就有下面的定义. 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Dependent map}) Suppose $f : \Pi_{x : A} P(x)$, then we have a map
+\[
+  \apd_f : \Pi_{p : x = y} (p_*(f(x))) =_{P(y)} f(y))  
+\]
+\end{lemma}
+
+\begin{proof}
+\rm By induction, it suffices to assume $p$ is $\refl_x$, then $\apd_f(\refl_x) = \refl_{f(x)}$. 
+\end{proof}
+
+\begin{annotation}
+\rm 我们让$u : P(x)$和$v : P(y)$, 那么$p_*(u) = v $就可以看做"a path form $u$ to $v$ lying over $p : x=y$". 
+\end{annotation}
+
+\begin{lemma}
+\rm (\redt{Constantly transport}) If $P : A \to \mathcal{U}$ is defined by $P(x) \defeqv B$ for a fixed $B : \mathcal{U}$, then for any $x, y : A$ and $p : x=y$ and $b : B$ we have a path
+\[
+    \transportconst_p^B(b) : \transport^P(p, b) = b.
+\]
+\end{lemma}
+
+\begin{annotation}
+\rm 有了$\transportconst$之后, 对应任意的$x,y : A$, $p : x = y$和$f : A \to B$, 我们可以构造一个function
+\[
+    \text{eq}_1 : f(x) = f(y) \to p_*(f(x)) = f(y)
+\]
+with definition equality
+\[
+    \text{eq}_1(\ap_f(p)) = \transportconst_p^B(f(x)) \centerdot \ap_f(p). 
+\]
+反过来，我们可以用$\transportconst^{-1}$来构造function
+\[
+    \text{eq}_2 : p_*(f(x)) = f(y) \to f(x) = f(y)
+\]
+with definition equality
+\[
+    \text{eq}_2(\apd_f(p)) =  {\transportconst_p^B}^{-1}(f(x)) \centerdot \apd_f(p). 
+\]
+接着我们可以证明$\text{eq}_1(\ap_f(p)) = \apd_f(p)$.
+\end{annotation}
+
+\newpage
+\subsection{Homotopies and Equivalences}
+
+\begin{definition}
+\rm Let $f, g : \Pi_{x : A} P(x)$ be two sections of a type family $P: A \to \mathcal{U}$. A \redt{homotopy} from $f$ to $g$ is a dependent function of type
+\[
+    (f \sim g) \defeqv \Pi_{x : A} (f(x) = g(x)).
+\]
+\end{definition}
+
+\begin{annotation}
+\rm 一个homotopy $f \sim g$可以从几个方面来理解:
+\begin{itemize}
+    \item 可以看做是由很多continous paths $f(x) = f(y)$构成的.
+    \item 把$f,g$看做两个functors, 那么$f \sim g$是一个natural transformation.
+\end{itemize}
+\end{annotation}
+
+\begin{lemma}
+\rm Homotopy is an equivalent relation on each dependent function type $\Pi_{x:A} P(x)$.
+\end{lemma}
+
+\begin{lemma}
+\rm (\redt{Natural transformation}) Suppose $H : f \sim g$ is a homotopy between dependent functions $f,g: \Pi_{x:A} P(x)$ and let $p : x=y$. Then we have 
+\[
+    H(x) \centerdot g(p) = f(p) \centerdot H(y).
+\]
+That is below diagram is commutative
+\begin{center}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRADMAKADwEoQAvqXSZc+QigDM5KrUYs2XAJ78hI7HgJEyk2fWatEIAOY9VwkBg3ii03dX0KjplYNkwox+EVDsAThAAtkhkIDgQSACMDvKGHJxo-NQMdABGMAwACqKaEiAMMOw4INQAFjB0UGyQYKzJWLVsUBBMqQWCFv5BIdThSABMMQZsABJmJflpGdnWWkZ+WMalxWUVVUY1dfkNcc2t7WocAcGI0WERiNJyw0ZjrslTWTk2RgVFE+WV1QRbDDtNLTarEOXROg3OSCujjipkSExS6SeszyCyWKxAn3W4B+8P+Rj2QLcAiAA
+\begin{tikzcd}
+f(x) \arrow[rrr, "f(p)", Rightarrow, no head] \arrow[ddd, "H(x)"', Rightarrow, no head] &  &  & f(y) \arrow[ddd, "H(y)", Rightarrow, no head] \\
+                                                                                        &  &  &                                               \\
+                                                                                        &  &  &                                               \\
+g(x) \arrow[rrr, "g(p)"', Rightarrow, no head]                                          &  &  & g(y)                                         
+\end{tikzcd}
+\end{center}
+\end{lemma}
+
+\begin{proof}
+\rm By induction, it suffices to assume $p$ is $\refl_x$, then $H(x) \centerdot \refl_{g(x)} = \refl_{f(x)} \centerdot H(x)$, which both sides are $H(x)$.
+\end{proof}
+
+\begin{corollary}
+\rm Let $H : f \sim \id_A$ be a homotopy, with $f : A \to A$. Then for any $x : A$ we have 
+\[
+    H(f(x)) = f(H(x)).
+\]
+Here $f(x)$ denotes the ordinary application of $f$ to $x$, while $f(H(x))$ denotes $\ap_f(H(x))$.
+\end{corollary}
+
+\begin{proof}
+\rm We know $H(x) : f(x) = x$, let $p$ be $H(x)$. By naturality of $H$, we have following commutative diagram:
+\begin{center}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRADMAKLgDwEo+IAL6l0mXPkIoAzOSq1GLNr0Eix2PASJlp8+s1aIOnfsNEgMGyUVm7q+pUZ7D5MKAHN4RUOwBOEAFskMhAcCCQARntFQ2MACRMBEGoGOgAjGAYABXFNKRAGGHYcZJAACxg6KDZIMFYUrDq2KAgmNMKzH38gxBCwpAAmaIM2BJVBFPTMnKstI18sdzKS6gqqmoJ6gsbYlraOtQ5uyOp+xFkFEaME00mM7NzrI0Li0oYd5tb21kO-QMHTuFzsNHCAbhMClMHrN8gslitypVqkZalt3k0jHtvi4hEA
+\begin{tikzcd}
+f(f(x)) \arrow[rrr, "f(H(x))", Rightarrow, no head] \arrow[ddd, "H(f(x))"', Rightarrow, no head] &  &  & f(x) \arrow[ddd, "H(x)", Rightarrow, no head] \\
+                                                                                                 &  &  &                                      \\
+                                                                                                 &  &  &                                      \\
+f(x) \arrow[rrr, "H(x)"', Rightarrow, no head]                                                   &  &  & x                                   
+\end{tikzcd}
+\end{center}
+This is $f(H(x)) \centerdot H(x) = H(f(x)) \centerdot H(x)$. We can whisker by ${H(x)}^{-1}$ to cancel $H(x)$, obtaining
+\[
+    f(H(x)) = f(H(x)) \centerdot H(x) \centerdot {H(x)}^{-1} = H(f(x)) \centerdot H(x) \centerdot {H(x)}^{-1} = H(f(x)).
+\]
+\end{proof}
+
+
+\begin{definition}
+\rm For a function $f : A \to B$, a \redt{quasi-inverse} of $f$ is a triple $(g, \alpha,\beta)$ consisting of a function $g : B \to A$ and homotopies $\alpha : f \circ g \sim \id_B$ and $\beta : g \circ f \sim \id_A$. We often use $\qinv(f)$ to denote the type:
+\[
+    \qinv(f) \equiv \Sigma_{g : B \to A}((f \circ g \sim \id_B) \times (g \circ f \sim \id_A)).
+\]
+\end{definition}
+
+\begin{example}
+\rm For any $p :  x=_A y $ and $z : A$, the function
+\[
+    (p \centerdot -) : (y =_A z) \to (x =_A z)
+\]
+has a quasi-inverse given by $(p^{-1} \centerdot -) : (x =_A z) \to (y =_A z)$. 
+
+如何理解这个例子呢？ 首先得把它们两个definition先给出来. 这里我们让$\textbf{concact} : \Pi_{A : \mathcal{U}}\Pi_{x,y,z : A} ~ (x = y) \to (y=z) \to (x=z)$. 那么这里有
+\[
+    \begin{aligned}
+        (p , - ) &\defeqv \textbf{concact}(A,x,y,z,p) \\
+        (p^{-1}, -) &\defeqv \textbf{concact}(A,y,x,z,p^{-1})
+    \end{aligned}
+\]
+那么接着来考虑它们的composition
+\[
+    \begin{aligned}
+        (p , - ) \circ (p^{-1} , -) (r) \equiv \textbf{concact}(A,x,y,z,p, \textbf{concact}(A,y,x,z,p^{-1},r))
+    \end{aligned}
+\]
+其中$r : x =_A z$. 再接下来需要证明
+\[
+    \textbf{concact}(A,x,y,z,p, \textbf{concact}(A,y,x,z,p^{-1},r)) = r
+\]
+通过path induction, 我们证明存在一个$\refl_{x=_A x}$对应上述类型.
+\end{example}
+
 
 \newpage
 \begin{thebibliography}{9}
